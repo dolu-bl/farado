@@ -1,5 +1,6 @@
 # Farado's specific things
 farado.log
+farado.log.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

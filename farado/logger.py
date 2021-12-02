@@ -7,22 +7,11 @@ import logging.config
 
 logging.config.fileConfig('resources/logger.cfg')
 
-## Get default logger
-def DLog():
-    '''
-    Usage example:
-        DLog().debug('debug message')
-        DLog().info('info message')
-        DLog().warn('warn message')
-        DLog().error('error message')
-        DLog().critical('critical message')
-    '''
-    # TODO: Control default logger from config file
-    return FLog
+## Default logger
+DLog = logging.getLogger('root')
 
 ## Logging to file
 FLog = logging.getLogger('FileLogger')
 
-## logging to console
+## Logging to console
 CLog = logging.getLogger('ConsoleLogger')
-

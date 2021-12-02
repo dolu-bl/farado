@@ -5,7 +5,8 @@ import os
 
 global_config = {
     'global': {
-        # 'server.socket_host': '0.0.0.0', # allow any hosts 
+        # 'server.environment': 'production', # enable for production
+        # 'server.socket_host': '0.0.0.0', # allow any hosts
         'server.socket_port': 8080,
     },
 }
@@ -13,10 +14,10 @@ global_config = {
 application_config = {
     '/': {
         'tools.sessions.on': True,
-        'tools.staticdir.root': os.path.abspath(os.getcwd())
+        'tools.staticdir.root': os.path.abspath(os.getcwd()),
     },
     '/static': {
         'tools.staticdir.on': True,
-        'tools.staticdir.dir': './public'
+        'tools.staticdir.dir': './resources/public',
     }
 }
