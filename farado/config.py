@@ -5,7 +5,7 @@ import os
 
 global_config = {
     'global': {
-        'server.socket_host': 'localhost',
+        # 'server.socket_host': '0.0.0.0', # allow any hosts 
         'server.socket_port': 8080,
     },
 }
