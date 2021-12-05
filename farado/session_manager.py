@@ -35,7 +35,7 @@ class SessionManager:
             Timestamp of last user action
         '''
 
-        def __init__(self, user = None, id = uuid.uuid1(), duration = -1):
+        def __init__(self, user = None, id = uuid.uuid1(), duration = 3600):
             self.id = id
             self.user = user
             self.duration = duration
@@ -50,7 +50,7 @@ class SessionManager:
                 flag whether session has expired
             '''
             result = bool((time.time() - self.last_action_time) <= self.duration)
-            if not result:
+            if not result and self.user:
                 DLog.info(f'User session has expired: {self.user.login}')
             return result
 
