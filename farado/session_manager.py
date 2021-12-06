@@ -85,6 +85,9 @@ class SessionManager:
         bool
             flag whether there is a session with given id
         '''
+        if not id:
+            return False
+
         try:
             id = uuid.UUID(id)
         except ValueError:
@@ -109,7 +112,7 @@ class SessionManager:
 
         Parameters
         ----------
-        id : uuid.UUID
+        id : int
             User id
 
         Returns
@@ -117,9 +120,7 @@ class SessionManager:
         bool
             flag whether there is a session for the user
         '''
-        try:
-            id = uuid.UUID(id)
-        except ValueError:
+        if not id:
             return False
 
         with self.sessions_mutex:
