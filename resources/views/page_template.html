@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru" xml:lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--
+    <link rel="icon" href="/static/images/logo.png">
+  -->
+  <title>{% block title %}{% endblock %}</title>
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
+  {% block styles %}{% endblock %}
+</head>
+
+<body>
+
+  <!--Main menu panel-->
+  <nav class="navbar navbar-inverse navbar-fixed-top hidden-print">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+          aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-home"></span> Farado</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> {{ user.login }} </a></li>
+          <li><a href="/out"><span class="glyphicon glyphicon-off"></span> Logout </a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!--/Main menu panel-->
+
+  <div class="container-fluid">
+    <div class="row">
+      <div id="wrapper" class="{% if gui_permissions.admin_panel %}active{% endif %}">
+
+        <!--Admin menu panel-->
+        {%- if gui_permissions.admin_panel -%}
+        <div id="sidebar-wrapper" class="hidden-print">
+          <ul class="sidebar-nav" id="sidebar">
+            {%- if gui_permissions.view_users -%}
+              <li>
+                <a href="/users">Users<span class="sub_icon glyphicon glyphicon-user"></span></a>
+              </li>
+            {%- endif -%}
+          </ul>
+          <ul class="sidebar-nav" id="sidebar">
+            {%- if gui_permissions.edit_config -%}
+              <li>
+                <a href="/config">Config <span class="sub_icon glyphicon glyphicon-cog"></span></a>
+              </li>
+            {%- endif -%}
+            <li>
+              <a href="/logs">Logs <span class="sub_icon glyphicon glyphicon-info-sign"></span></a>
+            </li>
+          </ul>
+        </div>
+        {%- endif -%}
+        <!--/Admin menu panel-->
+
+
+        <!--Page content-->
+        <div id="page-content-wrapper" class="main">
+          <div class="page-content inset">
+            {%- block Content %}{% endblock -%}
+          </div>
+        </div>
+        <!--/Page content-->
+
+      </div>
+      <!--/wrapper-->
+    </div>
+    <!--/row-->
+  </div>
+  <!--/container-fluid-->
+
+  <script src="/static/js/jquery-3.6.0.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  {% block scripts %}{% endblock %}
+
+</body>
+
+</html>
