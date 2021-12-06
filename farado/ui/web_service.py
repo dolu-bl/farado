@@ -2,22 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+
 from farado.config import global_config, application_config
-
 from farado.logger import DLog
+from farado.ui.auth_view import AuthView
 
 
-class Ui:
+
+class WebService:
     def __init__(self):
-        pass
+        self.auth_view = AuthView()
 
     @cherrypy.expose
     def index(self):
-        for i in range(10000):
-            DLog.error("asdfasdf")
-            DLog.info("asdfasdf")
-            DLog.warning("asdfasdf")
-            DLog.critical("asdfasdf324")
         return "123"
 
     def run(self):
@@ -25,4 +22,5 @@ class Ui:
         cherrypy._cplogging.LogManager.time = lambda self : "cherrypy"
         cherrypy.config.update(global_config)
         cherrypy.log.screen = False
+        cherrypy.tree.mount(self.auth_view, '/in', application_config)
         cherrypy.quickstart(self, '/', application_config)
