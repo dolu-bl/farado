@@ -21,11 +21,11 @@ class WebService:
             session_id = self.stem.permission_manager.login(login, password)
         else:
             session_id = self.session_id()
-            if not self.stem.session_manager.check_session_id(session_id):
-                return self.auth_view.index()
+
+        if not self.stem.session_manager.check_session_id(session_id):
+            return self.auth_view.index()
 
         return "123" + str(session_id)
-
 
     def session_id(self):
         cookie = cherrypy.request.cookie

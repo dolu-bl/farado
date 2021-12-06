@@ -14,8 +14,8 @@ from farado.items.user import User
 
 
 class MetaItemManager:
-    def __init__(self):
-        self.engine = sqlalchemy.create_engine('sqlite:///resources/database.sqlite')
+    def __init__(self, database_connection_string):
+        self.engine = sqlalchemy.create_engine(database_connection_string)
         self.metadata = sqlalchemy.MetaData()
         self.create_tables()
         self.map_tables()

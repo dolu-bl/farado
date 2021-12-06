@@ -13,7 +13,5 @@ class AuthView:
         self.web_service = web_service
 
     @cherrypy.expose
-    def index(self, login=None, password=None):
-        print("login =", login)
-        print("password =", password)
+    def index(self):
         return view_renderer["in"].render()
