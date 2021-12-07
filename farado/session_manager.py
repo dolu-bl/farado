@@ -57,7 +57,7 @@ class SessionManager:
         def keep_alive(self):
             '''Updates the last action time for this session
             '''
-            self.last_action_time = time()
+            self.last_action_time = time.time()
 
     def __init__(self):
         self.sessions = []
@@ -69,8 +69,8 @@ class SessionManager:
         with self.sessions_mutex:
             self.sessions = [session for session in self.sessions if session.check_duration()]
 
-    def check_session_id(self, id):
-        '''Checks if there is a session with given id
+    def user_by_session_id(self, id):
+        '''Checks if there is a session with given id and returns user instance
 
         Method calls deleter for all sessions that have expired
         and calls keep alive for checked session
@@ -82,16 +82,17 @@ class SessionManager:
 
         Returns
         -------
-        bool
-            flag whether there is a session with given id
+        User
+            user instance, if there is a session with the given id
         '''
         if not id:
-            return False
+            return None
 
         try:
-            id = uuid.UUID(id)
+            if not isinstance(id, uuid.UUID):
+                id = uuid.UUID(id)
         except ValueError:
-            return False
+            return None
 
         with self.sessions_mutex:
 
@@ -102,8 +103,8 @@ class SessionManager:
                     continue
 
                 session.keep_alive()
-                return True
-        return False
+                return session.user
+        return None
 
     def check_user_id(self, id):
         '''Checks if there is a session for a user with given id
