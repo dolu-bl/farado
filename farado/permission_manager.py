@@ -26,3 +26,4 @@ class PermissionManager:
             return False
 
         return self.session_manager.create_session(user)
+

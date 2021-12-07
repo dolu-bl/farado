@@ -10,4 +10,5 @@ template_environment = jinja2.Environment(
     extensions = ['jinja2.ext.loopcontrols', 'jinja2.ext.with_']
 )
 view_renderer = {}
-view_renderer["in"] = template_environment.get_template("in.html")
+view_renderer["login"] = template_environment.get_template("login.html")
+view_renderer["index"] = template_environment.get_template("index.html")

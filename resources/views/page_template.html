@@ -40,37 +40,31 @@
 
   <div class="container-fluid">
     <div class="row">
-      <div id="wrapper" class="{% if gui_permissions.admin_panel %}active{% endif %}">
+      <div id="wrapper" class="active">
 
         <!--Admin menu panel-->
-        {%- if gui_permissions.admin_panel -%}
-        <div id="sidebar-wrapper" class="hidden-print">
-          <ul class="sidebar-nav" id="sidebar">
-            {%- if gui_permissions.view_users -%}
+          <div id="sidebar-wrapper" class="hidden-print">
+            <ul class="sidebar-nav" id="sidebar">
               <li>
                 <a href="/users">Users<span class="sub_icon glyphicon glyphicon-user"></span></a>
               </li>
-            {%- endif -%}
-          </ul>
-          <ul class="sidebar-nav" id="sidebar">
-            {%- if gui_permissions.edit_config -%}
+            </ul>
+            <ul class="sidebar-nav" id="sidebar">
               <li>
                 <a href="/config">Config <span class="sub_icon glyphicon glyphicon-cog"></span></a>
               </li>
-            {%- endif -%}
-            <li>
-              <a href="/logs">Logs <span class="sub_icon glyphicon glyphicon-info-sign"></span></a>
-            </li>
-          </ul>
-        </div>
-        {%- endif -%}
+              <li>
+                <a href="/logs">Logs <span class="sub_icon glyphicon glyphicon-info-sign"></span></a>
+              </li>
+            </ul>
+          </div>
         <!--/Admin menu panel-->
 
 
         <!--Page content-->
         <div id="page-content-wrapper" class="main">
           <div class="page-content inset">
-            {%- block Content %}{% endblock -%}
+            {%- block content %}{% endblock -%}
           </div>
         </div>
         <!--/Page content-->

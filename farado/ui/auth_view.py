@@ -14,4 +14,4 @@ class AuthView:
 
     @cherrypy.expose
     def index(self):
-        return view_renderer["in"].render()
+        return view_renderer["login"].render()
