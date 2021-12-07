@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru" xml:lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!--
+    <link rel="icon" href="/static/images/logo.png">
+  -->
+  <title>Farado</title>
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+
+    <form class="form-signin" action="/" method="post">
+      <br />
+
+      <!--login-->
+      <div class="input-group">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+        </span>
+        <input type="text" id="input_login" name="login" class="form-control" placeholder="Login" required
+          autofocus />
+      </div>
+      <!--/login-->
+
+      <br />
+
+      <!--password-->
+      <div class="input-group">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+        </span>
+        <input type="password" id="input_password" name="password" class="form-control" placeholder="Password" required
+          style="margin-bottom:0px;" />
+      </div>
+      <!--/password-->
+
+      <br />
+
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    </form>
+
+  </div> <!-- /container -->
+
+  <footer class="footer">
+    <div class="container">
+      <p class="text-muted">© 2022 CompanyName</p>
+    </div>
+  </footer>
+
+  <script src="/static/js/jquery-3.6.0.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

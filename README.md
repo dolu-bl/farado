@@ -1,4 +1,11 @@
-# Farado
+
+```
+    _|                                   
+   |                           |         
+   __|   _` |   __|  _` |   _` |   _ \   
+   |    (   |  |    (   |  (   |  (   |  
+  _|   \__,_| _|   \__,_| \__,_| \___/   
+```
 
 Farado is a free and open source, web-based project management and issue tracking tool.
 

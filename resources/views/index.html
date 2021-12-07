@@ -1,0 +1,106 @@
+{% extends "page_template.html" %}
+
+
+
+{% block title %}Farado — Main page{% endblock %}
+
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+
+{% block content %}
+  {# Place to add a generic admin message #}
+  {% if global_message -%}
+    <div class="alert alert-{% if global_message.kind != 'info'    and
+                                  global_message.kind != 'warning' and
+                                  global_message.kind != 'danger'  -%} success
+                            {%- else                               -%} {{ global_message.kind }}
+                            {%- endif                               %} alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      {{ global_message }}
+    </div>
+  {%- endif %}
+
+
+  <h2 class="page-header">Modules</h2>
+
+  <div class="row placeholders">
+
+    <!--Module 1-->
+      <div class="col-xs-6 col-sm-3 placeholder">
+        <p>
+          <a href="/module-01">
+            <span class="glyphicon glyphicon-time" style="font-size:44px" aria-hidden="true" ></span>
+            <h4>Module 1</h4>
+          </a>
+          <span class="text-muted">Module 1 description</span>
+        </p>
+
+          <div>
+            <a class="btn" href="/module-01">
+              <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> More
+            </a>
+          </div>
+
+          <div>
+            <a class="btn" href="/module-01">
+              <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> More 2
+            </a>
+          </div>
+      </div>
+    <!--/Module 1-->
+
+    <!--Module 2-->
+      <div class="col-xs-6 col-sm-3 placeholder">
+        <p>
+          <a href="/module-02">
+            <span class="glyphicon glyphicon-briefcase" style="font-size:44px" aria-hidden="true" ></span>
+            <h4>Module 2</h4>
+          </a>
+          <span class="text-muted">Module 2 description</span>
+        </p>
+
+          <div>
+            <a class="btn" href="/module-02">
+              <span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> More
+            </a>
+          </div>
+
+          <div>
+            <a class="btn" href="/module-02">
+              <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> More 2
+            </a>
+          </div>
+      </div>
+    <!--/Module 2-->
+
+  </div>
+
+  <h2 class="page-header">Common</h2>
+
+  <div class="row">
+    <!-- column 1 -->
+    <div class="col-sm-6">
+    </div>
+    <!-- /column 1 -->
+
+
+    <!-- column 2 -->
+    <div class="col-sm-6">
+    </div>
+    <!-- /column 2 -->
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}

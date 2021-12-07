@@ -21,3 +21,9 @@ application_config = {
         'tools.staticdir.dir': './resources/public',
     }
 }
+
+farado_config = {
+    'database': {
+        'connection_string' : 'sqlite:///resources/database.sqlite',
+    }
+}
