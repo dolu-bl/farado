@@ -4,6 +4,8 @@
 import hashlib
 import threading
 
+from sqlalchemy import orm
+
 from farado.logger import DLog
 
 
@@ -40,25 +42,33 @@ class User():
         else:
             raise ValueError('A password_hash or a password must be set for the user.')
 
+    @orm.reconstructor
+    def init_on_load(self):
+        self.online_state = False
+        self.mutex = threading.RLock()
+
     def __repr__(self):
-        return str(
-            f'''<User(id='{ self.id
-                }',\n login='{ self.login
-                }',\n first_name='{ self.first_name
-                }',\n middle_name='{ self.middle_name
-                }',\n last_name='{ self.last_name
-                }',\n email='{ self.email
-                }',\n password_hash='{ self.password_hash
-                }',\n need_change_password='{ self.need_change_password
-                }',\n more_info='{ self.more_info
-                }',\n is_blocked='{ self.is_blocked
-                }',\n online_state='{ self.online_state
-                }')>'''
-            )
+        with self.mutex:
+            return str(
+                f'''<User(id='{ self.id
+                    }',\n login='{ self.login
+                    }',\n first_name='{ self.first_name
+                    }',\n middle_name='{ self.middle_name
+                    }',\n last_name='{ self.last_name
+                    }',\n email='{ self.email
+                    }',\n password_hash='{ self.password_hash
+                    }',\n need_change_password='{ self.need_change_password
+                    }',\n more_info='{ self.more_info
+                    }',\n is_blocked='{ self.is_blocked
+                    }',\n online_state='{ self.online_state
+                    }')>'''
+                )
 
     def set_password(self, password):
-        self.password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-        DLog.info(f"User password changed: {self.login}")
+        with self.mutex:
+            self.password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
+            DLog.info(f"User password changed: {self.login}")
 
     def check_password(self, password):
-        return bool(self.password_hash == hashlib.sha256(password.encode('utf-8')).hexdigest())
+        with self.mutex:
+            return bool(self.password_hash == hashlib.sha256(password.encode('utf-8')).hexdigest())

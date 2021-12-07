@@ -25,5 +25,7 @@ class PermissionManager:
         if not user:
             return False
 
-        return self.session_manager.create_session(user)
+        if not user.check_password(password):
+            return False
 
+        return self.session_manager.create_session(user)

@@ -175,6 +175,15 @@ class SessionManager:
         bool
             if the session was removed
         '''
+        if not id:
+            return None
+
+        try:
+            if not isinstance(id, uuid.UUID):
+                id = uuid.UUID(id)
+        except ValueError:
+            return None
+
         with self.sessions_mutex:
             session_to_remove = [session for session in self.sessions if session.id == id]
             for session in session_to_remove:
