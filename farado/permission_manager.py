@@ -1,10 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import uuid
-import time
-import threading
-
 from farado.logger import dlog
 from farado.items.user import User
 from farado.session_manager import SessionManager
