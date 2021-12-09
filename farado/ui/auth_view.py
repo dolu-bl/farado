@@ -3,14 +3,14 @@
 
 import cherrypy
 
-from farado.logger import DLog
+from farado.logger import dlog
 from farado.ui.renderer import view_renderer
 
 
 
 class AuthView:
-    def __init__(self, web_service):
-        self.web_service = web_service
+    def __init__(self):
+        pass
 
     @cherrypy.expose
     def index(self):

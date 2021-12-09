@@ -6,7 +6,7 @@ import threading
 
 from sqlalchemy import orm
 
-from farado.logger import DLog
+from farado.logger import dlog
 
 
 
@@ -67,7 +67,7 @@ class User():
     def set_password(self, password):
         with self.mutex:
             self.password_hash = hashlib.sha256(password.encode('utf-8')).hexdigest()
-            DLog.info(f"User password changed: {self.login}")
+            dlog.info(f"User password changed: {self.login}")
 
     def check_password(self, password):
         with self.mutex:
