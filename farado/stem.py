@@ -5,6 +5,7 @@ from farado.logger import dlog
 from farado.config import farado_config
 from farado.ui.web_service import WebService
 from farado.session_manager import SessionManager
+from farado.project_manager import ProjectManager
 from farado.permission_manager import PermissionManager
 from farado.items.meta_item_manager import MetaItemManager
 from farado.general_manager_holder import gm_holder
@@ -15,7 +16,7 @@ class Stem:
         dlog.info('Now starting...')
 
         self.meta_item_manager = MetaItemManager(farado_config['database']['connection_string'])
-        self.project_manager = None
+        self.project_manager = ProjectManager()
         self.permission_manager = PermissionManager()
 
         gm_holder.set_meta_item_manager(self.meta_item_manager)

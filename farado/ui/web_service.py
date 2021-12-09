@@ -28,7 +28,7 @@ class WebService:
             return view_renderer["login"].render()
 
         set_current_session_id(session_id)
-        return view_renderer["index"].render(user=user)
+        return view_renderer["index"].render(user=user, project_manager=gm_holder.project_manager)
 
     @cherrypy.expose
     def logout(self):

@@ -1,22 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-class IssueKind():
+class Workflow():
     def __init__(
             self,
             caption,
-            workflow_id=None,
+            description,
             ):
         self.id = None
         self.caption = caption
-        self.workflow_id = workflow_id
-        # creates by sqlalchemy.orm.mapper:
-        # self.field_kinds = []
+        self.description = description
 
     def __repr__(self):
         return str(
-            f'''<IssueKind(id='{ self.id
+            f'''<Workflow(id='{ self.id
                 }',\n caption='{ self.caption
-                }',\n workflow_id='{ self.workflow_id
+                }',\n description='{ self.description
                 }')>'''
             )

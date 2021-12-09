@@ -5,11 +5,14 @@ import threading
 
 # TODO: from farado.items.field_kind import FieldKind
 from farado.items.field import Field
+from farado.items.field_kind import FieldKind
 from farado.items.file import File
 # TODO: from farado.items.issue_kind import IssueKind
 from farado.items.issue import Issue
+from farado.items.issue_kind import IssueKind
 from farado.items.project import Project
 from farado.items.user import User
+from farado.items.workflow import Workflow
 
 
 
@@ -30,6 +33,13 @@ class MetaItemManager:
             , sqlalchemy.Column('content', sqlalchemy.String)
         )
 
+        self.workflows_table = sqlalchemy.Table('workflows'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+            , sqlalchemy.Column('description', sqlalchemy.String)
+        )
+
         self.issues_table = sqlalchemy.Table('issues'
             , self.metadata
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
@@ -40,6 +50,13 @@ class MetaItemManager:
             , sqlalchemy.Column('content', sqlalchemy.String)
         )
 
+        self.issue_kinds_table = sqlalchemy.Table('issue_kinds'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('workflow_id', sqlalchemy.ForeignKey('workflows.id'), index=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+        )
+
         self.fields_table = sqlalchemy.Table('fields'
             , self.metadata
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
@@ -47,6 +64,17 @@ class MetaItemManager:
                 sqlalchemy.ForeignKey('issues.id', ondelete="CASCADE"), index=True)
             , sqlalchemy.Column('fieldkind_id', sqlalchemy.Integer)
             , sqlalchemy.Column('value', sqlalchemy.String)
+        )
+
+        self.field_kinds_table = sqlalchemy.Table('field_kinds'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('issue_kind_id',
+                sqlalchemy.ForeignKey('issue_kinds.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+            , sqlalchemy.Column('value_type', sqlalchemy.String)
+            , sqlalchemy.Column('description', sqlalchemy.String)
+            , sqlalchemy.Column('is_system', sqlalchemy.Boolean)
         )
 
         self.files_table = sqlalchemy.Table('files'
@@ -74,12 +102,18 @@ class MetaItemManager:
             , sqlalchemy.Column('is_blocked', sqlalchemy.Boolean)
         )
 
-
     def map_tables(self):
         sqlalchemy.orm.mapper(Project, self.projects_table,
             properties={
                 'issues': sqlalchemy.orm.relationship(
                     Issue,
+                    lazy='noload')
+                }
+            )
+        sqlalchemy.orm.mapper(Workflow, self.workflows_table,
+            properties={
+                'issue_kinds': sqlalchemy.orm.relationship(
+                    IssueKind,
                     lazy='noload')
                 }
             )
@@ -100,10 +134,19 @@ class MetaItemManager:
                     lazy='noload')
                 }
             )
+        sqlalchemy.orm.mapper(IssueKind, self.issue_kinds_table,
+            properties={
+                'field_kinds': sqlalchemy.orm.relationship(
+                    FieldKind,
+                    cascade='all,delete',
+                    backref="issue_kind",
+                    lazy='immediate')
+                }
+            )
         sqlalchemy.orm.mapper(Field, self.fields_table)
+        sqlalchemy.orm.mapper(FieldKind, self.field_kinds_table)
         sqlalchemy.orm.mapper(File, self.files_table)
         sqlalchemy.orm.mapper(User, self.users_table)
-
 
     def add_item(self, item):
         with self.mutex:
@@ -137,6 +180,12 @@ class MetaItemManager:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
                 session.merge(item)
 
+    def items(self, item_type):
+        with self.mutex:
+            with sqlalchemy.orm.Session(self.engine) as session:
+                statement = sqlalchemy.select(item_type)
+                return session.execute(statement).scalars().all()
+
     def item_by_id(self, item_type, id):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session:
@@ -149,6 +198,13 @@ class MetaItemManager:
                 statement = sqlalchemy.select(item_type)
                 statement = eval(f"statement.filter_by({value_name}=value)")
                 return session.execute(statement).scalars().first()
+
+    def items_by_value(self, item_type, value_name, value):
+        with self.mutex:
+            with sqlalchemy.orm.Session(self.engine) as session:
+                statement = sqlalchemy.select(item_type)
+                statement = eval(f"statement.filter_by({value_name}=value)")
+                return session.execute(statement).scalars().all()
 
     def items_ids(self, item_type):
         with self.mutex:
