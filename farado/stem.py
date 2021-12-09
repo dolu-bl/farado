@@ -1,31 +1,38 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from farado.logger import DLog
+from farado.logger import dlog
 from farado.config import farado_config
 from farado.ui.web_service import WebService
 from farado.session_manager import SessionManager
 from farado.permission_manager import PermissionManager
 from farado.items.meta_item_manager import MetaItemManager
-
+from farado.general_manager_holder import gm_holder
 
 class Stem:
     def __init__(self):
-        DLog.info('''                                         ''')
-        DLog.info('''    _|                                   ''')
-        DLog.info('''   |                           |         ''')
-        DLog.info('''   __|   _` |   __|  _` |   _` |   _ \   ''')
-        DLog.info('''   |    (   |  |    (   |  (   |  (   |  ''')
-        DLog.info('''  _|   \__,_| _|   \__,_| \__,_| \___/   ''')
-        DLog.info('''                                         ''')
-        DLog.info('Now starting...')
+        self.log_splash()
+        dlog.info('Now starting...')
+
         self.meta_item_manager = MetaItemManager(farado_config['database']['connection_string'])
-        self.web_service = WebService(self)
-        self.session_manager = SessionManager()
-        self.permission_manager = PermissionManager(
-            self.session_manager,
-            self.meta_item_manager)
+        self.project_manager = None
+        self.permission_manager = PermissionManager()
+
+        gm_holder.set_meta_item_manager(self.meta_item_manager)
+        gm_holder.set_project_manager(self.project_manager)
+        gm_holder.set_permission_manager(self.permission_manager)
+
+        self.web_service = WebService()
 
     def run(self):
         self.web_service.run()
-        DLog.info('Farado finished')
+        dlog.info('Farado finished')
+
+    def log_splash(self):
+        dlog.info('''                                         ''')
+        dlog.info('''    _|                                   ''')
+        dlog.info('''   |                           |         ''')
+        dlog.info('''   __|   _` |   __|  _` |   _` |   _ \   ''')
+        dlog.info('''   |    (   |  |    (   |  (   |  (   |  ''')
+        dlog.info('''  _|   \__,_| _|   \__,_| \__,_| \___/   ''')
+        dlog.info('''                                         ''')

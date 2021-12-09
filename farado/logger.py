@@ -8,10 +8,10 @@ import logging.config
 logging.config.fileConfig('resources/logger.cfg')
 
 ## Default logger
-DLog = logging.getLogger('root')
+dlog = logging.getLogger('root')
 
 ## Logging to file
-FLog = logging.getLogger('FileLogger')
+flog = logging.getLogger('FileLogger')
 
 ## Logging to console
-CLog = logging.getLogger('ConsoleLogger')
+clog = logging.getLogger('ConsoleLogger')
