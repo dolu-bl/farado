@@ -36,6 +36,17 @@ class WebService:
         set_current_session_id(None)
         return view_renderer["login"].render()
 
+    @cherrypy.expose
+    def users(self):
+        session_id = current_session_id()
+        user = gm_holder.permission_manager.user_by_session_id(session_id)
+        if not user:
+            dlog.info(f"Providing login window")
+            return view_renderer["login"].render()
+
+        return view_renderer["users"].render(user=user, project_manager=gm_holder.project_manager)
+
+
     def run(self):
         # HACK: switching off date time output for cherrypy log
         cherrypy._cplogging.LogManager.time = lambda self : "cherrypy"

@@ -25,6 +25,7 @@ class Stem:
         gm_holder.set_permission_manager(self.permission_manager)
 
         self.web_service = WebService()
+        self.project_manager.read_permanent_items()
 
     def run(self):
         self.web_service.run()

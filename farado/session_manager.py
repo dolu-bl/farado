@@ -35,11 +35,17 @@ class SessionManager:
             Timestamp of last user action
         '''
 
-        def __init__(self, user = None, id = uuid.uuid1(), duration = 3600):
-            self.id = id
+        def __init__(self, user = None, duration = 3600):
+            self.id = uuid.uuid4()
             self.user = user
             self.duration = duration
             self.last_action_time = time.time()
+            if self.user:
+                self.user.online_state = True
+
+        def __del__(self):
+            if self.user:
+                self.user.online_state = False
 
         def check_duration(self):
             '''Checks if the session has timed out
@@ -52,6 +58,7 @@ class SessionManager:
             result = bool((time.time() - self.last_action_time) <= self.duration)
             if not result and self.user:
                 dlog.info(f'User session has expired: {self.user.login}')
+                self.user.online_state = False
             return result
 
         def keep_alive(self):
@@ -157,7 +164,7 @@ class SessionManager:
             if self.check_user_id(user.id):
                 return None
 
-            # TODO: get duration form config
+            # TODO: get duration form config for new session
             session = self.Session(user)
             self.sessions.append(session)
             return session.id

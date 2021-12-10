@@ -17,7 +17,7 @@ class PermissionManager:
             dlog.warning(f'Login failed — there are no username or password')
             return False
 
-        user = gm_holder.meta_item_manager.item_by_value(User, 'login', username)
+        user = gm_holder.project_manager.user_by_login(username)
         if not user:
             dlog.warning(f'Login failed — no such user: {username}')
             return False

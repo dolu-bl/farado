@@ -37,7 +37,7 @@
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">
+              <a class="nav-link {% block projects_active %}{% endblock %}" aria-current="page" href="#">
                 <!--TODO : <svg></svg>-->
                 Projects
               </a>
@@ -76,7 +76,7 @@
           </h6>
           <ul class="nav flex-column mb-2">
             <li class="nav-item">
-              <a class="nav-link" href="#">
+              <a class="nav-link {% block users_active %}{% endblock %}" href="/users">
                 <!--TODO : <svg></svg>-->
                 Users
               </a>
