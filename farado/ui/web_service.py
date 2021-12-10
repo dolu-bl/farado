@@ -24,7 +24,6 @@ class WebService:
 
         user = gm_holder.permission_manager.user_by_session_id(session_id)
         if not user:
-            dlog.info(f"Providing login window")
             return view_renderer["login"].render()
 
         set_current_session_id(session_id)
@@ -38,14 +37,46 @@ class WebService:
 
     @cherrypy.expose
     def users(self):
-        session_id = current_session_id()
-        user = gm_holder.permission_manager.user_by_session_id(session_id)
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
-            dlog.info(f"Providing login window")
             return view_renderer["login"].render()
 
         return view_renderer["users"].render(user=user, project_manager=gm_holder.project_manager)
 
+    @cherrypy.expose
+    def user(
+            self,
+            target_user_id,
+            target_user_login=None,
+            target_user_email=None,
+            target_user_first_name=None,
+            target_user_middle_name=None,
+            target_user_last_name=None,
+            target_user_need_change_password=None,
+            target_user_is_blocked=None,
+            ):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        target_user=gm_holder.project_manager.user_by_id(target_user_id)
+
+        save_result = None
+        if target_user_login:
+            target_user.login = target_user_login
+            target_user.email = target_user_email
+            target_user.first_name = target_user_first_name
+            target_user.middle_name = target_user_middle_name
+            target_user.last_name = target_user_last_name
+            target_user.need_change_password = target_user_need_change_password
+            target_user.is_blocked = target_user_is_blocked
+            gm_holder.project_manager.save_item(target_user)
+            save_result = True
+
+        return view_renderer["user"].render(
+            user=user,
+            target_user=target_user,
+            save_result=save_result)
 
     def run(self):
         # HACK: switching off date time output for cherrypy log

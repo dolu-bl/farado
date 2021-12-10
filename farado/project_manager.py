@@ -25,8 +25,21 @@ class ProjectManager:
     def project_issues(self, project_id):
         return gm_holder.meta_item_manager.items_by_value(Issue, "project_id", project_id)
 
+    def user_by_id(self, id):
+        id = int(id)
+        for user in self.users:
+            if id == user.id:
+                return user
+        return None
+
     def user_by_login(self, login):
         for user in self.users:
             if login == user.login:
                 return user
         return None
+
+    def save_item(self, item):
+        if item.id in gm_holder.meta_item_manager.items_ids(type(item)):
+            gm_holder.meta_item_manager.expunge_item(item)
+        else:
+            gm_holder.meta_item_manager.add(item)

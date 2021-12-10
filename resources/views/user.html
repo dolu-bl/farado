@@ -1,0 +1,82 @@
+{% extends "page_template.html" %}
+
+
+
+{% block title %}Farado — User{% endblock %}
+
+{% block users_active %}active{% endblock %}
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">User</h2>
+
+  {% if save_result -%}
+    <div class="alert alert-success alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+      User saved
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+    <form class="row g-3" action="/user">
+      <div class="col-12">
+        <label for="inputId" class="form-label">Id</label>
+        <input type="text" name="target_user_id" class="form-control" id="inputId" value="{{ target_user.id }}" readonly>
+      </div>
+      <div class="col-md-6">
+        <label for="inputLogin" class="form-label">Login</label>
+        <input type="text" name="target_user_login" class="form-control" id="inputLogin" value="{{ target_user.login }}">
+      </div>
+      <div class="col-md-6">
+        <label for="inputEmail" class="form-label">Email</label>
+        <input type="text" name="target_user_email" class="form-control" id="inputEmail" value="{{ target_user.email }}">
+      </div>
+      <div class="col-md-4">
+        <label for="inputFirstName" class="form-label">First name</label>
+        <input type="text" name="target_user_first_name" class="form-control" id="inputFirstName" value="{{ target_user.first_name }}">
+      </div>
+      <div class="col-md-4">
+        <label for="inputMiddleName" class="form-label">Middle name</label>
+        <input type="text" name="target_user_middle_name" class="form-control" id="inputMiddleName" value="{{ target_user.middle_name }}">
+      </div>
+      <div class="col-md-4">
+        <label for="inputLastName" class="form-label">Last name</label>
+        <input type="text" name="target_user_last_name" class="form-control" id="inputLastName" value="{{ target_user.last_name }}">
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          <input class="form-check-input" name="target_user_need_change_password" type="checkbox" id="checkNeedChangePassword" {% if target_user.need_change_password %}checked{% endif %} >
+          <label class="form-check-label" for="checkNeedChangePassword">
+            Need change password
+          </label>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="form-check">
+          <input class="form-check-input" name="target_user_is_blocked" type="checkbox" id="checkIsBlocked" {% if target_user.is_blocked %}checked{% endif %} >
+          <label class="form-check-label" for="checkIsBlocked">
+            Blocked
+          </label>
+        </div>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}
