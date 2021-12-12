@@ -184,27 +184,36 @@ class MetaItemManager:
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session:
                 statement = sqlalchemy.select(item_type)
-                return session.execute(statement).scalars().all()
+                result = session.execute(statement).scalars().all()
+                session.expunge_all()
+                return result
 
     def item_by_id(self, item_type, id):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session:
                 statement = sqlalchemy.select(item_type).filter_by(id=id)
-                return session.execute(statement).scalars().first()
+                result = session.execute(statement).scalars().first()
+                session.expunge_all()
+                return result
+
 
     def item_by_value(self, item_type, value_name, value):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session:
                 statement = sqlalchemy.select(item_type)
                 statement = eval(f"statement.filter_by({value_name}=value)")
-                return session.execute(statement).scalars().first()
+                result = session.execute(statement).scalars().first()
+                session.expunge_all()
+                return result
 
     def items_by_value(self, item_type, value_name, value):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session:
                 statement = sqlalchemy.select(item_type)
                 statement = eval(f"statement.filter_by({value_name}=value)")
-                return session.execute(statement).scalars().all()
+                result = session.execute(statement).scalars().all()
+                session.expunge_all()
+                return result
 
     def items_ids(self, item_type):
         with self.mutex:
@@ -217,11 +226,16 @@ class MetaItemManager:
             with sqlalchemy.orm.Session(self.engine) as session:
                 query = session.query(Issue).join(Field).where(Field.value == value)
                 if not fieldkind_id:
-                    return query.all()
+                    result = query.all()
+                else:
+                    result = query.where(Field.fieldkind_id == fieldkind_id).all()
+                session.expunge_all()
+                return result
 
-                return query.where(Field.fieldkind_id == fieldkind_id).all()
 
     def subissues_by_id(self, id):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session:
-                return session.query(Issue).where(Issue.parent_id == id).all()
+                result = session.query(Issue).where(Issue.parent_id == id).all()
+                session.expunge_all()
+                return result

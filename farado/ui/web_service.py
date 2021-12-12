@@ -68,8 +68,8 @@ class WebService:
             target_user.first_name = target_user_first_name
             target_user.middle_name = target_user_middle_name
             target_user.last_name = target_user_last_name
-            target_user.need_change_password = target_user_need_change_password
-            target_user.is_blocked = target_user_is_blocked
+            target_user.need_change_password = bool(target_user_need_change_password == 'on')
+            target_user.is_blocked = bool(target_user_is_blocked == 'on')
             gm_holder.project_manager.save_item(target_user)
             save_result = True
 
