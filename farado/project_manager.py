@@ -26,6 +26,8 @@ class ProjectManager:
         return gm_holder.meta_item_manager.items_by_value(Issue, "project_id", project_id)
 
     def user_by_id(self, id):
+        if not id:
+            return None
         id = int(id)
         for user in self.users:
             if id == user.id:

@@ -9,6 +9,8 @@ from farado.ui.auth_view import AuthView
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id, set_current_session_id
 from farado.general_manager_holder import gm_holder
+from farado.items.user import User
+
 
 
 class WebService:
@@ -63,6 +65,8 @@ class WebService:
 
         save_result = None
         if target_user_login:
+            if not target_user:
+                target_user = User(password="123")
             target_user.login = target_user_login
             target_user.email = target_user_email
             target_user.first_name = target_user_first_name
@@ -77,6 +81,17 @@ class WebService:
             user=user,
             target_user=target_user,
             save_result=save_result)
+
+    @cherrypy.expose
+    def new_user(self):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        return view_renderer["user"].render(
+            user=user,
+            target_user=None,
+            save_result=None)
 
     def run(self):
         # HACK: switching off date time output for cherrypy log

@@ -152,23 +152,29 @@ class MetaItemManager:
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
                 session.add(item)
+                session.refresh(item)
+                session.expunge_all()
 
     def add_items(self, items):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
                 session.add_all(items)
+                session.expunge_all()
 
     def delete_item_by_id(self, item_type, id):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
                 item = session.get(item_type, id)
                 session.delete(item)
+                session.expunge_all()
 
+    # TODO : remove
     def expunge_item(self, item):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
                 session.expunge(item)
 
+    # TODO : remove
     def expunge_items(self, items):
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
@@ -179,6 +185,7 @@ class MetaItemManager:
         with self.mutex:
             with sqlalchemy.orm.Session(self.engine) as session, session.begin():
                 session.merge(item)
+                session.expunge_all()
 
     def items(self, item_type):
         with self.mutex:

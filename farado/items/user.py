@@ -12,11 +12,11 @@ from farado.logger import dlog
 
 class User():
     def __init__( self
-                , login
-                , first_name
-                , middle_name
-                , last_name
-                , email
+                , login = ""
+                , first_name = ""
+                , middle_name = ""
+                , last_name = ""
+                , email = ""
                 , password_hash = None
                 , password = None
                 , need_change_password = False

@@ -16,7 +16,12 @@
 
 {% block content %}
 
-  <h2 class="page-header">Users</h2>
+  <h2 class="page-header">
+    Users
+    <form action="/new_user">
+      <button class="btn btn-sm btn-dark" type="submit">+</button>
+    </form>
+  </h2>
 
   <div class="row placeholders">
 
