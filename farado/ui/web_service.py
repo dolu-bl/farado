@@ -54,6 +54,7 @@ class WebService:
             target_user_first_name=None,
             target_user_middle_name=None,
             target_user_last_name=None,
+            target_user_password=None,
             target_user_need_change_password=None,
             target_user_is_blocked=None,
             ):
@@ -66,7 +67,7 @@ class WebService:
         save_result = None
         if target_user_login:
             if not target_user:
-                target_user = User(password="123")
+                target_user = User()
             target_user.login = target_user_login
             target_user.email = target_user_email
             target_user.first_name = target_user_first_name
@@ -74,6 +75,8 @@ class WebService:
             target_user.last_name = target_user_last_name
             target_user.need_change_password = bool(target_user_need_change_password == 'on')
             target_user.is_blocked = bool(target_user_is_blocked == 'on')
+            if target_user_password and 0 < len(target_user_password):
+                target_user.set_password(target_user_password)
             gm_holder.project_manager.save_item(target_user)
             save_result = True
 

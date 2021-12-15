@@ -39,8 +39,7 @@ class User():
             self.password_hash = password_hash
         elif password:
             self.set_password(password)
-        else:
-            raise ValueError('A password_hash or a password must be set for the user.')
+
 
     @orm.reconstructor
     def init_on_load(self):
