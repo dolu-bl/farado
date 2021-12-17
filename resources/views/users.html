@@ -23,6 +23,12 @@
     </form>
   </h2>
 
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
   <div class="row placeholders">
 
     <table class="table">
@@ -37,13 +43,16 @@
           <th scope="col">need_change_password</th>
           <th scope="col">is_blocked</th>
           <th scope="col">online_state</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
         {% for user in project_manager.users %}
         <tr>
           <th scope="row">{{ user.id }}</th>
-          <td><a href="/administration/user?target_user_id={{ user.id }}">{{ user.login }}</a></td>
+          <td>
+            <a href="/administration/user?target_user_id={{ user.id }}" title="Modify user">{{ user.login }}</a>
+          </td>
           <td>{{ user.first_name }}</td>
           <td>{{ user.middle_name }}</td>
           <td>{{ user.last_name }}</td>
@@ -51,6 +60,11 @@
           <td>{{ user.need_change_password }}</td>
           <td>{{ user.is_blocked }}</td>
           <td>{{ user.online_state }}</td>
+          <td>
+            <a href="/administration/remove_user?target_user_id={{ user.id }}" title="Remove user">
+              <span class="badge bg-danger">x</span>
+            </a>
+          </td>
         </tr>
         {% endfor %}
       </tbody>

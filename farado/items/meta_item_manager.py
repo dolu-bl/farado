@@ -170,7 +170,6 @@ class MetaItemManager:
             with self.session.begin():
                 item = self.session.get(item_type, id)
                 self.session.delete(item)
-                self.session.expunge_all()
 
     def merge_item(self, item):
         with self.mutex:

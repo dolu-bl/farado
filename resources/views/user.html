@@ -18,9 +18,9 @@
 
   <h2 class="page-header">User</h2>
 
-  {% if save_result -%}
-    <div class="alert alert-success alert-dismissible" role="alert">
-      User saved
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
     </div>
   {%- endif %}
 

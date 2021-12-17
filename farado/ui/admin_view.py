@@ -8,7 +8,7 @@ from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder
 from farado.items.user import User
-
+from farado.ui.operation_result import OperationResult
 
 
 class AdminView:
@@ -44,7 +44,7 @@ class AdminView:
 
         target_user=gm_holder.project_manager.user_by_id(target_user_id)
 
-        save_result = None
+        operation_result = None
         if target_user_login:
             if not target_user:
                 target_user = User()
@@ -58,12 +58,12 @@ class AdminView:
             if 0 < len(target_user_password):
                 target_user.set_password(target_user_password)
             gm_holder.project_manager.save_item(target_user)
-            save_result = True
+            operation_result = OperationResult(caption="User saved", kind="success")
 
         return view_renderer["user"].render(
             user=user,
             target_user=target_user,
-            save_result=save_result)
+            operation_result=operation_result)
 
     @cherrypy.expose
     def add_user(self):
@@ -76,3 +76,16 @@ class AdminView:
             target_user=None,
             save_result=None)
 
+    @cherrypy.expose
+    def remove_user(self, target_user_id):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        gm_holder.project_manager.remove_item(User, target_user_id)
+        operation_result = OperationResult(caption="User removed", kind="success")
+
+        return view_renderer["users"].render(
+            user=user,
+            project_manager=gm_holder.project_manager,
+            operation_result=operation_result)

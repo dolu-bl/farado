@@ -46,3 +46,9 @@ class ProjectManager:
         if is_new_item:
             if type(item) == User:
                 self.users.append(item)
+
+    def remove_item(self, item_type, item_id):
+        item_id = int(item_id)
+        gm_holder.meta_item_manager.delete_item_by_id(item_type, item_id)
+        if item_type == User:
+            self.users = [user for user in self.users if not(user.id == item_id)]
