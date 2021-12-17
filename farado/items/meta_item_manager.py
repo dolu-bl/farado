@@ -24,6 +24,7 @@ class MetaItemManager:
         self.map_tables()
         self.metadata.create_all(self.engine)
         self.mutex = threading.RLock()
+        self.session = sqlalchemy.orm.Session(self.engine)
 
     def create_tables(self):
         self.projects_table = sqlalchemy.Table('projects'
@@ -150,99 +151,88 @@ class MetaItemManager:
 
     def add_item(self, item):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session, session.begin():
-                session.add(item)
-                session.refresh(item)
-                session.expunge_all()
+            with self.session.begin():
+                self.session.add(item)
+                self.session.flush()
+                self.session.refresh(item)
+                self.session.expunge_all()
 
     def add_items(self, items):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session, session.begin():
-                session.add_all(items)
-                session.expunge_all()
+            with self.session.begin():
+                self.session.add_all(items)
+                self.session.flush()
+                self.session.refresh(items)
+                self.session.expunge_all()
 
     def delete_item_by_id(self, item_type, id):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session, session.begin():
-                item = session.get(item_type, id)
-                session.delete(item)
-                session.expunge_all()
-
-    # TODO : remove
-    def expunge_item(self, item):
-        with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session, session.begin():
-                session.expunge(item)
-
-    # TODO : remove
-    def expunge_items(self, items):
-        with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session, session.begin():
-                for item in items:
-                    session.expunge(item)
+            with self.session.begin():
+                item = self.session.get(item_type, id)
+                self.session.delete(item)
+                self.session.expunge_all()
 
     def merge_item(self, item):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session, session.begin():
-                session.merge(item)
-                session.expunge_all()
+            with self.session.begin():
+                self.session.merge(item)
+                self.session.expunge_all()
 
     def items(self, item_type):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
+            with self.session.begin():
                 statement = sqlalchemy.select(item_type)
-                result = session.execute(statement).scalars().all()
-                session.expunge_all()
+                result = self.session.execute(statement).scalars().all()
+                self.session.expunge_all()
                 return result
 
     def item_by_id(self, item_type, id):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
+            with self.session.begin():
                 statement = sqlalchemy.select(item_type).filter_by(id=id)
-                result = session.execute(statement).scalars().first()
-                session.expunge_all()
+                result = self.session.execute(statement).scalars().first()
+                self.session.expunge_all()
                 return result
-
 
     def item_by_value(self, item_type, value_name, value):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
+            with self.session.begin():
                 statement = sqlalchemy.select(item_type)
                 statement = eval(f"statement.filter_by({value_name}=value)")
-                result = session.execute(statement).scalars().first()
-                session.expunge_all()
+                result = self.session.execute(statement).scalars().first()
+                self.session.expunge_all()
                 return result
 
     def items_by_value(self, item_type, value_name, value):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
+            with self.session.begin():
                 statement = sqlalchemy.select(item_type)
                 statement = eval(f"statement.filter_by({value_name}=value)")
-                result = session.execute(statement).scalars().all()
-                session.expunge_all()
+                result = self.session.execute(statement).scalars().all()
+                self.session.expunge_all()
                 return result
 
     def items_ids(self, item_type):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
+            with self.session.begin():
                 statement = sqlalchemy.select(item_type.id)
-                return [id[0] for id in session.execute(statement).all()]
+                return [id[0] for id in self.session.execute(statement).all()]
 
     def issues_by_field(self, value, fieldkind_id=None):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
-                query = session.query(Issue).join(Field).where(Field.value == value)
+            with self.session.begin():
+                query = self.session.query(Issue).join(Field).where(Field.value == value)
                 if not fieldkind_id:
                     result = query.all()
                 else:
                     result = query.where(Field.fieldkind_id == fieldkind_id).all()
-                session.expunge_all()
+                self.session.expunge_all()
                 return result
 
 
     def subissues_by_id(self, id):
         with self.mutex:
-            with sqlalchemy.orm.Session(self.engine) as session:
-                result = session.query(Issue).where(Issue.parent_id == id).all()
-                session.expunge_all()
+            with self.session.begin():
+                result = self.session.query(Issue).where(Issue.parent_id == id).all()
+                self.session.expunge_all()
                 return result

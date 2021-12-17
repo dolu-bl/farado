@@ -18,7 +18,7 @@
 
   <h2 class="page-header">
     Users
-    <form action="/new_user">
+    <form action="/administration/add_user" method="post">
       <button class="btn btn-sm btn-dark" type="submit">+</button>
     </form>
   </h2>
@@ -43,7 +43,7 @@
         {% for user in project_manager.users %}
         <tr>
           <th scope="row">{{ user.id }}</th>
-          <td><a href="/user?target_user_id={{ user.id }}">{{ user.login }}</a></td>
+          <td><a href="/administration/user?target_user_id={{ user.id }}">{{ user.login }}</a></td>
           <td>{{ user.first_name }}</td>
           <td>{{ user.middle_name }}</td>
           <td>{{ user.last_name }}</td>

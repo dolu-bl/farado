@@ -41,7 +41,8 @@ class ProjectManager:
         return None
 
     def save_item(self, item):
-        if item.id in gm_holder.meta_item_manager.items_ids(type(item)):
-            gm_holder.meta_item_manager.merge_item(item)
-        else:
-            gm_holder.meta_item_manager.add_item(item)
+        is_new_item = bool(item.id == None)
+        gm_holder.meta_item_manager.add_item(item)
+        if is_new_item:
+            if type(item) == User:
+                self.users.append(item)
