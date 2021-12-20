@@ -1,0 +1,67 @@
+{% extends "page_template.html" %}
+
+
+
+{% block title %}Farado — Projects{% endblock %}
+
+{% block projects_active %}active{% endblock %}
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">
+    Projects
+    <form action="/projects/add_project" method="post">
+      <button class="btn btn-sm btn-dark" type="submit">+</button>
+    </form>
+  </h2>
+
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+
+    <table class="table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Id</th>
+          <th scope="col">Caption</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in project_manager.projects() %}
+        <tr>
+          <th scope="row">{{ project.id }}</th>
+          <td>
+            <a href="/projects/project?target_project_id={{ project.id }}" title="Modify project">{{ project.caption }}</a>
+          </td>
+          <td>
+            <a href="/projects/remove_project?target_project_id={{ project.id }}" title="Remove project">
+              <span class="badge bg-danger">x</span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}

@@ -4,8 +4,8 @@
 class Project():
     def __init__(
             self,
-            caption,
-            content,
+            caption='',
+            content='',
             ):
         self.id = None
         self.caption = caption
