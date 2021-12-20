@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 class FieldKind():
-    def __init__( self
-                , caption
-                , value_type
-                , description
-                , issue_kind_id = None
-                , is_system = False
-                ):
+    def __init__(
+            self,
+            caption,
+            value_type,
+            description,
+            issue_kind_id=None,
+            is_system=False,
+            ):
         self.id = None
         self.caption = caption
         self.value_type = value_type

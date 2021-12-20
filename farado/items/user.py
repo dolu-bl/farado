@@ -12,11 +12,11 @@ from farado.logger import dlog
 
 class User():
     def __init__( self
-                , login
-                , first_name
-                , middle_name
-                , last_name
-                , email
+                , login = ""
+                , first_name = ""
+                , middle_name = ""
+                , last_name = ""
+                , email = ""
                 , password_hash = None
                 , password = None
                 , need_change_password = False
@@ -39,8 +39,7 @@ class User():
             self.password_hash = password_hash
         elif password:
             self.set_password(password)
-        else:
-            raise ValueError('A password_hash or a password must be set for the user.')
+
 
     @orm.reconstructor
     def init_on_load(self):
