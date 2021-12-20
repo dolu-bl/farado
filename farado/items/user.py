@@ -11,18 +11,19 @@ from farado.logger import dlog
 
 
 class User():
-    def __init__( self
-                , login = ""
-                , first_name = ""
-                , middle_name = ""
-                , last_name = ""
-                , email = ""
-                , password_hash = None
-                , password = None
-                , need_change_password = False
-                , more_info = ""
-                , is_blocked = False
-                ):
+    def __init__(
+            self,
+            login="",
+            first_name="",
+            middle_name="",
+            last_name="",
+            email="",
+            password_hash=None,
+            password=None,
+            need_change_password=False,
+            more_info="",
+            is_blocked=False,
+            ):
         self.id = None
         self.login = login
         self.first_name = first_name
