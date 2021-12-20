@@ -18,7 +18,7 @@
 
   <h2 class="page-header">
     Users
-    <form action="/administration/add_user" method="post">
+    <form action="/users/add_user" method="post">
       <button class="btn btn-sm btn-dark" type="submit">+</button>
     </form>
   </h2>
@@ -51,7 +51,7 @@
         <tr>
           <th scope="row">{{ user.id }}</th>
           <td>
-            <a href="/administration/user?target_user_id={{ user.id }}" title="Modify user">{{ user.login }}</a>
+            <a href="/users/user?target_user_id={{ user.id }}" title="Modify user">{{ user.login }}</a>
           </td>
           <td>{{ user.first_name }}</td>
           <td>{{ user.middle_name }}</td>
@@ -61,7 +61,7 @@
           <td>{{ user.is_blocked }}</td>
           <td>{{ user.online_state }}</td>
           <td>
-            <a href="/administration/remove_user?target_user_id={{ user.id }}" title="Remove user">
+            <a href="/users/remove_user?target_user_id={{ user.id }}" title="Remove user">
               <span class="badge bg-danger">x</span>
             </a>
           </td>

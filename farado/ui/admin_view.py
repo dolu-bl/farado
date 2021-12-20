@@ -11,12 +11,12 @@ from farado.items.user import User
 from farado.ui.operation_result import OperationResult
 
 
-class AdminView:
+class UsersView:
     def __init__(self):
         pass
 
     @cherrypy.expose
-    def users(self):
+    def index(self):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
