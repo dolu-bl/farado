@@ -13,6 +13,8 @@ from farado.items.issue_kind import IssueKind
 from farado.items.project import Project
 from farado.items.user import User
 from farado.items.workflow import Workflow
+from farado.items.role import Role
+from farado.items.rule import Rule
 
 
 
@@ -103,6 +105,31 @@ class MetaItemManager:
             , sqlalchemy.Column('is_blocked', sqlalchemy.Boolean)
         )
 
+        self.roles_table = sqlalchemy.Table('roles'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+        )
+
+        self.rules_table = sqlalchemy.Table('rules'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+            , sqlalchemy.Column('role_id',
+                sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('project_id', sqlalchemy.ForeignKey('projects.id'), index=True)
+            , sqlalchemy.Column('is_project_watcher', sqlalchemy.Boolean)
+            , sqlalchemy.Column('is_project_editor', sqlalchemy.Boolean)
+            , sqlalchemy.Column('is_project_creator', sqlalchemy.Boolean)
+            , sqlalchemy.Column('is_project_deleter', sqlalchemy.Boolean)
+            , sqlalchemy.Column('issue_kind_id', sqlalchemy.ForeignKey('issue_kinds.id'), index=True)
+            , sqlalchemy.Column('workflow_id', sqlalchemy.ForeignKey('workflows.id'), index=True)
+            , sqlalchemy.Column('is_issue_watcher', sqlalchemy.Boolean)
+            , sqlalchemy.Column('is_issue_editor', sqlalchemy.Boolean)
+            , sqlalchemy.Column('is_issue_creator', sqlalchemy.Boolean)
+            , sqlalchemy.Column('is_issue_deleter', sqlalchemy.Boolean)
+        )
+
     def map_tables(self):
         sqlalchemy.orm.mapper(Project, self.projects_table,
             properties={
@@ -148,6 +175,16 @@ class MetaItemManager:
         sqlalchemy.orm.mapper(FieldKind, self.field_kinds_table)
         sqlalchemy.orm.mapper(File, self.files_table)
         sqlalchemy.orm.mapper(User, self.users_table)
+        sqlalchemy.orm.mapper(Role, self.roles_table,
+            properties={
+                'rules': sqlalchemy.orm.relationship(
+                    Rule,
+                    cascade='all,delete',
+                    backref="rule",
+                    lazy='immediate')
+                }
+            )
+        sqlalchemy.orm.mapper(Rule, self.rules_table)
 
     def add_item(self, item):
         with self.mutex:
