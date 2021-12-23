@@ -1,0 +1,30 @@
+{% macro switch(name, is_checked=False) -%}
+  <div class="form-check form-switch">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      role="switch"
+      name="{{ name }}"
+      {% if is_checked %}checked{% endif %}>
+  </div>
+{%- endmacro %}
+
+{#
+  Item required properties:
+  * item.id
+  * item.caption
+#}
+{% macro select(name, items, selected_id=None) -%}
+  <select
+    class="form-select form-select-sm"
+    name="{{ name }}">
+    <option>—</option>
+    {% for item in items %}
+      <option
+        value="{{item.id}}"
+        {% if item.id == selected_id %}selected{% endif %}>
+        {{ item.caption }}
+      </option>
+    {% endfor %}
+  </select>
+{%- endmacro %}

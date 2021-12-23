@@ -36,6 +36,9 @@ class ProjectManager:
     def rules_by_role(self, role_id):
         return gm_holder.meta_item_manager.items_by_value(Rule, "role_id", role_id)
 
+    def rule(self, rule_id):
+        return gm_holder.meta_item_manager.item_by_id(Rule, rule_id)
+
     def user_by_id(self, id):
         if not id:
             return None
