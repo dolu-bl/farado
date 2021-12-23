@@ -86,6 +86,7 @@ class RolesView:
         return view_renderer["role"].render(
             user=user,
             target_role=None,
+            project_manager=gm_holder.project_manager,
             save_result=None)
 
     @cherrypy.expose
