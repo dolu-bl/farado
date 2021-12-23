@@ -1,0 +1,3 @@
+cherrypy
+sqlalchemy
+jinja2

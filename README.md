@@ -16,6 +16,7 @@ Farado is a free and open source, web-based project management and issue trackin
 * dox — documentation
 * farado — project source files
 * resources — configuration files, database, view templates, public data
+* utests — unit tests files
 
 
 
@@ -25,6 +26,8 @@ Farado is a free and open source, web-based project management and issue trackin
 * SQLAlchemy 1.4.27
 * Jinja2 3.0.1
 * CherryPy 18.6.1
+
+Install python and run `pip install -r requirements.txt`.
 
 
 
