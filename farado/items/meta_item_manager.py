@@ -135,7 +135,7 @@ class MetaItemManager:
             , self.metadata
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
             , sqlalchemy.Column('user_id',
-                sqlalchemy.ForeignKey('user.id', ondelete="CASCADE"), index=True)
+                sqlalchemy.ForeignKey('users.id', ondelete="CASCADE"), index=True)
             , sqlalchemy.Column('role_id',
                 sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
         )
@@ -165,7 +165,7 @@ class MetaItemManager:
                 , 'files': sqlalchemy.orm.relationship(
                     File,
                     cascade='all,delete',
-                    backref="file",
+                    backref="issue",
                     lazy='immediate')
                 , 'children': sqlalchemy.orm.relationship(
                     Issue,
@@ -189,7 +189,7 @@ class MetaItemManager:
                 'user_roles': sqlalchemy.orm.relationship(
                     UserRole,
                     cascade='all,delete',
-                    backref="user_role",
+                    backref="user",
                     lazy='immediate'),
                 }
             )
@@ -198,12 +198,12 @@ class MetaItemManager:
                 'rules': sqlalchemy.orm.relationship(
                     Rule,
                     cascade='all,delete',
-                    backref="rule",
+                    backref="role",
                     lazy='immediate'),
                 'user_roles': sqlalchemy.orm.relationship(
                     UserRole,
                     cascade='all,delete',
-                    backref="user_role",
+                    backref="role",
                     lazy='immediate'),
                 }
             )
