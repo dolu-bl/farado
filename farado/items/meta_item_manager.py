@@ -15,6 +15,7 @@ from farado.items.user import User
 from farado.items.workflow import Workflow
 from farado.items.role import Role
 from farado.items.rule import Rule
+from farado.items.user_role import UserRole
 
 
 
@@ -130,6 +131,15 @@ class MetaItemManager:
             , sqlalchemy.Column('is_issue_deleter', sqlalchemy.Boolean)
         )
 
+        self.user_roles_table = sqlalchemy.Table('user_roles'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('user_id',
+                sqlalchemy.ForeignKey('user.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('role_id',
+                sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
+        )
+
     def map_tables(self):
         sqlalchemy.orm.mapper(Project, self.projects_table,
             properties={
@@ -174,17 +184,31 @@ class MetaItemManager:
         sqlalchemy.orm.mapper(Field, self.fields_table)
         sqlalchemy.orm.mapper(FieldKind, self.field_kinds_table)
         sqlalchemy.orm.mapper(File, self.files_table)
-        sqlalchemy.orm.mapper(User, self.users_table)
+        sqlalchemy.orm.mapper(User, self.users_table,
+            properties={
+                'user_roles': sqlalchemy.orm.relationship(
+                    UserRole,
+                    cascade='all,delete',
+                    backref="user_role",
+                    lazy='immediate'),
+                }
+            )
         sqlalchemy.orm.mapper(Role, self.roles_table,
             properties={
                 'rules': sqlalchemy.orm.relationship(
                     Rule,
                     cascade='all,delete',
                     backref="rule",
-                    lazy='immediate')
+                    lazy='immediate'),
+                'user_roles': sqlalchemy.orm.relationship(
+                    UserRole,
+                    cascade='all,delete',
+                    backref="user_role",
+                    lazy='immediate'),
                 }
             )
         sqlalchemy.orm.mapper(Rule, self.rules_table)
+        sqlalchemy.orm.mapper(UserRole, self.user_roles_table)
 
     def add_item(self, item):
         with self.mutex:
@@ -264,7 +288,6 @@ class MetaItemManager:
                     result = query.where(Field.fieldkind_id == fieldkind_id).all()
                 self.session.expunge_all()
                 return result
-
 
     def subissues_by_id(self, id):
         with self.mutex:
