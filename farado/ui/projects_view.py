@@ -9,6 +9,7 @@ from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder
 from farado.items.project import Project
 from farado.ui.operation_result import OperationResult
+from farado.permission_manager import PermissionFlag
 
 
 class ProjectsView:
@@ -20,6 +21,9 @@ class ProjectsView:
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not gm_holder.permission_manager.check_project_rights(user.id, PermissionFlag.watcher):
+            return view_renderer["403"].render()
 
         return view_renderer["projects"].render(
             user=user,

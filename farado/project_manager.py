@@ -43,6 +43,9 @@ class ProjectManager:
     def user_roles_by_user(self, user_id):
         return gm_holder.meta_item_manager.items_by_value(UserRole, "user_id", user_id)
 
+    def roles_by_user(self, user_id):
+        return gm_holder.meta_item_manager.roles_by_user(user_id)
+
     def user_by_id(self, id):
         if not id:
             return None

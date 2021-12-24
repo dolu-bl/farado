@@ -119,16 +119,10 @@ class MetaItemManager:
             , sqlalchemy.Column('role_id',
                 sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
             , sqlalchemy.Column('project_id', sqlalchemy.ForeignKey('projects.id'), index=True)
-            , sqlalchemy.Column('is_project_watcher', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_project_editor', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_project_creator', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_project_deleter', sqlalchemy.Boolean)
+            , sqlalchemy.Column('project_rights', sqlalchemy.Integer)
             , sqlalchemy.Column('issue_kind_id', sqlalchemy.ForeignKey('issue_kinds.id'), index=True)
             , sqlalchemy.Column('workflow_id', sqlalchemy.ForeignKey('workflows.id'), index=True)
-            , sqlalchemy.Column('is_issue_watcher', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_issue_editor', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_issue_creator', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_issue_deleter', sqlalchemy.Boolean)
+            , sqlalchemy.Column('issue_rights', sqlalchemy.Integer)
         )
 
         self.user_roles_table = sqlalchemy.Table('user_roles'
@@ -286,6 +280,14 @@ class MetaItemManager:
                     result = query.all()
                 else:
                     result = query.where(Field.fieldkind_id == fieldkind_id).all()
+                self.session.expunge_all()
+                return result
+
+    def roles_by_user(self, user_id=None):
+        with self.mutex:
+            with self.session.begin():
+                query = self.session.query(Role).join(User.user_roles).where(User.id == user_id)
+                result = query.all()
                 self.session.expunge_all()
                 return result
 
