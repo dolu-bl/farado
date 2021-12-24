@@ -55,21 +55,15 @@ class PermissionManager:
         self.session_manager.remove_session(session_id)
 
     def user_by_session_id(self, session_id):
-        # TODO : permissions
         return self.session_manager.user_by_session_id(session_id)
 
-    def check_project_rights(self, user_id, permission_flag, project_id=None):
+    def check_project_rights(self, user_id, flag: PermissionFlag, project_id=None):
+        if project_id:
+            project_id = int(project_id)
         result = False
         for role in gm_holder.project_manager.roles_by_user(user_id):
             for rule in role.rules:
                 if rule.project_id and not(rule.project_id == project_id):
                     continue
-                if PermissionFlag.watcher == permission_flag:
-                    result |= rule.is_project_watcher
-                if PermissionFlag.editor == permission_flag:
-                    result |= rule.is_project_editor
-                if PermissionFlag.creator == permission_flag:
-                    result |= rule.is_project_creator
-                if PermissionFlag.deleter == permission_flag:
-                    result |= rule.is_project_deleter
+                result |= bool(flag.value <= rule.project_rights)
         return result

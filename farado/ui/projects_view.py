@@ -12,18 +12,17 @@ from farado.ui.operation_result import OperationResult
 from farado.permission_manager import PermissionFlag
 
 
+
 class ProjectsView:
     def __init__(self):
-        pass
+        # aliases
+        self.check_project_rights = gm_holder.permission_manager.check_project_rights
 
     @cherrypy.expose
     def index(self):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
-
-        if not gm_holder.permission_manager.check_project_rights(user.id, PermissionFlag.watcher):
-            return view_renderer["403"].render()
 
         return view_renderer["projects"].render(
             user=user,
@@ -40,11 +39,18 @@ class ProjectsView:
         if not user:
             return view_renderer["login"].render()
 
+        if not self.check_project_rights(user.id, PermissionFlag.watcher, target_project_id):
+            return view_renderer["403"].render()
+
         target_project=gm_holder.project_manager.project(target_project_id)
 
         operation_result = None
         if target_project_caption:
+            if not self.check_project_rights(user.id, PermissionFlag.editor, target_project_id):
+                return view_renderer["403"].render()
             if not target_project:
+                if not self.check_project_rights(user.id, PermissionFlag.creator):
+                    return view_renderer["403"].render()
                 target_project = Project()
             target_project.caption = target_project_caption
             target_project.content = target_project_content
@@ -62,6 +68,9 @@ class ProjectsView:
         if not user:
             return view_renderer["login"].render()
 
+        if not self.check_project_rights(user.id, PermissionFlag.creator):
+            return view_renderer["403"].render()
+
         return view_renderer["project"].render(
             user=user,
             target_project=None,
@@ -72,6 +81,9 @@ class ProjectsView:
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not self.check_project_rights(user.id, PermissionFlag.deleter):
+            return view_renderer["403"].render()
 
         gm_holder.project_manager.remove_item(Project, target_project_id)
         operation_result = OperationResult(caption="Project removed", kind="success")
