@@ -10,12 +10,10 @@ from farado.general_manager_holder import gm_holder
 from farado.items.role import Role
 from farado.items.rule import Rule
 from farado.ui.operation_result import OperationResult
-from farado.ui.base_view import BaseView
+from farado.ui.base_view import BaseView, UiUserRestrictions
 
 
 class RolesView(BaseView):
-    def __init__(self):
-        pass
 
     @cherrypy.expose
     def index(self):
@@ -23,9 +21,18 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
+
         return view_renderer["roles"].render(
             user=user,
-            project_manager=gm_holder.project_manager)
+            project_manager=gm_holder.project_manager,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def role(
@@ -37,6 +44,9 @@ class RolesView(BaseView):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
 
         target_role = gm_holder.project_manager.role(target_role_id)
 
@@ -76,7 +86,13 @@ class RolesView(BaseView):
             user=user,
             target_role=target_role,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def add_role(self):
@@ -84,11 +100,20 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
+
         return view_renderer["role"].render(
             user=user,
             target_role=None,
             project_manager=gm_holder.project_manager,
-            save_result=None)
+            save_result=None,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def remove_role(self, target_role_id):
@@ -96,19 +121,31 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
+
         gm_holder.project_manager.remove_item(Role, target_role_id)
         operation_result = OperationResult(caption="Role removed", kind="success")
 
         return view_renderer["roles"].render(
             user=user,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def add_rule(self, target_role_id):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
 
         if not gm_holder.project_manager.role(target_role_id):
             return view_renderer["404"].render()
@@ -121,4 +158,8 @@ class RolesView(BaseView):
             user=user,
             target_role=gm_holder.project_manager.role(target_role_id),
             project_manager=gm_holder.project_manager,
-            operation_result=OperationResult(caption="Rule added", kind="success"))
+            operation_result=OperationResult(caption="Rule added", kind="success"),
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )

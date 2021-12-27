@@ -11,15 +11,19 @@ from farado.ui.roles_view import RolesView
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id, set_current_session_id
 from farado.general_manager_holder import gm_holder
-from farado.ui.base_view import BaseView
+from farado.ui.base_view import BaseView, UiUserRestrictions
 
 
 
 class WebService(BaseView):
+
     def __init__(self):
+        super().__init__()
         self.users_view = UsersView()
         self.projects_view = ProjectsView()
         self.roles_view = RolesView()
+
+
 
     @cherrypy.expose
     def index(self, login=None, password=None):
@@ -33,13 +37,23 @@ class WebService(BaseView):
             return view_renderer["login"].render()
 
         set_current_session_id(session_id)
-        return view_renderer["index"].render(user=user, project_manager=gm_holder.project_manager)
+        return view_renderer["index"].render(
+            user=user,
+            project_manager=gm_holder.project_manager,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def logout(self):
         gm_holder.permission_manager.logout(current_session_id())
         set_current_session_id(None)
         return view_renderer["login"].render()
+
+
 
     def run(self):
         # HACK: switching off date time output for cherrypy log

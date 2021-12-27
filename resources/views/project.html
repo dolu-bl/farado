@@ -38,9 +38,13 @@
         <label for="inputEmail" class="form-label">Content</label>
         <textarea name="target_project_content" class="form-control" id="textareaContent" rows="9">{{ target_project.content }}</textarea>
       </div>
-      <div class="col-12">
-        <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-      </div>
+
+      {% if restriction.primary_action_enabled %}
+        <div class="col-12">
+          <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+        </div>
+      {% endif %}
+
     </form>
   </div>
 {% endblock %}

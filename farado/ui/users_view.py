@@ -10,12 +10,10 @@ from farado.general_manager_holder import gm_holder
 from farado.items.user import User
 from farado.items.user_role import UserRole
 from farado.ui.operation_result import OperationResult
-from farado.ui.base_view import BaseView
+from farado.ui.base_view import BaseView, UiUserRestrictions
 
 
 class UsersView(BaseView):
-    def __init__(self):
-        pass
 
     @cherrypy.expose
     def index(self):
@@ -23,9 +21,18 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
+
         return view_renderer["users"].render(
             user=user,
-            project_manager=gm_holder.project_manager)
+            project_manager=gm_holder.project_manager,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def user(
@@ -43,6 +50,9 @@ class UsersView(BaseView):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
 
         target_user = gm_holder.project_manager.user_by_id(target_user_id)
 
@@ -66,7 +76,13 @@ class UsersView(BaseView):
             user=user,
             target_user=target_user,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def add_user(self):
@@ -74,10 +90,19 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
+
         return view_renderer["user"].render(
             user=user,
             target_user=None,
-            save_result=None)
+            save_result=None,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def remove_user(self, target_user_id):
@@ -85,19 +110,31 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
+
         gm_holder.project_manager.remove_item(User, target_user_id)
         operation_result = OperationResult(caption="User removed", kind="success")
 
         return view_renderer["users"].render(
             user=user,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def add_user_role(self, target_role_id, target_user_id):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
 
         target_user = gm_holder.project_manager.user_by_id(target_user_id)
         user_role = UserRole()
@@ -110,13 +147,22 @@ class UsersView(BaseView):
             user=user,
             target_user=target_user,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
+
+
 
     @cherrypy.expose
     def remove_user_role(self, target_user_id, target_user_role_id):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if not self.is_admin(user.id):
+            return view_renderer["403"].render()
 
         target_user = gm_holder.project_manager.user_by_id(target_user_id)
         gm_holder.project_manager.remove_item(UserRole, target_user_role_id)
@@ -126,4 +172,8 @@ class UsersView(BaseView):
             user=user,
             target_user=target_user,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+            )
