@@ -11,10 +11,11 @@ from farado.ui.roles_view import RolesView
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id, set_current_session_id
 from farado.general_manager_holder import gm_holder
+from farado.ui.base_view import BaseView
 
 
 
-class WebService:
+class WebService(BaseView):
     def __init__(self):
         self.users_view = UsersView()
         self.projects_view = ProjectsView()

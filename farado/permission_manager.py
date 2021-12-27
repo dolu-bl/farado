@@ -1,11 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import enum
+
 from farado.logger import dlog
 from farado.items.user import User
 from farado.session_manager import SessionManager
 from farado.general_manager_holder import gm_holder
 
+
+class PermissionFlag(enum.Enum):
+    none = 0
+    watcher = 1
+    editor = 2
+    creator = 4
+    deleter = 8
 
 class PermissionManager:
 
@@ -46,5 +55,15 @@ class PermissionManager:
         self.session_manager.remove_session(session_id)
 
     def user_by_session_id(self, session_id):
-        # TODO : permissions
         return self.session_manager.user_by_session_id(session_id)
+
+    def check_project_rights(self, user_id, flag: PermissionFlag, project_id=None):
+        if project_id:
+            project_id = int(project_id)
+        result = False
+        for role in gm_holder.project_manager.roles_by_user(user_id):
+            for rule in role.rules:
+                if rule.project_id and not(rule.project_id == project_id):
+                    continue
+                result |= bool(flag.value <= rule.project_rights)
+        return result

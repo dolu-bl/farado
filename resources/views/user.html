@@ -75,11 +75,73 @@
           </label>
         </div>
       </div>
+      
       <div class="col-12">
         <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
       </div>
     </form>
   </div>
+
+  {% if target_user %}
+    <div class="row placeholders">
+      <div class="col-12">
+        <hr>
+        <h5 class="page-header">
+          Roles
+        </h5>
+      </div>
+
+      <div class="col-12">
+        <form action="/users/add_user_role" method="post">
+          <div class="btn-toolbar">
+            <div class="btn-group">
+              <select class="form-select form-select-sm" name="target_role_id">
+                <option value="0">—</option>
+                {% for role in project_manager.roles() %}
+                  <option value="{{role.id}}">
+                    {{ role.caption }}
+                  </option>
+                {% endfor %}
+              </select>
+              <input type="hidden" name="target_user_id" value="{{ target_user.id }}">
+            </div>
+            <div class="btn-group">
+              <button type="submit" id="saveButton" class="btn btn-sm btn-dark">+</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-12">
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">Id</th>
+              <th scope="col">Role</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user_role in project_manager.user_roles_by_user(target_user.id) %}
+            <tr>
+              <th scope="row">{{ user_role.id }}</th>
+              <td>
+                {{ project_manager.role(user_role.role_id).caption }}</a>
+              </td>
+              <td>
+                <a href="/users/remove_user_role?target_user_role_id={{ user_role.id }}&target_user_id={{ target_user.id }}"
+                  title="Remove user role">
+                  <span class="badge bg-danger">x</span>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
 {% endblock %}
 
 

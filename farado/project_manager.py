@@ -7,6 +7,7 @@ from farado.items.issue import Issue
 from farado.items.user import User
 from farado.items.role import Role
 from farado.items.rule import Rule
+from farado.items.user_role import UserRole
 from farado.general_manager_holder import gm_holder
 
 
@@ -38,6 +39,12 @@ class ProjectManager:
 
     def rule(self, rule_id):
         return gm_holder.meta_item_manager.item_by_id(Rule, rule_id)
+
+    def user_roles_by_user(self, user_id):
+        return gm_holder.meta_item_manager.items_by_value(UserRole, "user_id", user_id)
+
+    def roles_by_user(self, user_id):
+        return gm_holder.meta_item_manager.roles_by_user(user_id)
 
     def user_by_id(self, id):
         if not id:

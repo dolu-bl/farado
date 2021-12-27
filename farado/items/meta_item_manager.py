@@ -15,6 +15,7 @@ from farado.items.user import User
 from farado.items.workflow import Workflow
 from farado.items.role import Role
 from farado.items.rule import Rule
+from farado.items.user_role import UserRole
 
 
 
@@ -118,16 +119,19 @@ class MetaItemManager:
             , sqlalchemy.Column('role_id',
                 sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
             , sqlalchemy.Column('project_id', sqlalchemy.ForeignKey('projects.id'), index=True)
-            , sqlalchemy.Column('is_project_watcher', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_project_editor', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_project_creator', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_project_deleter', sqlalchemy.Boolean)
+            , sqlalchemy.Column('project_rights', sqlalchemy.Integer)
             , sqlalchemy.Column('issue_kind_id', sqlalchemy.ForeignKey('issue_kinds.id'), index=True)
             , sqlalchemy.Column('workflow_id', sqlalchemy.ForeignKey('workflows.id'), index=True)
-            , sqlalchemy.Column('is_issue_watcher', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_issue_editor', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_issue_creator', sqlalchemy.Boolean)
-            , sqlalchemy.Column('is_issue_deleter', sqlalchemy.Boolean)
+            , sqlalchemy.Column('issue_rights', sqlalchemy.Integer)
+        )
+
+        self.user_roles_table = sqlalchemy.Table('user_roles'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('user_id',
+                sqlalchemy.ForeignKey('users.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('role_id',
+                sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
         )
 
     def map_tables(self):
@@ -155,7 +159,7 @@ class MetaItemManager:
                 , 'files': sqlalchemy.orm.relationship(
                     File,
                     cascade='all,delete',
-                    backref="file",
+                    backref="issue",
                     lazy='immediate')
                 , 'children': sqlalchemy.orm.relationship(
                     Issue,
@@ -174,17 +178,31 @@ class MetaItemManager:
         sqlalchemy.orm.mapper(Field, self.fields_table)
         sqlalchemy.orm.mapper(FieldKind, self.field_kinds_table)
         sqlalchemy.orm.mapper(File, self.files_table)
-        sqlalchemy.orm.mapper(User, self.users_table)
+        sqlalchemy.orm.mapper(User, self.users_table,
+            properties={
+                'user_roles': sqlalchemy.orm.relationship(
+                    UserRole,
+                    cascade='all,delete',
+                    backref="user",
+                    lazy='immediate'),
+                }
+            )
         sqlalchemy.orm.mapper(Role, self.roles_table,
             properties={
                 'rules': sqlalchemy.orm.relationship(
                     Rule,
                     cascade='all,delete',
-                    backref="rule",
-                    lazy='immediate')
+                    backref="role",
+                    lazy='immediate'),
+                'user_roles': sqlalchemy.orm.relationship(
+                    UserRole,
+                    cascade='all,delete',
+                    backref="role",
+                    lazy='immediate'),
                 }
             )
         sqlalchemy.orm.mapper(Rule, self.rules_table)
+        sqlalchemy.orm.mapper(UserRole, self.user_roles_table)
 
     def add_item(self, item):
         with self.mutex:
@@ -265,6 +283,13 @@ class MetaItemManager:
                 self.session.expunge_all()
                 return result
 
+    def roles_by_user(self, user_id=None):
+        with self.mutex:
+            with self.session.begin():
+                query = self.session.query(Role).join(User.user_roles).where(User.id == user_id)
+                result = query.all()
+                self.session.expunge_all()
+                return result
 
     def subissues_by_id(self, id):
         with self.mutex:

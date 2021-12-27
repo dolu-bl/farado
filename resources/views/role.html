@@ -35,103 +35,80 @@
         <input type="text" name="target_role_caption" class="form-control" id="inputCaption" value="{{ target_role.caption }}" required>
       </div>
 
-      <div class="col-12">
-        <h5 class="page-header">
-          Rules
-          {# FIXME : If you add a new role, all user changes on this page are discarded. #}
-          <a href="/roles/add_rule?target_role_id={{ target_role.id }}" class="btn btn-sm btn-dark" type="submit">+</a>
-        </h5>
+      {% if target_role %}
+        <div class="col-12">
+          <h5 class="page-header">
+            Rules
+            {# FIXME : If you add a new role, all user changes on this page are discarded. #}
+            <a href="/roles/add_rule?target_role_id={{ target_role.id }}" class="btn btn-sm btn-dark" type="submit">+</a>
+          </h5>
 
-        <table class="table">
-          <thead class="table-dark">
-            <tr>
-              <th scope="col">Id</th>
-              <th scope="col">Caption</th>
-              <th scope="col">Project</th>
-              <th scope="col">Project watcher</th>
-              <th scope="col">Project editor</th>
-              <th scope="col">Project creator</th>
-              <th scope="col">Project deleter</th>
-              <th scope="col">Issue kind</th>
-              <th scope="col">Workflow</th>
-              <th scope="col">Issue watcher</th>
-              <th scope="col">Issue editor</th>
-              <th scope="col">Issue creator</th>
-              <th scope="col">Issue deleter</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for rule in project_manager.rules_by_role(target_role.id) %}
-            <tr id="rule_row_{{ rule.id }}">
-              <th scope="row">{{ rule.id }}</th>
-              <td>
-                <input
-                  type="text"
-                  name="rule_caption_{{ rule.id }}"
-                  class="form-control form-select-sm"
-                  value="{{ rule.caption }}"
-                  required>
-              </td>
-              <td>
-                {{ rule_macros.select(
-                  'rule_project_id_' + rule.id | string,
-                  project_manager.projects(),
-                  rule.project_id ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                    'rule_project_watcher_' + rule.id | string,
-                    rule.is_project_watcher ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_project_editor_' + rule.id | string,
-                  rule.is_project_editor ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_project_creator_' + rule.id | string,
-                  rule.is_project_creator ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_project_deleter_' + rule.id | string,
-                  rule.is_project_deleter ) }}
-              </td>
-              <td>
-              </td>
-              <td>
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_issue_watcher_' + rule.id | string,
-                  rule.is_issue_watcher ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_issue_editor_' + rule.id | string,
-                  rule.is_issue_editor ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_issue_creator_' + rule.id | string,
-                  rule.is_issue_creator ) }}
-              </td>
-              <td>
-                {{ rule_macros.switch(
-                  'rule_issue_deleter_' + rule.id | string,
-                  rule.is_issue_deleter ) }}
-              </td>
-              <td>
-                <a href="#" title="Remove rule" onclick="$('#rule_row_{{ rule.id }}').remove();">
-                  <span class="badge bg-danger">x</span>
-                </a>
-              </td>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+          <table class="table">
+            <thead class="table-dark">
+              <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Caption</th>
+                <th scope="col">Project</th>
+                <th scope="col">Project rights</th>
+                <th scope="col">Issue kind</th>
+                <th scope="col">Workflow</th>
+                <th scope="col">Issue rights</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rule in project_manager.rules_by_role(target_role.id) %}
+              <tr id="rule_row_{{ rule.id }}">
+                <th scope="row">{{ rule.id }}</th>
+                <td>
+                  <input
+                    type="text"
+                    name="rule_caption_{{ rule.id }}"
+                    class="form-control form-select-sm"
+                    value="{{ rule.caption }}"
+                    required>
+                </td>
+                <td>
+                  {{ rule_macros.select(
+                    'rule_project_id_' + rule.id | string,
+                    project_manager.projects(),
+                    rule.project_id ) }}
+                </td>
+                <td>
+                  <select
+                    class="form-select form-select-sm"
+                    name="rule_project_rights_{{ rule.id }}">
+                    <option value="0" {% if not rule.project_rights %}selected{% endif %}>none</option>
+                    <option value="1" {% if 1 == rule.project_rights %}selected{% endif %}>watcher</option>
+                    <option value="2" {% if 2 == rule.project_rights %}selected{% endif %}>editor</option>
+                    <option value="4" {% if 4 == rule.project_rights %}selected{% endif %}>creator</option>
+                    <option value="8" {% if 8 == rule.project_rights %}selected{% endif %}>deleter</option>
+                  </select>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                  <select
+                    class="form-select form-select-sm"
+                    name="rule_issue_rights_{{ rule.id }}">
+                    <option value="0" {% if not rule.issue_rights %}selected{% endif %}>none</option>
+                    <option value="1" {% if 1 == rule.issue_rights %}selected{% endif %}>watcher</option>
+                    <option value="2" {% if 2 == rule.issue_rights %}selected{% endif %}>editor</option>
+                    <option value="4" {% if 4 == rule.issue_rights %}selected{% endif %}>creator</option>
+                    <option value="8" {% if 8 == rule.issue_rights %}selected{% endif %}>deleter</option>
+                  </select>
+                <td>
+                  <a href="#" title="Remove rule" onclick="$('#rule_row_{{ rule.id }}').remove();">
+                    <span class="badge bg-danger">x</span>
+                  </a>
+                </td>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+
       <div class="col-12">
         <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
       </div>
