@@ -10,9 +10,10 @@ from farado.general_manager_holder import gm_holder
 from farado.items.user import User
 from farado.items.user_role import UserRole
 from farado.ui.operation_result import OperationResult
+from farado.ui.base_view import BaseView
 
 
-class UsersView:
+class UsersView(BaseView):
     def __init__(self):
         pass
 

@@ -10,14 +10,11 @@ from farado.general_manager_holder import gm_holder
 from farado.items.project import Project
 from farado.ui.operation_result import OperationResult
 from farado.permission_manager import PermissionFlag
+from farado.ui.base_view import BaseView
 
 
 
-class ProjectsView:
-    def __init__(self):
-        # aliases
-        self.check_project_rights = gm_holder.permission_manager.check_project_rights
-
+class ProjectsView(BaseView):
     @cherrypy.expose
     def index(self):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
