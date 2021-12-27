@@ -48,6 +48,7 @@
               <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Caption</th>
+                <th scope="col">Admin</th>
                 <th scope="col">Project</th>
                 <th scope="col">Project rights</th>
                 <th scope="col">Issue kind</th>
@@ -67,6 +68,11 @@
                     class="form-control form-select-sm"
                     value="{{ rule.caption }}"
                     required>
+                </td>
+                <td>
+                  {{ rule_macros.switch(
+                    'rule_is_admin_' + rule.id | string,
+                    rule.is_admin ) }}
                 </td>
                 <td>
                   {{ rule_macros.select(

@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from sqlalchemy.util.compat import u
 from farado.items.user import User
+from farado.items.role import Role
+from farado.items.rule import Rule
+from farado.items.user_role import UserRole
 
 from farado.items.project import Project
 
@@ -29,6 +33,14 @@ if __name__ == '__main__':
         password="admin",
     )
     manager.add_item(user)
+
+    role = Role('Administrator')
+    role.rules.append(Rule(
+            caption='Admin rule',
+            is_admin=True
+    ))
+    manager.add_item(role)
+    manager.add_item(UserRole(user_id=user.id, role_id=role.id))
 
     # ====================== #
     issue_kind = IssueKind(
