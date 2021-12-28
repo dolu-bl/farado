@@ -70,7 +70,7 @@ class ProjectsView(BaseView):
             operation_result=operation_result,
             restriction=UiUserRestrictions(
                 is_admin=self.is_admin(user.id),
-                primary_action_enabled=bool(PermissionFlag.editor > rights),
+                is_save_enabled=bool(PermissionFlag.editor <= rights),
                 )
             )
 

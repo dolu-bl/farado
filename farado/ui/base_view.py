@@ -5,17 +5,15 @@ from farado.general_manager_holder import gm_holder
 
 
 class UiUserRestrictions:
-    def __init__(
-            self,
-            is_admin=False,
-            primary_action_enabled=False,
-            secondary_action_enabled=False,
-            third_action_enabled=False,
-            ) -> None:
-        self.is_admin = is_admin
-        self.primary_action_enabled = primary_action_enabled
-        self.secondary_action_enabled = secondary_action_enabled
-        self.third_action_enabled = third_action_enabled
+    def __init__(self, **args) -> None:
+        for key, value in args.items():
+            setattr(self, key, value)
+    def __repr__(self):
+        result = '<UiUserRestrictions(\n'
+        for key, value in self.__dict__.items():
+            result += f'''{key}='{value}'\n'''
+        result += ')>'
+        return result
 
 class BaseView:
     def __init__(self):
