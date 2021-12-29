@@ -21,14 +21,15 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         return view_renderer["users"].render(
             user=user,
             project_manager=gm_holder.project_manager,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -51,7 +52,8 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         target_user = gm_holder.project_manager.user_by_id(target_user_id)
@@ -78,7 +80,7 @@ class UsersView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -90,7 +92,8 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         return view_renderer["user"].render(
@@ -98,7 +101,7 @@ class UsersView(BaseView):
             target_user=None,
             save_result=None,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -110,7 +113,8 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         gm_holder.project_manager.remove_item(User, target_user_id)
@@ -121,7 +125,7 @@ class UsersView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -133,7 +137,8 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         target_user = gm_holder.project_manager.user_by_id(target_user_id)
@@ -149,7 +154,7 @@ class UsersView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -161,7 +166,8 @@ class UsersView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         target_user = gm_holder.project_manager.user_by_id(target_user_id)
@@ -174,6 +180,6 @@ class UsersView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )

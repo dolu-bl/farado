@@ -21,14 +21,15 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         return view_renderer["roles"].render(
             user=user,
             project_manager=gm_holder.project_manager,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -45,7 +46,8 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         target_role = gm_holder.project_manager.role(target_role_id)
@@ -88,7 +90,7 @@ class RolesView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -100,7 +102,8 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         return view_renderer["role"].render(
@@ -109,7 +112,7 @@ class RolesView(BaseView):
             project_manager=gm_holder.project_manager,
             save_result=None,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -121,7 +124,8 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         gm_holder.project_manager.remove_item(Role, target_role_id)
@@ -132,7 +136,7 @@ class RolesView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
 
@@ -144,7 +148,8 @@ class RolesView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.is_admin(user.id):
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
             return view_renderer["403"].render()
 
         if not gm_holder.project_manager.role(target_role_id):
@@ -160,6 +165,6 @@ class RolesView(BaseView):
             project_manager=gm_holder.project_manager,
             operation_result=OperationResult(caption="Rule added", kind="success"),
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
+                is_admin=is_admin,
                 )
             )
