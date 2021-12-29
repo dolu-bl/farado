@@ -18,9 +18,11 @@
 
   <h2 class="page-header">
     Projects
-    <form action="/projects/add_project" method="post">
-      <button class="btn btn-sm btn-dark" type="submit">+</button>
-    </form>
+    {% if restriction.is_create_enabled %}
+      <form action="/projects/add_project" method="post">
+        <button class="btn btn-sm btn-dark" type="submit">+</button>
+      </form>
+    {% endif %}
   </h2>
 
   {% if operation_result -%}
@@ -47,9 +49,11 @@
             <a href="/projects/project?target_project_id={{ project.id }}" title="Modify project">{{ project.caption }}</a>
           </td>
           <td>
+            {% if restriction.is_delete_enabled %}
             <a href="/projects/remove_project?target_project_id={{ project.id }}" title="Remove project">
               <span class="badge bg-danger">x</span>
             </a>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

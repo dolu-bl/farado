@@ -22,11 +22,15 @@ class ProjectsView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
+        rights = self.project_rights(user.id)
+
         return view_renderer["projects"].render(
             user=user,
             project_manager=gm_holder.project_manager,
             restriction=UiUserRestrictions(
                 is_admin=self.is_admin(user.id),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
                 )
             )
 
@@ -82,7 +86,8 @@ class ProjectsView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.check_project_rights(user.id, PermissionFlag.creator):
+        rights = self.project_rights(user.id)
+        if PermissionFlag.creator > rights:
             return view_renderer["403"].render()
 
         return view_renderer["project"].render(
@@ -91,6 +96,7 @@ class ProjectsView(BaseView):
             save_result=None,
             restriction=UiUserRestrictions(
                 is_admin=self.is_admin(user.id),
+                is_save_enabled=bool(PermissionFlag.editor <= rights),
                 )
             )
 
@@ -102,7 +108,8 @@ class ProjectsView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.check_project_rights(user.id, PermissionFlag.deleter):
+        rights = self.project_rights(user.id, target_project_id)
+        if PermissionFlag.deleter > rights:
             return view_renderer["403"].render()
 
         gm_holder.project_manager.remove_item(Project, target_project_id)
@@ -114,5 +121,7 @@ class ProjectsView(BaseView):
             operation_result=operation_result,
             restriction=UiUserRestrictions(
                 is_admin=self.is_admin(user.id),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
                 )
             )
