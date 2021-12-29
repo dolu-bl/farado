@@ -9,7 +9,7 @@ from farado.session_manager import SessionManager
 from farado.general_manager_holder import gm_holder
 
 
-class PermissionFlag(enum.Enum):
+class PermissionFlag(enum.IntEnum):
     none = 0
     watcher = 1
     editor = 2
@@ -67,3 +67,21 @@ class PermissionManager:
                     continue
                 result |= bool(flag.value <= rule.project_rights)
         return result
+
+    def project_rights(self, user_id, project_id=None):
+        if project_id:
+            project_id = int(project_id)
+        result = 0
+        for role in gm_holder.project_manager.roles_by_user(user_id):
+            for rule in role.rules:
+                if rule.project_id and not(rule.project_id == project_id):
+                    continue
+                result |= rule.project_rights
+        return result
+
+    def check_is_admin(self, user_id):
+        for role in gm_holder.project_manager.roles_by_user(user_id):
+            for rule in role.rules:
+                if rule.is_admin:
+                    return True
+        return False

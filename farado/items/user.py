@@ -41,7 +41,6 @@ class User():
         elif password:
             self.set_password(password)
 
-
     @orm.reconstructor
     def init_on_load(self):
         self.online_state = False

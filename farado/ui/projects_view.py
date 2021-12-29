@@ -10,20 +10,31 @@ from farado.general_manager_holder import gm_holder
 from farado.items.project import Project
 from farado.ui.operation_result import OperationResult
 from farado.permission_manager import PermissionFlag
-from farado.ui.base_view import BaseView
+from farado.ui.base_view import BaseView, UiUserRestrictions
 
 
 
 class ProjectsView(BaseView):
+
     @cherrypy.expose
     def index(self):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
 
+        rights = self.project_rights(user.id)
+
         return view_renderer["projects"].render(
             user=user,
-            project_manager=gm_holder.project_manager)
+            project_manager=gm_holder.project_manager,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
+                )
+            )
+
+
 
     @cherrypy.expose
     def project(
@@ -36,19 +47,22 @@ class ProjectsView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.check_project_rights(user.id, PermissionFlag.watcher, target_project_id):
+        rights = self.project_rights(user.id, target_project_id)
+        if PermissionFlag.watcher > rights:
             return view_renderer["403"].render()
 
-        target_project=gm_holder.project_manager.project(target_project_id)
+        target_project = gm_holder.project_manager.project(target_project_id)
 
         operation_result = None
         if target_project_caption:
-            if not self.check_project_rights(user.id, PermissionFlag.editor, target_project_id):
+            if PermissionFlag.editor > rights:
                 return view_renderer["403"].render()
+
             if not target_project:
-                if not self.check_project_rights(user.id, PermissionFlag.creator):
+                if PermissionFlag.creator > rights:
                     return view_renderer["403"].render()
                 target_project = Project()
+
             target_project.caption = target_project_caption
             target_project.content = target_project_content
             gm_holder.project_manager.save_item(target_project)
@@ -57,7 +71,14 @@ class ProjectsView(BaseView):
         return view_renderer["project"].render(
             user=user,
             target_project=target_project,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_save_enabled=bool(PermissionFlag.editor <= rights),
+                )
+            )
+
+
 
     @cherrypy.expose
     def add_project(self):
@@ -65,13 +86,21 @@ class ProjectsView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.check_project_rights(user.id, PermissionFlag.creator):
+        rights = self.project_rights(user.id)
+        if PermissionFlag.creator > rights:
             return view_renderer["403"].render()
 
         return view_renderer["project"].render(
             user=user,
             target_project=None,
-            save_result=None)
+            save_result=None,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_save_enabled=bool(PermissionFlag.editor <= rights),
+                )
+            )
+
+
 
     @cherrypy.expose
     def remove_project(self, target_project_id):
@@ -79,7 +108,8 @@ class ProjectsView(BaseView):
         if not user:
             return view_renderer["login"].render()
 
-        if not self.check_project_rights(user.id, PermissionFlag.deleter):
+        rights = self.project_rights(user.id, target_project_id)
+        if PermissionFlag.deleter > rights:
             return view_renderer["403"].render()
 
         gm_holder.project_manager.remove_item(Project, target_project_id)
@@ -88,4 +118,10 @@ class ProjectsView(BaseView):
         return view_renderer["projects"].render(
             user=user,
             project_manager=gm_holder.project_manager,
-            operation_result=operation_result)
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
+                )
+            )

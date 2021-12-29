@@ -5,10 +5,12 @@ class Rule():
     def __init__(
             self,
             caption='',
+            is_admin=False,
             ):
         self.id = None
         self.caption = caption
         self.role_id = None
+        self.is_admin = is_admin
         self.project_id = None
         self.project_rights = None
         self.issue_kind_id = None
@@ -20,6 +22,7 @@ class Rule():
             f'''<Rule(id='{ self.id
                 }',\n caption='{ self.caption
                 }',\n role_id='{ self.role_id
+                }',\n is_admin='{ self.is_admin
                 }',\n project_id='{ self.project_id
                 }',\n project_rights='{ self.project_rights
                 }',\n issue_kind_id='{ self.issue_kind_id
@@ -31,8 +34,9 @@ class Rule():
     def reset_properties(self, properties):
         '''
         properties example:
-        {'caption': 'asdf', 'project_id': '2', 'project_watcher': 'on', 'issue_editor': 'on'}
+        {'caption': 'asdf', 'project_id': '2', 'is_admin': 'on'}
         '''
+        self.is_admin = False
         self.project_rights = 0
         self.issue_rights = 0
         for key, value in properties.items():
@@ -40,6 +44,8 @@ class Rule():
                 self.caption = value
             elif key in 'role_id':
                 self.role_id = to_int_or_none(value)
+            elif key in 'is_admin':
+                self.is_admin = bool(value == "on")
             elif key in 'project_id':
                 self.project_id = to_int_or_none(value)
             elif key in 'project_rights':

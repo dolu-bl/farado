@@ -118,6 +118,7 @@ class MetaItemManager:
             , sqlalchemy.Column('caption', sqlalchemy.String)
             , sqlalchemy.Column('role_id',
                 sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('is_admin', sqlalchemy.Boolean)
             , sqlalchemy.Column('project_id', sqlalchemy.ForeignKey('projects.id'), index=True)
             , sqlalchemy.Column('project_rights', sqlalchemy.Integer)
             , sqlalchemy.Column('issue_kind_id', sqlalchemy.ForeignKey('issue_kinds.id'), index=True)
