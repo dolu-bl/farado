@@ -12,6 +12,7 @@ template_environment = jinja2.Environment(
 view_renderer = {}
 view_renderer["login"] = template_environment.get_template("login.html")
 view_renderer["index"] = template_environment.get_template("index.html")
+view_renderer["logs"] = template_environment.get_template("logs.html")
 view_renderer["users"] = template_environment.get_template("users.html")
 view_renderer["user"] = template_environment.get_template("user.html")
 view_renderer["projects"] = template_environment.get_template("projects.html")

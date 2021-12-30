@@ -57,6 +57,31 @@ class WebService(BaseView):
 
 
 
+    @cherrypy.expose
+    def logs(self):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        is_admin = self.is_admin(user.id)
+        if not is_admin:
+            return view_renderer["403"].render()
+
+        # TODO: read filename from single point
+        log_filename = 'resources/logs/farado.log'
+        with open(log_filename, 'r') as file:
+            logs_data = file.read()
+
+        return view_renderer["logs"].render(
+            user=user,
+            log_data=logs_data,
+            project_manager=gm_holder.project_manager,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                )
+        )
+
+
     def run(self):
         # HACK: switching off date time output for cherrypy log
         cherrypy._cplogging.LogManager.time = lambda self : "cherrypy"

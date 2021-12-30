@@ -18,6 +18,5 @@ class UiUserRestrictions:
 class BaseView:
     def __init__(self):
         # aliases
-        self.check_project_rights = gm_holder.permission_manager.check_project_rights
         self.project_rights = gm_holder.permission_manager.project_rights
         self.is_admin = gm_holder.permission_manager.check_is_admin
