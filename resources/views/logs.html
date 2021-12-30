@@ -1,0 +1,39 @@
+{% extends "base_template.html" %}
+
+
+
+{% block title %}Farado — Logs{% endblock %}
+
+{% block logs_active %}active{% endblock %}
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">
+    Logs
+  </h2>
+
+  <div class="row placeholders">
+    <div class="col-12">
+      <textarea
+        readonly
+        class="form-control rounded-0"
+        rows="20"
+        style="font-family:monospace;white-space: pre;overflow-wrap: normal;overflow-x: scroll;">{{ log_data }}</textarea>
+    </div>
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}

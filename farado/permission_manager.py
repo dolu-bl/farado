@@ -57,17 +57,6 @@ class PermissionManager:
     def user_by_session_id(self, session_id):
         return self.session_manager.user_by_session_id(session_id)
 
-    def check_project_rights(self, user_id, flag: PermissionFlag, project_id=None):
-        if project_id:
-            project_id = int(project_id)
-        result = False
-        for role in gm_holder.project_manager.roles_by_user(user_id):
-            for rule in role.rules:
-                if rule.project_id and not(rule.project_id == project_id):
-                    continue
-                result |= bool(flag.value <= rule.project_rights)
-        return result
-
     def project_rights(self, user_id, project_id=None):
         if project_id:
             project_id = int(project_id)
