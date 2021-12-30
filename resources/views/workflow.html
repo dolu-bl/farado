@@ -1,0 +1,175 @@
+{% extends "base_template.html" %}
+{% import "base_macros.html" as macros %}
+
+
+{% block title %}Farado — Workflow{% endblock %}
+
+{% block workflows_active %}active{% endblock %}
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">Workflow</h2>
+
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+    <form class="row g-3" action="/workflows/workflow" method="post">
+
+      <!-- Workflow.id -->
+      <div class="col-12">
+        <label for="inputId" class="form-label">Id</label>
+        <input type="text" name="target_workflow_id" class="form-control" id="inputId" value="{{ target_workflow.id }}" readonly>
+      </div>
+
+      <!-- Workflow.caption -->
+      <div class="col-12">
+        <label for="inputCaption" class="form-label">Caption</label>
+        <input type="text" name="target_workflow_caption" class="form-control" id="inputCaption" value="{{ target_workflow.caption }}" required>
+      </div>
+
+      <!-- Workflow.description -->
+      <div class="col-12">
+        <label for="textareaDescription" class="form-label">Description</label>
+        <textarea name="target_workflow_description" class="form-control" id="textareaDescription" rows="9">{{ target_workflow.description }}</textarea>
+      </div>
+
+      <div class="col-12">
+        <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+      </div>
+
+      <div class="row placeholders">
+        <div class="col-12">
+          <hr>
+        </div>
+      </div>
+    </form>
+
+    {% if target_workflow %}
+      <!-- States -->
+      <div class="col-12">
+        <h5 class="page-header">
+          States
+          {# FIXME : If you add a new state, all workflow changes on this page are discarded. #}
+          <a href="/workflows/add_state?target_workflow_id={{ target_workflow.id }}" class="btn btn-sm btn-dark" type="submit">+</a>
+        </h5>
+
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col" style="width: 1%">Id</th>
+              <th scope="col">Caption</th>
+              <th scope="col">Description</th>
+              <th scope="col" style="width: 1%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for state in target_workflow.states %}
+              <tr id="state_row_{{ state.id }}">
+                <form id="state_form_{{ state.id }}" action="/workflows/save_state" method="post">
+                  <th scope="row">{{ state.id }}</th>
+                  <td>
+                    <!-- State.caption -->
+                    <input
+                      type="text"
+                      name="target_state_caption"
+                      class="form-control form-select-sm"
+                      value="{{ state.caption }}"
+                      required>
+                  </td>
+                  <td>
+                    <!-- State.description -->
+                    <textarea
+                      name="target_state_description"
+                      class="form-control form-select-sm"
+                      rows="1">{{ state.description }}</textarea>
+                  </td>
+                  <td>
+                    <div style="white-space: nowrap">
+                      <input type="hidden" name="target_state_id" value="{{ state.id }}">
+                      <input type="hidden" name="target_workflow_id" value="{{ target_workflow.id }}">
+                      <!-- State.save() -->
+                      <a href="#" onclick="$('#state_form_{{ state.id }}').submit();"><span class="badge bg-primary">v</span></a>
+                      <!-- State.remove() -->
+                      <a href="/workflows/remove_state?target_workflow_id={{ target_workflow.id }}&target_state_id={{ state.id }}" title="Remove state"><span class="badge bg-danger">x</span></a>
+                    </div>
+                  </td>
+                </form>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Edges -->
+      <div class="col-12">
+        <h5 class="page-header">
+          Edges
+          {# FIXME : If you add a new edge, all workflow changes on this page are discarded. #}
+          <a href="/workflows/add_edge?target_workflow_id={{ target_workflow.id }}" class="btn btn-sm btn-dark" type="submit">+</a>
+        </h5>
+
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col" style="width: 1%">Id</th>
+              <th scope="col">From</th>
+              <th scope="col">To</th>
+              <th scope="col" style="width: 1%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for edge in target_workflow.edges %}
+            <tr id="edge_row_{{ edge.id }}">
+              <form id="edge_form_{{ edge.id }}" action="/workflows/save_edge" method="post">
+                <th scope="row">{{ edge.id }}</th>
+                <td>
+                  <!-- Edge.from_state -->
+                  {{ macros.select(
+                    'target_edge_from_state_id',
+                    target_workflow.states,
+                    edge.from_state_id ) }}
+                </td>
+                <td>
+                  <!-- Edge.to_state -->
+                  {{ macros.select(
+                    'target_edge_to_state_id',
+                    target_workflow.states,
+                    edge.to_state_id ) }}
+                </td>
+                <td>
+                  <div style="white-space: nowrap">
+                    <input type="hidden" name="target_edge_id" value="{{ edge.id }}">
+                    <input type="hidden" name="target_workflow_id" value="{{ target_workflow.id }}">
+                    <!-- Edge.save() -->
+                    <a href="#" onclick="$('#edge_form_{{ edge.id }}').submit();"><span class="badge bg-primary">v</span></a>
+                    <!-- Edge.remove() -->
+                    <a href="/workflows/remove_edge?target_workflow_id={{ target_workflow.id }}&target_edge_id={{ edge.id }}" title="Remove edge"><span class="badge bg-danger">x</span></a>
+                  </div>
+                </td>
+              </form>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}
