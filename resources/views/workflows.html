@@ -2,9 +2,9 @@
 
 
 
-{% block title %}Farado — Roles{% endblock %}
+{% block title %}Farado — Workflows{% endblock %}
 
-{% block roles_active %}active{% endblock %}
+{% block workflows_active %}active{% endblock %}
 
 
 {% block styles %}
@@ -17,8 +17,8 @@
 {% block content %}
 
   <h2 class="page-header">
-    Roles
-    <form action="/roles/add_role" method="post">
+    Workflows
+    <form action="/workflows/add_workflow" method="post">
       <button class="btn btn-sm btn-dark" type="submit">+</button>
     </form>
   </h2>
@@ -36,18 +36,18 @@
         <tr>
           <th scope="col">Id</th>
           <th scope="col">Caption</th>
-          <th scope="col"></th>
+          <th scope="col" style="width: 1%"></th>
         </tr>
       </thead>
       <tbody>
-        {% for role in project_manager.roles() %}
+        {% for workflow in project_manager.workflows() %}
         <tr>
-          <th scope="row">{{ role.id }}</th>
+          <th scope="row">{{ workflow.id }}</th>
           <td>
-            <a href="/roles/role?target_role_id={{ role.id }}" title="Modify role">{{ role.caption }}</a>
+            <a href="/workflows/workflow?target_workflow_id={{ workflow.id }}" title="Modify workflow">{{ workflow.caption }}</a>
           </td>
           <td>
-            <a href="/roles/remove_role?target_role_id={{ role.id }}" title="Remove role">
+            <a href="/workflows/remove_workflow?target_workflow_id={{ workflow.id }}" title="Remove workflow">
               <span class="badge bg-danger">x</span>
             </a>
           </td>

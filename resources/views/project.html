@@ -1,4 +1,4 @@
-{% extends "page_template.html" %}
+{% extends "base_template.html" %}
 
 
 
@@ -31,11 +31,11 @@
         <input type="text" name="target_project_id" class="form-control" id="inputId" value="{{ target_project.id }}" readonly>
       </div>
       <div class="col-12">
-        <label for="inputLogin" class="form-label">Caption</label>
+        <label for="inputCaption" class="form-label">Caption</label>
         <input type="text" name="target_project_caption" class="form-control" id="inputCaption" value="{{ target_project.caption }}" required>
       </div>
       <div class="col-12">
-        <label for="inputEmail" class="form-label">Content</label>
+        <label for="textareaContent" class="form-label">Content</label>
         <textarea name="target_project_content" class="form-control" id="textareaContent" rows="9">{{ target_project.content }}</textarea>
       </div>
 

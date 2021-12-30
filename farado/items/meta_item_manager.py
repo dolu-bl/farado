@@ -13,6 +13,8 @@ from farado.items.issue_kind import IssueKind
 from farado.items.project import Project
 from farado.items.user import User
 from farado.items.workflow import Workflow
+from farado.items.state import State
+from farado.items.edge import Edge
 from farado.items.role import Role
 from farado.items.rule import Rule
 from farado.items.user_role import UserRole
@@ -42,6 +44,24 @@ class MetaItemManager:
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
             , sqlalchemy.Column('caption', sqlalchemy.String)
             , sqlalchemy.Column('description', sqlalchemy.String)
+        )
+
+        self.states_table = sqlalchemy.Table('states'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+            , sqlalchemy.Column('description', sqlalchemy.String)
+            , sqlalchemy.Column('workflow_id',
+                sqlalchemy.ForeignKey('workflows.id', ondelete="CASCADE"), index=True)
+        )
+
+        self.edges_table = sqlalchemy.Table('edges'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('from_state_id', sqlalchemy.Integer, index=True)
+            , sqlalchemy.Column('to_state_id', sqlalchemy.Integer, index=True)
+            , sqlalchemy.Column('workflow_id',
+                sqlalchemy.ForeignKey('workflows.id', ondelete="CASCADE"), index=True)
         )
 
         self.issues_table = sqlalchemy.Table('issues'
@@ -145,11 +165,23 @@ class MetaItemManager:
             )
         sqlalchemy.orm.mapper(Workflow, self.workflows_table,
             properties={
+                'states': sqlalchemy.orm.relationship(
+                    State,
+                    cascade='all,delete',
+                    backref="state_workflow",
+                    lazy='immediate'),
+                'edges': sqlalchemy.orm.relationship(
+                    Edge,
+                    cascade='all,delete',
+                    backref="edge_workflow",
+                    lazy='immediate'),
                 'issue_kinds': sqlalchemy.orm.relationship(
                     IssueKind,
-                    lazy='noload')
+                    lazy='noload'),
                 }
             )
+        sqlalchemy.orm.mapper(State, self.states_table)
+        sqlalchemy.orm.mapper(Edge, self.edges_table)
         sqlalchemy.orm.mapper(Issue, self.issues_table,
             properties={
                 'fields': sqlalchemy.orm.relationship(
