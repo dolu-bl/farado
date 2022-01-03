@@ -4,7 +4,7 @@
 class IssueKind():
     def __init__(
             self,
-            caption,
+            caption='',
             workflow_id=None,
             ):
         self.id = None

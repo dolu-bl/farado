@@ -1,12 +1,28 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import enum
+
+class ValueTypes(enum.IntEnum):
+    string = 0
+    markdown_text = 1
+    integer = 2
+    float = 3
+    bool = 4
+    date_time = 5
+    uri = 6
+    # reserved
+    issue_id = 100
+    user_id = 101
+    project_id = 102
+    workflow_id = 103
+
 class FieldKind():
     def __init__(
             self,
-            caption,
-            value_type,
-            description,
+            caption='',
+            value_type=ValueTypes.string,
+            description='',
             issue_kind_id=None,
             is_system=False,
             ):

@@ -96,7 +96,7 @@ class MetaItemManager:
             , sqlalchemy.Column('issue_kind_id',
                 sqlalchemy.ForeignKey('issue_kinds.id', ondelete="CASCADE"), index=True)
             , sqlalchemy.Column('caption', sqlalchemy.String)
-            , sqlalchemy.Column('value_type', sqlalchemy.String)
+            , sqlalchemy.Column('value_type', sqlalchemy.Integer)
             , sqlalchemy.Column('description', sqlalchemy.String)
             , sqlalchemy.Column('is_system', sqlalchemy.Boolean)
         )
