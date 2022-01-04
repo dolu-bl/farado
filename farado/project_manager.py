@@ -11,7 +11,7 @@ from farado.items.workflow import Workflow
 from farado.items.state import State
 from farado.items.edge import Edge
 from farado.items.issue_kind import IssueKind
-from farado.items.field_kind import FieldKind
+from farado.items.field_kind import FieldKind, ValueTypes
 from farado.items.user_role import UserRole
 from farado.general_manager_holder import gm_holder
 
@@ -81,6 +81,8 @@ class ProjectManager:
     def field_kind(self, field_kind_id):
         return gm_holder.meta_item_manager.item_by_id(FieldKind, field_kind_id)
 
+    def value_types(self):
+        return ValueTypes
 
     def user_by_id(self, id):
         if not id:

@@ -74,7 +74,7 @@
               <th scope="col" style="width: 1%">Id</th>
               <th scope="col">Caption</th>
               <th scope="col">Description</th>
-              <th scope="col">Value kind</th>
+              <th scope="col">Value type</th>
               <th scope="col">Is system</th>
               <th scope="col" style="width: 1%"></th>
             </tr>
@@ -100,8 +100,26 @@
                       class="form-control form-select-sm"
                       rows="1">{{ field_kind.description }}</textarea>
                   </td>
-                  <td>TODO</td>
-                  <td>TODO</td>
+                  <td>
+                    <!-- FieldKind.value_type -->
+                    <select
+                      class="form-select form-select-sm"
+                      name="target_field_kind_value_type">
+                        {% for value_type in project_manager.value_types() %}
+                          <option
+                            value="{{ value_type | int }}"
+                            {% if value_type | int == field_kind.value_type %}selected{% endif %}>
+                              {{ value_type | string }}
+                          </option>
+                        {% endfor %}
+                    </select>
+                  </td>
+                  <td>
+                    <!-- FieldKind.is_system -->
+                    {{ macros.switch(
+                      'target_field_kind_is_system',
+                      field_kind.is_system ) }}
+                  </td>
                   <td>
                     <div style="white-space: nowrap">
                       <input type="hidden" name="target_field_kind_id" value="{{ field_kind.id }}">
