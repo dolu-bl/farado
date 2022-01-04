@@ -91,8 +91,16 @@
                     <option value="8" {% if 8 == rule.project_rights %}selected{% endif %}>deleter</option>
                   </select>
                 <td>
+                  {{ rule_macros.select(
+                    'rule_issue_kind_id_' + rule.id | string,
+                    project_manager.issue_kinds(),
+                    rule.issue_kind_id ) }}
                 </td>
                 <td>
+                  {{ rule_macros.select(
+                    'rule_workflow_id_' + rule.id | string,
+                    project_manager.workflows(),
+                    rule.workflow_id ) }}
                 </td>
                 <td>
                   <select
