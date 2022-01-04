@@ -1,0 +1,72 @@
+{% extends "base_template.html" %}
+
+
+
+{% block title %}Farado — Issue kinds{% endblock %}
+
+{% block issue_kinds_active %}active{% endblock %}
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">
+    Issue kinds
+    <form action="/issue_kinds/add_issue_kind" method="post">
+      <button class="btn btn-sm btn-dark" type="submit">+</button>
+    </form>
+  </h2>
+
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+
+    <table class="table">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col" style="width: 1%">Id</th>
+          <th scope="col">Caption</th>
+          <th scope="col">Workflow</th>
+          <th scope="col" style="width: 1%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for issue_kind in project_manager.issue_kinds() %}
+        <tr>
+          <th scope="row">{{ issue_kind.id }}</th>
+          <td>
+            <a href="/issue_kinds/issue_kind?target_issue_kind_id={{ issue_kind.id }}" title="Modify issue kind">{{ issue_kind.caption }}</a>
+          </td>
+          <td>
+            {% set workflow = project_manager.workflow(issue_kind.workflow_id) %}
+            {{ workflow.caption if workflow is not none else '—' }}
+          </td>
+          <td>
+            <a href="/issue_kinds/remove_issue_kind?target_issue_kind_id={{ issue_kind.id }}" title="Remove issue kind">
+              <span class="badge bg-danger">x</span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}

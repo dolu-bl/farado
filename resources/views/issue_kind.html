@@ -1,0 +1,130 @@
+{% extends "base_template.html" %}
+{% import "base_macros.html" as macros %}
+
+
+{% block title %}Farado — Issue kind{% endblock %}
+
+{% block issue_kinds_active %}active{% endblock %}
+
+
+{% block styles %}
+  <!--
+    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
+  -->
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">Issue kind</h2>
+
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+    <form class="row g-3" action="/issue_kinds/issue_kind" method="post">
+
+      <!-- IssueKind.id -->
+      <div class="col-12">
+        <label for="inputId" class="form-label">Id</label>
+        <input type="text" name="target_issue_kind_id" class="form-control" id="inputId" value="{{ target_issue_kind.id }}" readonly>
+      </div>
+
+      <!-- IssueKind.caption -->
+      <div class="col-12">
+        <label for="inputCaption" class="form-label">Caption</label>
+        <input type="text" name="target_issue_kind_caption" class="form-control" id="inputCaption" value="{{ target_issue_kind.caption }}" required>
+      </div>
+
+      <!-- IssueKind.workflowId -->
+      <div class="col-12">
+        <label for="textareaDescription" class="form-label">Workflow</label>
+        {{ macros.select(
+          'target_issue_kind_workflow_id',
+          project_manager.workflows(),
+          target_issue_kind.workflow_id ) }}
+      </div>
+
+      <div class="col-12">
+        <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+      </div>
+
+      <div class="row placeholders">
+        <div class="col-12">
+          <hr>
+        </div>
+      </div>
+    </form>
+
+    {% if target_issue_kind %}
+      <!-- States -->
+      <div class="col-12">
+        <h5 class="page-header">
+          States
+          {# FIXME : If you add a new field kind, all issue_kind changes on this page are discarded. #}
+          <a href="/issue_kinds/add_field_kind?target_issue_kind_id={{ target_issue_kind.id }}" class="btn btn-sm btn-dark" type="submit">+</a>
+        </h5>
+
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col" style="width: 1%">Id</th>
+              <th scope="col">Caption</th>
+              <th scope="col">Description</th>
+              <th scope="col">Value kind</th>
+              <th scope="col">Is system</th>
+              <th scope="col" style="width: 1%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for field_kind in target_issue_kind.field_kinds %}
+              <tr id="field_kind_row_{{ field_kind.id }}">
+                <form id="field_kind_form_{{ field_kind.id }}" action="/issue_kinds/save_field_kind" method="post">
+                  <th scope="row">{{ field_kind.id }}</th>
+                  <td>
+                    <!-- FieldKind.caption -->
+                    <input
+                      type="text"
+                      name="target_field_kind_caption"
+                      class="form-control form-select-sm"
+                      value="{{ field_kind.caption }}"
+                      required>
+                  </td>
+                  <td>
+                    <!-- FieldKind.description -->
+                    <textarea
+                      name="target_field_kind_description"
+                      class="form-control form-select-sm"
+                      rows="1">{{ field_kind.description }}</textarea>
+                  </td>
+                  <td>TODO</td>
+                  <td>TODO</td>
+                  <td>
+                    <div style="white-space: nowrap">
+                      <input type="hidden" name="target_field_kind_id" value="{{ field_kind.id }}">
+                      <input type="hidden" name="target_issue_kind_id" value="{{ target_issue_kind.id }}">
+                      <!-- FieldKind.save() -->
+                      <a href="#" onclick="$('#field_kind_form_{{ field_kind.id }}').submit();"><span class="badge bg-primary">v</span></a>
+                      <!-- FieldKind.remove() -->
+                      <a href="/issue_kinds/remove_field_kind?target_issue_kind_id={{ target_issue_kind.id }}&target_field_kind_id={{ field_kind.id }}" title="Remove field kind"><span class="badge bg-danger">x</span></a>
+                    </div>
+                  </td>
+                </form>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  <script>
+  </script>
+{% endblock %}
