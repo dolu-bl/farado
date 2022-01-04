@@ -9,6 +9,7 @@ from farado.ui.users_view import UsersView
 from farado.ui.projects_view import ProjectsView
 from farado.ui.roles_view import RolesView
 from farado.ui.workflows_view import WorkflowsView
+from farado.ui.issue_kinds_view import IssueKindsView
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id, set_current_session_id
 from farado.general_manager_holder import gm_holder
@@ -24,6 +25,7 @@ class WebService(BaseView):
         self.projects_view = ProjectsView()
         self.roles_view = RolesView()
         self.workflows_view = WorkflowsView()
+        self.issue_kinds_view = IssueKindsView()
 
 
 
@@ -82,6 +84,7 @@ class WebService(BaseView):
         )
 
 
+
     def run(self):
         # HACK: switching off date time output for cherrypy log
         cherrypy._cplogging.LogManager.time = lambda self : "cherrypy"
@@ -91,4 +94,5 @@ class WebService(BaseView):
         cherrypy.tree.mount(self.projects_view, '/projects', application_config)
         cherrypy.tree.mount(self.roles_view, '/roles', application_config)
         cherrypy.tree.mount(self.workflows_view, '/workflows', application_config)
+        cherrypy.tree.mount(self.issue_kinds_view, '/issue_kinds', application_config)
         cherrypy.quickstart(self, '/', application_config)
