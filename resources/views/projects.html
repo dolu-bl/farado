@@ -8,9 +8,8 @@
 
 
 {% block styles %}
-  <!--
-    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
-  -->
+  <link href="/static/css/datatables.min.css" rel="stylesheet" type="text/css" />
+  <link href="/static/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 
@@ -33,31 +32,14 @@
 
   <div class="row placeholders">
 
-    <table class="table">
-      <thead class="table-dark">
+    <table class="table" id="projects_table">
+      <thead>
         <tr>
           <th scope="col" style="width: 1%">Id</th>
           <th scope="col">Caption</th>
           <th scope="col" style="width: 1%"></th>
         </tr>
       </thead>
-      <tbody>
-        {% for project in project_manager.projects() %}
-        <tr>
-          <th scope="row">{{ project.id }}</th>
-          <td>
-            <a href="/projects/project?target_project_id={{ project.id }}" title="Modify project">{{ project.caption }}</a>
-          </td>
-          <td>
-            {% if restriction.is_delete_enabled %}
-            <a href="/projects/remove_project?target_project_id={{ project.id }}" title="Remove project">
-              <span class="badge bg-danger">x</span>
-            </a>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
     </table>
 
   </div>
@@ -66,6 +48,47 @@
 
 
 {% block scripts %}
-  <script>
-  </script>
+<script src="/static/js/datatables.min.js"></script>
+<script src="/static/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#projects_table').DataTable({
+    "processing": true,
+    "serverSide": true,
+    "ajax": "projects_data",
+    "searching": false,
+    "ordering": false,
+    "columns": [
+      {
+          data: 'id'
+      },
+      {
+          data: 'caption',
+          render: function(data, type, row) {
+            if (type !== 'display') {
+              return data;
+            }
+            if (data === 'false') {
+              return '';
+            }
+            return '<a href="/projects/project?target_project_id=' + row.id + '" title="Modify project">' + data + '</a>';
+          }
+      },
+      {
+          data: 'management',
+          render: function(data, type, row) {
+            if (type !== 'display') {
+              return data;
+            }
+            if (!data) {
+              return '';
+            }
+            return '<a href="/projects/remove_project?target_project_id=' + row.id + '" title="Remove project"><span class="badge bg-danger">x</span></a>';
+          }
+      }
+    ]
+  });
+});
+</script>
 {% endblock %}

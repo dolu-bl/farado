@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+import json
 
 from farado.logger import dlog
 from farado.ui.renderer import view_renderer
@@ -10,7 +11,7 @@ from farado.general_manager_holder import gm_holder
 from farado.items.project import Project
 from farado.ui.operation_result import OperationResult
 from farado.permission_manager import PermissionFlag
-from farado.ui.base_view import BaseView, UiUserRestrictions
+from farado.ui.base_view import BaseView, UiUserRestrictions, DataTableArgs
 
 
 
@@ -33,6 +34,37 @@ class ProjectsView(BaseView):
                 is_delete_enabled=bool(PermissionFlag.deleter <= rights),
                 )
             )
+
+    @cherrypy.expose
+    def projects_data(self, **args):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        rights = self.project_rights(user.id)
+        table_args = DataTableArgs(args)
+
+        projects_count = gm_holder.meta_item_manager.items_count(Project)
+        projects = gm_holder.meta_item_manager.ordered_items(
+            Project,
+            Project.id,
+            table_args.start,
+            table_args.start + table_args.length)
+        data = []
+        for project in projects:
+            data.append({
+                'id': project.id,
+                'caption': project.caption,
+                'management': bool(PermissionFlag.deleter <= rights)
+                })
+
+        result = {
+            "draw": table_args.draw,
+            "recordsTotal": projects_count,
+            "recordsFiltered": projects_count,
+            "data": data,
+        }
+        return json.dumps(result, indent=2)
 
 
 

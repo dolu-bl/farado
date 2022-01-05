@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import json
+
 from farado.general_manager_holder import gm_holder
 
 
@@ -20,3 +22,26 @@ class BaseView:
         # aliases
         self.project_rights = gm_holder.permission_manager.project_rights
         self.is_admin = gm_holder.permission_manager.check_is_admin
+
+class DataTableArgs:
+    def __init__(self, args) -> None:
+        self._args = args
+
+        self.draw = 1
+        if 'draw' in args:
+            self.draw = int(args['draw'])
+
+        self.start = 0
+        if 'start' in args:
+            self.start = int(args['start'])
+
+        self.length = 10
+        if 'length' in args:
+            self.length = int(args['length'])
+
+        self.search_value = ''
+        if 'search[value]' in args:
+            self.search_value = str(args['search[value]'])
+
+    def __repr__(self):
+        return json.dumps(self._args, indent=2)
