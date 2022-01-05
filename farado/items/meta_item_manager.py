@@ -273,6 +273,24 @@ class MetaItemManager:
                 self.session.expunge_all()
                 return result
 
+    def ordered_items(self, item_type, order_by, slice_start=None, slice_stop=None):
+        with self.mutex:
+            with self.session.begin():
+                statement = sqlalchemy.select(item_type).order_by(order_by)
+                if not slice_start is None:
+                    statement = statement.slice(slice_start, slice_stop)
+                result = self.session.execute(statement).scalars().all()
+                self.session.expunge_all()
+                return result
+
+    def items_count(self, item_type):
+        with self.mutex:
+            with self.session.begin():
+                result = self.session.query(sqlalchemy.func.count(item_type.id)).first()
+                if not result:
+                    return 0
+                return result[0]
+
     def item_by_id(self, item_type, id):
         with self.mutex:
             with self.session.begin():
