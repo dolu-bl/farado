@@ -65,7 +65,8 @@ class PermissionManager:
             for rule in role.rules:
                 if rule.project_id and not(rule.project_id == project_id):
                     continue
-                result |= rule.project_rights
+                if rule.project_rights:
+                    result |= rule.project_rights
         return result
 
     def check_is_admin(self, user_id):
