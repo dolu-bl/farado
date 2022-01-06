@@ -1,7 +1,7 @@
 # Farado's specific things
 farado.log
 farado.log.*
-database.sqlite
+*.sqlite
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
