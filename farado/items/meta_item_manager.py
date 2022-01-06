@@ -273,12 +273,19 @@ class MetaItemManager:
                 self.session.expunge_all()
                 return result
 
-    def ordered_items(self, item_type, order_by, slice_start=None, slice_stop=None):
+    def ordered_items(self, item_type, order_by, is_order_ascending=True, slice_start=None, slice_stop=None):
         with self.mutex:
             with self.session.begin():
-                statement = sqlalchemy.select(item_type).order_by(order_by)
+                statement = sqlalchemy.select(item_type)
+
+                if is_order_ascending:
+                    statement = statement.order_by(order_by)
+                else:
+                    statement = statement.order_by(sqlalchemy.desc(order_by))
+
                 if not slice_start is None:
                     statement = statement.slice(slice_start, slice_stop)
+
                 result = self.session.execute(statement).scalars().all()
                 self.session.expunge_all()
                 return result

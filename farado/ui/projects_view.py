@@ -46,10 +46,11 @@ class ProjectsView(BaseView):
 
         projects_count = gm_holder.meta_item_manager.items_count(Project)
         projects = gm_holder.meta_item_manager.ordered_items(
-            Project,
-            Project.id,
-            table_args.start,
-            table_args.start + table_args.length)
+            item_type = Project,
+            order_by = "caption" if 1 == table_args.order_column else "id",
+            is_order_ascending = table_args.is_order_ascending,
+            slice_start = table_args.start,
+            slice_stop = table_args.start + table_args.length)
         data = []
         for project in projects:
             data.append({

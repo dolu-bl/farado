@@ -43,5 +43,13 @@ class DataTableArgs:
         if 'search[value]' in args:
             self.search_value = str(args['search[value]'])
 
+        self.order_column = 0
+        if 'order[0][column]' in args:
+            self.order_column = int(args['order[0][column]'])
+
+        self.is_order_ascending = True
+        if 'order[0][dir]' in args:
+            self.is_order_ascending = bool(args['order[0][dir]'] == 'asc')
+
     def __repr__(self):
         return json.dumps(self._args, indent=2)
