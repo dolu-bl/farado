@@ -50,7 +50,9 @@ class ProjectsView(BaseView):
             order_by = "caption" if 1 == table_args.order_column else "id",
             is_order_ascending = table_args.is_order_ascending,
             slice_start = table_args.start,
-            slice_stop = table_args.start + table_args.length)
+            slice_stop = table_args.start + table_args.length,
+            search_value = table_args.search_value,
+            search_fields = ['caption', 'id'])
         data = []
         for project in projects:
             data.append({

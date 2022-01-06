@@ -273,7 +273,47 @@ class MetaItemManager:
                 self.session.expunge_all()
                 return result
 
-    def ordered_items(self, item_type, order_by, is_order_ascending=True, slice_start=None, slice_stop=None):
+    def ordered_items(
+            self,
+            item_type,
+            order_by,
+            is_order_ascending=True,
+            slice_start=None,
+            slice_stop=None,
+            search_value=None,
+            search_fields=[]):
+        '''Get a sorted list of objects from the database as a fragment
+
+        The fields of the objects satisfy the search conditions
+
+        Parameters
+        ----------
+        item_type : python class
+            Item type specifying in which table to search
+
+        order_by : str
+            Name of the table column by which sorting will be performed
+
+        is_order_ascending : bool
+            Sort order direction of the table by the specified column
+
+        slice_start : int
+            Start offset from the beginning of the data to form the target fragment
+
+        slice_stop : int
+            Stop offset from the beginning of the data to form the target fragment
+
+        search_value : str
+            Searching value string
+
+        search_fields : list of str
+            List of table columns in which searching will be performed
+
+        Returns
+        -------
+        list
+            List of objects received from the database
+        '''
         with self.mutex:
             with self.session.begin():
                 statement = sqlalchemy.select(item_type)
@@ -282,6 +322,18 @@ class MetaItemManager:
                     statement = statement.order_by(order_by)
                 else:
                     statement = statement.order_by(sqlalchemy.desc(order_by))
+
+                if search_value:
+                    is_filter_ready = False
+                    for field in search_fields:
+                        new_filter = sqlalchemy.sql.column(field).contains(search_value)
+                        if not is_filter_ready:
+                            filter = new_filter
+                            is_filter_ready = True
+                        else:
+                            filter = sqlalchemy.or_(filter, new_filter)
+                    if is_filter_ready:
+                        statement = statement.filter(filter)
 
                 if not slice_start is None:
                     statement = statement.slice(slice_start, slice_stop)
