@@ -32,7 +32,7 @@
 
   <div class="row placeholders">
 
-    <table class="table" id="projects_table">
+    <table class="table table-striped table-sm table-bordered" style="width:100%" id="projects_table">
       <thead>
         <tr>
           <th scope="col" style="width: 1%">Id</th>
@@ -40,6 +40,13 @@
           <th scope="col" style="width: 1%"></th>
         </tr>
       </thead>
+      <tfoot>
+        <tr>
+          <th>Id</th>
+          <th>Caption</th>
+          <th></th>
+        </tr>
+      </tfoot>
     </table>
 
   </div>
@@ -49,46 +56,61 @@
 
 {% block scripts %}
 <script src="/static/js/datatables.min.js"></script>
+<script src="/static/js/jquery.dataTables.min.js"></script>
 <script src="/static/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
+// Projects table initialization
 $(document).ready(function() {
   $('#projects_table').DataTable({
     "processing": true,
     "serverSide": true,
-    "ajax": "projects_data",
-    "searching": false,
-    "ordering": false,
+    "ajax": {
+      "url": "projects_data",
+      "type": "POST"
+    },
+    "searching": true,
+    "ordering": true,
+    "pageLength": 20,
+    "lengthChange": false,
+    "order": [[ 1, "asc" ]],
     "columns": [
       {
-          data: 'id'
+        data: 'id',
+        orderable: false
       },
       {
-          data: 'caption',
-          render: function(data, type, row) {
-            if (type !== 'display') {
-              return data;
-            }
-            if (data === 'false') {
-              return '';
-            }
-            return '<a href="/projects/project?target_project_id=' + row.id + '" title="Modify project">' + data + '</a>';
-          }
+        data: 'caption',
+        render: render_caption,
+        orderable: true
       },
       {
-          data: 'management',
-          render: function(data, type, row) {
-            if (type !== 'display') {
-              return data;
-            }
-            if (!data) {
-              return '';
-            }
-            return '<a href="/projects/remove_project?target_project_id=' + row.id + '" title="Remove project"><span class="badge bg-danger">x</span></a>';
-          }
+        data: 'management',
+        render: render_management,
+        orderable: false
       }
     ]
   });
 });
+
+function render_caption(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (data === 'false') {
+    return '';
+  }
+  return '<a href="/projects/project?target_project_id=' + row.id + '" title="Modify project">' + data + '</a>';
+}
+
+function render_management(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (!data) {
+    return '';
+  }
+  return '<a href="/projects/remove_project?target_project_id=' + row.id + '" title="Remove project"><span class="badge bg-danger">x</span></a>';
+}
 </script>
 {% endblock %}
