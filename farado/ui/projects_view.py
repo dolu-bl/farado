@@ -87,6 +87,8 @@ class ProjectsView(BaseView):
             return view_renderer["403"].render()
 
         target_project = gm_holder.project_manager.project(target_project_id)
+        if not target_project and not target_project_caption:
+            return view_renderer["404"].render()
 
         operation_result = None
         if target_project_caption:
