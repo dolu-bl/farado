@@ -27,16 +27,19 @@
   <div class="row placeholders">
     <form class="row g-3" action="/projects/project" method="post">
 
+      <!-- Project.id -->
       <div class="col-12">
         <label for="inputId" class="form-label">Id</label>
         <input type="text" name="target_project_id" class="form-control" id="inputId" value="{{ target_project.id }}" readonly>
       </div>
 
+      <!-- Project.caption -->
       <div class="col-12">
         <label for="inputCaption" class="form-label">Caption</label>
         <input type="text" name="target_project_caption" class="form-control" id="inputCaption" value="{{ target_project.caption }}" required>
       </div>
 
+      <!-- Project.content -->
       <div class="col-12">
         <label for="contentTab" class="form-label">Content</label>
         <ul class="nav nav-tabs" id="contentTab" role="tablist">
@@ -84,6 +87,7 @@
               <div id="consentViewResult"></div>
           </div>
         </div>
+      </div>
 
       {% if restriction.is_save_enabled %}
         <div class="col-12">
