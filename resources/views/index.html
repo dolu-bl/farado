@@ -87,17 +87,6 @@
   <div class="row">
     <!-- column 1 -->
     <div class="col-sm-6">
-      {% for project in project_manager.projects() %}
-      <p>{{ project.id }}</p>
-      <p>{{ project.caption }}</p>
-      <p>{{ project.content }}</p>
-      <p>
-        {% for issue in project_manager.project_issues(project.id) %}
-        <p>{{ issue.caption }}</p>
-        {% endfor %}
-      </p>
-
-      {% endfor %}
     </div>
     <!-- /column 1 -->
 
