@@ -26,18 +26,64 @@
 
   <div class="row placeholders">
     <form class="row g-3" action="/projects/project" method="post">
+
       <div class="col-12">
         <label for="inputId" class="form-label">Id</label>
         <input type="text" name="target_project_id" class="form-control" id="inputId" value="{{ target_project.id }}" readonly>
       </div>
+
       <div class="col-12">
         <label for="inputCaption" class="form-label">Caption</label>
         <input type="text" name="target_project_caption" class="form-control" id="inputCaption" value="{{ target_project.caption }}" required>
       </div>
+
       <div class="col-12">
-        <label for="textareaContent" class="form-label">Content</label>
-        <textarea name="target_project_content" class="form-control" id="textareaContent" rows="9">{{ target_project.content }}</textarea>
-      </div>
+        <label for="contentTab" class="form-label">Content</label>
+        <ul class="nav nav-tabs" id="contentTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="content-edit-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#content-edit"
+              type="button"
+              role="tab"
+              aria-controls="content-edit"
+              aria-selected="true">Edit</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="content-view-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#content-view"
+              type="button"
+              role="tab"
+              aria-controls="content-view"
+              aria-selected="false">View</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="contentTabContent">
+          <div
+            class="tab-pane fade show active"
+            id="content-edit"
+            role="tabpanel"
+            aria-labelledby="content-edit-tab">
+              <textarea
+                name="target_project_content"
+                class="form-control"
+                id="textareaContent"
+                rows="9"
+                onchange="contentMarkdownToHtml()">{{ target_project.content }}</textarea>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="content-view"
+            role="tabpanel"
+            aria-labelledby="content-view-tab">
+              <div id="consentViewResult"></div>
+          </div>
+        </div>
 
       {% if restriction.is_save_enabled %}
         <div class="col-12">
@@ -52,6 +98,35 @@
 
 
 {% block scripts %}
-  <script>
-  </script>
+<script src="/static/js/showdown.min.js"></script>
+
+<script>
+converter = new showdown.Converter(),
+converter.setOption('tables', true);
+converter.setOption('tasklists', true);
+
+function contentMarkdownToHtml() {
+  $("#consentViewResult").html(
+    converter.makeHtml(
+      $("#textareaContent").val()
+    )
+  );
+}
+
+$(document).ready(function() {
+  var triggerTabList = [].slice.call(document.querySelectorAll('#contentTab a'))
+  triggerTabList.forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
+
+  contentMarkdownToHtml();
+});
+
+
+</script>
 {% endblock %}
