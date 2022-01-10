@@ -25,77 +25,134 @@
   {%- endif %}
 
   <div class="row placeholders">
-    <form class="row g-3" action="/projects/project" method="post">
 
-      <!-- Project.id -->
-      <div class="col-12">
-        <label for="inputId" class="form-label">Id</label>
-        <input type="text" name="target_project_id" class="form-control" id="inputId" value="{{ target_project.id }}" readonly>
-      </div>
+    <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+            class="nav-link active"
+            id="pills-view-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-view"
+            type="button"
+            role="tab"
+            aria-controls="pills-view"
+            aria-selected="true">View</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+            class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
+            id="pills-edit-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-edit"
+            type="button"
+            role="tab"
+            aria-controls="pills-edit"
+            {% if not restriction.is_save_enabled %}disabled{% endif %}
+            aria-selected="false">Edit</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="pillsTabContent">
+      <!-- VIEW -->
+      <div
+          class="tab-pane fade show active"
+          id="pills-view"
+          role="tabpanel"
+          aria-labelledby="pills-view-tab">
 
-      <!-- Project.caption -->
-      <div class="col-12">
-        <label for="inputCaption" class="form-label">Caption</label>
-        <input type="text" name="target_project_caption" class="form-control" id="inputCaption" value="{{ target_project.caption }}" required>
-      </div>
-
-      <!-- Project.content -->
-      <div class="col-12">
-        <label for="contentTab" class="form-label">Content</label>
-        <ul class="nav nav-tabs" id="contentTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link active"
-              id="content-edit-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#content-edit"
-              type="button"
-              role="tab"
-              aria-controls="content-edit"
-              aria-selected="true">Edit</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button
-              class="nav-link"
-              id="content-view-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#content-view"
-              type="button"
-              role="tab"
-              aria-controls="content-view"
-              aria-selected="false">View</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="contentTabContent">
-          <div
-            class="tab-pane fade show active"
-            id="content-edit"
-            role="tabpanel"
-            aria-labelledby="content-edit-tab">
-              <textarea
-                name="target_project_content"
-                class="form-control"
-                id="textareaContent"
-                rows="9"
-                onchange="contentMarkdownToHtml()">{{ target_project.content }}</textarea>
-          </div>
-          <div
-            class="tab-pane fade"
-            id="content-view"
-            role="tabpanel"
-            aria-labelledby="content-view-tab">
-              <div id="consentViewResult"></div>
-          </div>
-        </div>
-      </div>
-
-      {% if restriction.is_save_enabled %}
         <div class="col-12">
-          <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+          Id: {{ target_project.id }}
         </div>
-      {% endif %}
 
-    </form>
+        <div class="col-12">
+          Caption: {{ target_project.caption }}
+        </div>
+
+        <div class="col-12">
+          Content: <div id="contentView"></div>
+        </div>
+      </div>
+
+      <!-- EDIT -->
+      <div
+          class="tab-pane fade"
+          id="pills-edit"
+          role="tabpanel"
+          aria-labelledby="pills-edit-tab">
+
+        <form class="row g-3" action="/projects/project" method="post">
+
+          <!-- Project.id -->
+          <div class="col-12">
+            <label for="inputId" class="form-label">Id</label>
+            <input type="text" name="target_project_id" class="form-control" id="inputId" value="{{ target_project.id }}" readonly>
+          </div>
+
+          <!-- Project.caption -->
+          <div class="col-12">
+            <label for="inputCaption" class="form-label">Caption</label>
+            <input type="text" name="target_project_caption" class="form-control" id="inputCaption" value="{{ target_project.caption }}" required>
+          </div>
+
+          <!-- Project.content -->
+          <div class="col-12">
+            <label for="contentTab" class="form-label">Content</label>
+            <ul class="nav nav-tabs" id="contentTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="content-edit-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#content-edit"
+                  type="button"
+                  role="tab"
+                  aria-controls="content-edit"
+                  aria-selected="true">Edit</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="content-view-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#content-view"
+                  type="button"
+                  role="tab"
+                  aria-controls="content-view"
+                  aria-selected="false">View</button>
+              </li>
+            </ul>
+            <div class="tab-content" id="contentTabContent">
+              <div
+                class="tab-pane fade show active"
+                id="content-edit"
+                role="tabpanel"
+                aria-labelledby="content-edit-tab">
+                  <textarea
+                    name="target_project_content"
+                    class="form-control"
+                    id="textareaContent"
+                    rows="9"
+                    onchange="contentMarkdownToHtml('contentViewResult')">{{ target_project.content }}</textarea>
+              </div>
+              <div
+                class="tab-pane fade"
+                id="content-view"
+                role="tabpanel"
+                aria-labelledby="content-view-tab">
+                  <div id="contentViewResult"></div>
+              </div>
+            </div>
+          </div>
+
+          {% if restriction.is_save_enabled %}
+            <div class="col-12">
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+            </div>
+          {% endif %}
+
+        </form>
+      </div>
+    </div>
+
   </div>
 {% endblock %}
 
@@ -109,8 +166,8 @@ converter = new showdown.Converter(),
 converter.setOption('tables', true);
 converter.setOption('tasklists', true);
 
-function contentMarkdownToHtml() {
-  $("#consentViewResult").html(
+function contentMarkdownToHtml(id) {
+  $("#" + id).html(
     converter.makeHtml(
       $("#textareaContent").val()
     )
@@ -118,8 +175,7 @@ function contentMarkdownToHtml() {
 }
 
 $(document).ready(function() {
-  var triggerTabList = [].slice.call(document.querySelectorAll('#contentTab a'))
-  triggerTabList.forEach(function (triggerEl) {
+  [].slice.call(document.querySelectorAll('#pillsTab a')).forEach(function (triggerEl) {
     var tabTrigger = new bootstrap.Tab(triggerEl);
 
     triggerEl.addEventListener('click', function (event) {
@@ -128,7 +184,17 @@ $(document).ready(function() {
     });
   });
 
-  contentMarkdownToHtml();
+  [].slice.call(document.querySelectorAll('#contentTab a')).forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
+
+  contentMarkdownToHtml('contentView');
+  contentMarkdownToHtml('contentViewResult');
 });
 
 
