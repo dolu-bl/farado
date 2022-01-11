@@ -14,6 +14,15 @@
 {% endblock %}
 
 
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/roles">Roles</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Role {{ target_role.id }}</li>
+  </ol>
+{% endblock %}
+
+
 {% block content %}
 
   <h2 class="page-header">Role</h2>
