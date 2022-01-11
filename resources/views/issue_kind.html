@@ -14,6 +14,15 @@
 {% endblock %}
 
 
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/issue_kinds">Issue kinds</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Issue kind {{ target_issue_kind.id }}</li>
+  </ol>
+{% endblock %}
+
+
 {% block content %}
 
   <h2 class="page-header">Issue kind</h2>
