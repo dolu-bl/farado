@@ -16,6 +16,7 @@ from farado.items.field import Field
 from farado.items.field_kind import FieldKind
 
 from farado.items.meta_item_manager import MetaItemManager
+from farado.project_manager import ProjectManager
 from farado.config import farado_config
 
 
@@ -46,14 +47,13 @@ if __name__ == '__main__':
     issue_kind = IssueKind(
         "Задача",
     )
-    issue_kind.field_kinds.append(
-        FieldKind(
-            "Developer",
-            "User",
-            "Issue developer",
-            issue_kind.id,
-        )
+    field_kind = FieldKind(
+        "Developer",
+        "User",
+        "Issue developer",
+        issue_kind.id,
     )
+    issue_kind.field_kinds.append(field_kind)
     manager.add_item(issue_kind)
 
     # ====================== #
@@ -61,12 +61,17 @@ if __name__ == '__main__':
         "Project caption 1",
         "Project content 1"
     )
-    project.issues.append(
-        Issue(
-            "Issue caption 1",
-            "Issue content 1"
-        )
-    )
+    issue1 = manager.create_issue(issue_kind.id)
+    issue1.caption = "Issue 1"
+    issue1.content = "Issue content 1"
+    project.issues.append(issue1)
+    manager.add_item(project)
+
+    issue2 = manager.create_issue(issue_kind.id)
+    issue2.caption = "Issue 2"
+    issue2.content = "Issue content 2"
+    issue2.parent_id = issue1.id
+    project.issues.append(issue2)
     manager.add_item(project)
 
     # ====================== #

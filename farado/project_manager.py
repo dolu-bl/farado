@@ -4,6 +4,7 @@
 from farado.logger import dlog
 from farado.items.project import Project
 from farado.items.issue import Issue
+from farado.items.field import Field
 from farado.items.user import User
 from farado.items.role import Role
 from farado.items.rule import Rule
@@ -111,3 +112,14 @@ class ProjectManager:
         gm_holder.meta_item_manager.delete_item_by_id(item_type, item_id)
         if item_type == User:
             self.users = [user for user in self.users if not(user.id == item_id)]
+
+    def create_issue(self, issue_kind_id):
+        issue_kind = self.issue_kind(issue_kind_id)
+        if not issue_kind:
+            return None
+
+        issue = Issue()
+        issue.issue_kind_id = issue_kind.id
+        for field_kind in issue_kind.field_kinds:
+            issue.fields.append(Field(field_kind_id=field_kind.id))
+        return issue

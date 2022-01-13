@@ -3,11 +3,9 @@ import sqlalchemy.orm
 
 import threading
 
-# TODO: from farado.items.field_kind import FieldKind
 from farado.items.field import Field
 from farado.items.field_kind import FieldKind
 from farado.items.file import File
-# TODO: from farado.items.issue_kind import IssueKind
 from farado.items.issue import Issue
 from farado.items.issue_kind import IssueKind
 from farado.items.project import Project
@@ -67,7 +65,7 @@ class MetaItemManager:
         self.issues_table = sqlalchemy.Table('issues'
             , self.metadata
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
-            , sqlalchemy.Column('issuekind_id', sqlalchemy.Integer)
+            , sqlalchemy.Column('issue_kind_id', sqlalchemy.Integer)
             , sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('issues.id'), index=True)
             , sqlalchemy.Column('project_id', sqlalchemy.ForeignKey('projects.id'), index=True)
             , sqlalchemy.Column('caption', sqlalchemy.String)
@@ -86,7 +84,7 @@ class MetaItemManager:
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
             , sqlalchemy.Column('issue_id',
                 sqlalchemy.ForeignKey('issues.id', ondelete="CASCADE"), index=True)
-            , sqlalchemy.Column('fieldkind_id', sqlalchemy.Integer)
+            , sqlalchemy.Column('field_kind_id', sqlalchemy.Integer)
             , sqlalchemy.Column('value', sqlalchemy.String)
         )
 
@@ -382,14 +380,14 @@ class MetaItemManager:
                 statement = sqlalchemy.select(item_type.id)
                 return [id[0] for id in self.session.execute(statement).all()]
 
-    def issues_by_field(self, value, fieldkind_id=None):
+    def issues_by_field(self, value, field_kind_id=None):
         with self.mutex:
             with self.session.begin():
                 query = self.session.query(Issue).join(Field).where(Field.value == value)
-                if not fieldkind_id:
+                if not field_kind_id:
                     result = query.all()
                 else:
-                    result = query.where(Field.fieldkind_id == fieldkind_id).all()
+                    result = query.where(Field.field_kind_id == field_kind_id).all()
                 self.session.expunge_all()
                 return result
 
