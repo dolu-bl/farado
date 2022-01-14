@@ -85,6 +85,13 @@ class ProjectManager:
     def value_types(self):
         return ValueTypes
 
+    def issues(self):
+        return gm_holder.meta_item_manager.items(Issue)
+
+    def issue(self, issue_id):
+        return gm_holder.meta_item_manager.item_by_id(Issue, issue_id)
+
+
     def user_by_id(self, id):
         if not id:
             return None

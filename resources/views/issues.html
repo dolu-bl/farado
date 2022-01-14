@@ -4,7 +4,7 @@
 
 {% block title %}Farado — Issues{% endblock %}
 
-{% block issues_active %}active{% endblock %}
+{% set active_menu = 'issues' %}
 
 
 {% block styles %}
@@ -137,7 +137,7 @@ function render_kind(data, type, row) {
   if (type !== 'display') {
     return data;
   }
-  if (data.size() != 2) {
+  if (data[0] === 'false') {
     return '';
   }
   return data[1];
@@ -147,7 +147,7 @@ function render_parent(data, type, row) {
   if (type !== 'display') {
     return data;
   }
-  if (data.size() != 2) {
+  if (data[0] === 'false') {
     return '';
   }
   return '<a href="/issues/issue/' + data[0] + '" title="Open issue">' + data[1] + '</a>';
@@ -157,7 +157,7 @@ function render_project(data, type, row) {
   if (type !== 'display') {
     return data;
   }
-  if (data.size() != 2) {
+  if (data[0] === 'false') {
     return '';
   }
   return '<a href="/projects/project/' + data[0] + '" title="Open project">' + data[1] + '</a>';
