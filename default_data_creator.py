@@ -17,78 +17,92 @@ from farado.items.field_kind import FieldKind
 
 from farado.items.meta_item_manager import MetaItemManager
 from farado.project_manager import ProjectManager
+from farado.general_manager_holder import gm_holder
+
 from farado.config import farado_config
 
 
+def main():
+    data_creator = DefaultDataCreator()
+    data_creator.create_users()
+    data_creator.create_issues()
+
+class DefaultDataCreator:
+    def __init__(self) -> None:
+        self.meta_item_manager = MetaItemManager(farado_config['database']['connection_string'])
+        self.project_manager = ProjectManager()
+        gm_holder.set_meta_item_manager(self.meta_item_manager)
+        gm_holder.set_project_manager(self.project_manager)
+        self.add_item = self.meta_item_manager.add_item
+
+    def create_users(self):
+        user = User(
+            'admin',
+            'John',
+            'Ivanovich',
+            'Smith',
+            'john.smith@ivanovich.com',
+            password="admin",
+        )
+        self.add_item(user)
+
+        role = Role('Administrator')
+        role.rules.append(Rule(
+                caption='Admin rule',
+                is_admin=True
+        ))
+        self.add_item(role)
+        self.add_item(UserRole(user_id=user.id, role_id=role.id))
+
+    def create_issues(self):
+        issue_kind = IssueKind(
+            "Задача",
+        )
+        field_kind = FieldKind(
+            "Developer",
+            "User",
+            "Issue developer",
+            issue_kind.id,
+        )
+        issue_kind.field_kinds.append(field_kind)
+        self.add_item(issue_kind)
+
+        # ====================== #
+        project = Project(
+            "Project caption 1",
+            "Project content 1"
+        )
+        issue1 = self.project_manager.create_issue(issue_kind.id)
+        issue1.caption = "Issue 1"
+        issue1.content = "Issue content 1"
+        project.issues.append(issue1)
+        self.add_item(project)
+
+        issue2 = self.project_manager.create_issue(issue_kind.id)
+        issue2.caption = "Issue 2"
+        issue2.content = "Issue content 2"
+        issue2.parent_id = issue1.id
+        project.issues.append(issue2)
+        self.add_item(project)
+
+        # ====================== #
+        project2 = Project(
+            "Project caption 2",
+            "Project content 2"
+        )
+        project2.issues.append(
+            Issue(
+                "Issue caption 21",
+                "Issue content 21"
+            )
+        )
+        project2.issues.append(
+            Issue(
+                "Issue caption 22",
+                "Issue content 22"
+            )
+        )
+        self.add_item(project2)
 
 if __name__ == '__main__':
-    manager = MetaItemManager(farado_config['database']['connection_string'])
-
-    # ====================== #
-    user = User(
-        'admin',
-        'John',
-        'Ivanovich',
-        'Smith',
-        'john.smith@ivanovich.com',
-        password="admin",
-    )
-    manager.add_item(user)
-
-    role = Role('Administrator')
-    role.rules.append(Rule(
-            caption='Admin rule',
-            is_admin=True
-    ))
-    manager.add_item(role)
-    manager.add_item(UserRole(user_id=user.id, role_id=role.id))
-
-    # ====================== #
-    issue_kind = IssueKind(
-        "Задача",
-    )
-    field_kind = FieldKind(
-        "Developer",
-        "User",
-        "Issue developer",
-        issue_kind.id,
-    )
-    issue_kind.field_kinds.append(field_kind)
-    manager.add_item(issue_kind)
-
-    # ====================== #
-    project = Project(
-        "Project caption 1",
-        "Project content 1"
-    )
-    issue1 = manager.create_issue(issue_kind.id)
-    issue1.caption = "Issue 1"
-    issue1.content = "Issue content 1"
-    project.issues.append(issue1)
-    manager.add_item(project)
-
-    issue2 = manager.create_issue(issue_kind.id)
-    issue2.caption = "Issue 2"
-    issue2.content = "Issue content 2"
-    issue2.parent_id = issue1.id
-    project.issues.append(issue2)
-    manager.add_item(project)
-
-    # ====================== #
-    project2 = Project(
-        "Project caption 2",
-        "Project content 2"
-    )
-    project2.issues.append(
-        Issue(
-            "Issue caption 21",
-            "Issue content 21"
-        )
-    )
-    project2.issues.append(
-        Issue(
-            "Issue caption 22",
-            "Issue content 22"
-        )
-    )
-    manager.add_item(project2)
+    main()

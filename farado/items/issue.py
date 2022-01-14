@@ -4,8 +4,8 @@
 class Issue():
     def __init__(
             self,
-            caption,
-            content,
+            caption=None,
+            content=None,
             issue_kind_id=None,
             parent_id=None,
             project_id=None):
