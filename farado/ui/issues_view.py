@@ -77,3 +77,103 @@ class IssuesView(BaseView):
         }
         return json.dumps(result, indent=2)
 
+    @cherrypy.expose
+    def issue(
+            self,
+            target_issue_id,
+            target_issue_caption='',
+            target_issue_content='',
+            issue_kind_id=None,
+            **args
+            ):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+        if PermissionFlag.watcher > rights:
+            return view_renderer["403"].render()
+
+        target_issue = gm_holder.project_manager.issue(target_issue_id)
+        if not target_issue and not target_issue_caption:
+            return view_renderer["404"].render()
+
+        operation_result = None
+        if target_issue_caption:
+            if PermissionFlag.editor > rights:
+                return view_renderer["403"].render()
+
+            if not target_issue:
+                if PermissionFlag.creator > rights:
+                    return view_renderer["403"].render()
+                target_issue = gm_holder.project_manager.create_issue(issue_kind_id)
+
+            target_issue.caption = target_issue_caption
+            target_issue.content = target_issue_content
+
+            # Appling fields values
+            for field in target_issue.fields:
+                field_kind_argument = f'field_kind_{field.field_kind_id}'
+                if field_kind_argument in args:
+                    field.value = args[field_kind_argument]
+
+            gm_holder.project_manager.save_item(target_issue)
+            operation_result = OperationResult(caption="Issue saved", kind="success")
+
+        return view_renderer["issue"].render(
+            user=user,
+            target_issue=target_issue,
+            project_manager=gm_holder.project_manager,
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_save_enabled=bool(PermissionFlag.editor <= rights),
+                )
+            )
+
+    @cherrypy.expose
+    def add_issue(self, issue_kind_id):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+        temporary_issue = gm_holder.project_manager.create_issue(issue_kind_id)
+
+        return view_renderer["issue"].render(
+            user=user,
+            target_issue=None,
+            new_issue=temporary_issue,
+            save_result=None,
+            project_manager=gm_holder.project_manager,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
+                )
+            )
+
+    @cherrypy.expose
+    def remove_issue_kind(self, target_issue_id):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+
+        gm_holder.project_manager.remove_item(Issue, target_issue_id)
+        operation_result = OperationResult(caption="Issue removed", kind="success")
+
+        return view_renderer["issues"].render(
+            user=user,
+            project_manager=gm_holder.project_manager,
+            operation_result=operation_result,
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
+                )
+            )

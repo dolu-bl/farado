@@ -26,7 +26,25 @@
   <h2 class="page-header">
     Issues
     {% if restriction.is_create_enabled %}
-      <a href="/issues/add_issue" class="btn btn-sm btn-outline-dark" role="button" aria-pressed="true">+</a>
+      <div class="dropdown">
+        <a
+            class="btn btn-secondary btn-sm dropdown-toggle"
+            href="#"
+            role="button"
+            id="dropdownMenuAddIssue"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">+</a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuAddIssue">
+          {% for issue_kind in project_manager.issue_kinds() %}
+            <a
+                class="dropdown-item"
+                href="/issues/add_issue?issue_kind_id={{ issue_kind.id }}">
+              {{- issue_kind.caption -}}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
     {% endif %}
   </h2>
 
@@ -70,6 +88,7 @@
 
 
 {% block scripts %}
+<script src="/static/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/datatables.min.js"></script>
 <script src="/static/js/jquery.dataTables.min.js"></script>
 <script src="/static/js/dataTables.bootstrap5.min.js"></script>

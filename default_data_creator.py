@@ -13,7 +13,7 @@ from farado.items.issue import Issue
 from farado.items.issue_kind import IssueKind
 
 from farado.items.field import Field
-from farado.items.field_kind import FieldKind
+from farado.items.field_kind import FieldKind, ValueTypes
 
 from farado.items.meta_item_manager import MetaItemManager
 from farado.project_manager import ProjectManager
@@ -58,13 +58,20 @@ class DefaultDataCreator:
         issue_kind = IssueKind(
             "Задача",
         )
-        field_kind = FieldKind(
-            "Developer",
-            "User",
-            "Issue developer",
-            issue_kind.id,
+        issue_kind.field_kinds.append(
+            FieldKind(
+                "Developer",
+                ValueTypes.user_id,
+                "Issue developer"
+            )
         )
-        issue_kind.field_kinds.append(field_kind)
+        issue_kind.field_kinds.append(
+            FieldKind(
+                "Field2",
+                ValueTypes.integer,
+                "Some integer value"
+            )
+        )
         self.add_item(issue_kind)
 
         # ====================== #
