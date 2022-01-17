@@ -25,3 +25,4 @@ view_renderer["issue_kinds"] = template_environment.get_template("issue_kinds.ht
 view_renderer["issue_kind"] = template_environment.get_template("issue_kind.html")
 view_renderer["issues"] = template_environment.get_template("issues.html")
 view_renderer["issue"] = template_environment.get_template("issue.html")
+view_renderer["new_issue"] = template_environment.get_template("new_issue.html")

@@ -1,0 +1,149 @@
+{% extends "base_template.html" %}
+
+
+
+{% block title %}Farado — New issue{% endblock %}
+
+{% set active_menu = 'issues' %}
+
+
+{% block styles %}
+  <!-- styles -->
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/issues">Issues</a></li>
+    <li class="breadcrumb-item active" aria-current="page">New issue</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">New issue</h2>
+
+  <div class="row placeholders">
+    <form class="row g-3" action="/issues/issue" method="post">
+      <input type="hidden" name="issue_kind_id" value="{{ new_issue.issue_kind_id }}">
+
+      <!-- Issue.caption -->
+      <div class="col-12">
+        <label for="inputCaption" class="form-label">Caption</label>
+        <input type="text" name="target_issue_caption" class="form-control" id="inputCaption" value="" required>
+      </div>
+
+      <!-- Issue.content -->
+      <div class="col-12">
+        <label for="contentTab" class="form-label">Content</label>
+        <ul class="nav nav-tabs" id="contentTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link active"
+              id="content-edit-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#content-edit"
+              type="button"
+              role="tab"
+              aria-controls="content-edit"
+              aria-selected="true">Edit</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button
+              class="nav-link"
+              id="content-view-tab"
+              data-bs-toggle="tab"
+              data-bs-target="#content-view"
+              type="button"
+              role="tab"
+              aria-controls="content-view"
+              aria-selected="false">View</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="contentTabContent">
+          <div
+            class="tab-pane fade show active"
+            id="content-edit"
+            role="tabpanel"
+            aria-labelledby="content-edit-tab">
+              <textarea
+                name="target_issue_content"
+                class="form-control"
+                id="textareaContent"
+                rows="9"
+                onchange="contentMarkdownToHtml('contentViewResult')"></textarea>
+          </div>
+          <div
+            class="tab-pane fade"
+            id="content-view"
+            role="tabpanel"
+            aria-labelledby="content-view-tab">
+              <div id="contentViewResult"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Issue.fields -->
+      {% for field in new_issue.fields %}
+        <div class="col-12">
+          {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+          {% if field_kind %}
+            <label
+                for="inputField_{{ field_kind.id }}"
+                class="form-label">{{ field_kind.caption }}</label>
+            <input
+                type="text"
+                name="field_kind_{{ field_kind.id }}"
+                class="form-control"
+                id="inputField_{{ field_kind.id }}"
+                value="">
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <!-- TODO : Issue.files -->
+
+      <div class="col-12">
+        <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+      </div>
+
+    </form>
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<script src="/static/js/showdown.min.js"></script>
+
+<script>
+converter = new showdown.Converter(),
+converter.setOption('tables', true);
+converter.setOption('tasklists', true);
+
+function contentMarkdownToHtml(id) {
+  $("#" + id).html(
+    converter.makeHtml(
+      $("#textareaContent").val()
+    )
+  );
+}
+
+$(document).ready(function() {
+  [].slice.call(document.querySelectorAll('#contentTab a')).forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
+
+  contentMarkdownToHtml('contentViewResult');
+});
+
+
+</script>
+{% endblock %}

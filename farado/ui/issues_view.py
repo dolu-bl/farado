@@ -80,7 +80,7 @@ class IssuesView(BaseView):
     @cherrypy.expose
     def issue(
             self,
-            target_issue_id,
+            target_issue_id=None,
             target_issue_caption='',
             target_issue_content='',
             issue_kind_id=None,
@@ -142,16 +142,13 @@ class IssuesView(BaseView):
         rights = self.project_rights(user.id)
         temporary_issue = gm_holder.project_manager.create_issue(issue_kind_id)
 
-        return view_renderer["issue"].render(
+        return view_renderer["new_issue"].render(
             user=user,
-            target_issue=None,
             new_issue=temporary_issue,
             save_result=None,
             project_manager=gm_holder.project_manager,
             restriction=UiUserRestrictions(
-                is_admin=self.is_admin(user.id),
-                is_create_enabled=bool(PermissionFlag.creator <= rights),
-                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
+                is_admin=self.is_admin(user.id)
                 )
             )
 
