@@ -29,58 +29,82 @@ class ProjectManager:
         return gm_holder.meta_item_manager.items(Project)
 
     def project(self, project_id):
-        return gm_holder.meta_item_manager.item_by_id(Project, project_id)
+        if project_id:
+            return gm_holder.meta_item_manager.item_by_id(Project, project_id)
+        return None
 
     def project_issues(self, project_id):
-        return gm_holder.meta_item_manager.items_by_value(Issue, "project_id", project_id)
+        if project_id:
+            return gm_holder.meta_item_manager.items_by_value(Issue, "project_id", project_id)
+        return None
 
     def roles(self):
         return gm_holder.meta_item_manager.items(Role)
 
     def role(self, role_id):
-        return gm_holder.meta_item_manager.item_by_id(Role, role_id)
+        if role_id:
+            return gm_holder.meta_item_manager.item_by_id(Role, role_id)
+        return None
 
     def rules_by_role(self, role_id):
-        return gm_holder.meta_item_manager.items_by_value(Rule, "role_id", role_id)
+        if role_id:
+            return gm_holder.meta_item_manager.items_by_value(Rule, "role_id", role_id)
+        return None
 
     def rule(self, rule_id):
-        return gm_holder.meta_item_manager.item_by_id(Rule, rule_id)
+        if rule_id:
+            return gm_holder.meta_item_manager.item_by_id(Rule, rule_id)
+        return None
 
     def user_roles_by_user(self, user_id):
-        return gm_holder.meta_item_manager.items_by_value(UserRole, "user_id", user_id)
+        if user_id:
+            return gm_holder.meta_item_manager.items_by_value(UserRole, "user_id", user_id)
+        return None
 
     def roles_by_user(self, user_id):
-        return gm_holder.meta_item_manager.roles_by_user(user_id)
+        if user_id:
+            return gm_holder.meta_item_manager.roles_by_user(user_id)
+        return None
 
     def workflows(self):
         return gm_holder.meta_item_manager.items(Workflow)
 
     def workflow(self, workflow_id):
-        return gm_holder.meta_item_manager.item_by_id(Workflow, workflow_id)
+        if workflow_id:
+            return gm_holder.meta_item_manager.item_by_id(Workflow, workflow_id)
+        return None
 
     def states(self):
         return gm_holder.meta_item_manager.items(State)
 
     def state(self, state_id):
-        return gm_holder.meta_item_manager.item_by_id(State, state_id)
+        if state_id:
+            return gm_holder.meta_item_manager.item_by_id(State, state_id)
+        return None
 
     def edges(self):
         return gm_holder.meta_item_manager.items(Edge)
 
     def edge(self, edge_id):
-        return gm_holder.meta_item_manager.item_by_id(Edge, edge_id)
+        if edge_id:
+            return gm_holder.meta_item_manager.item_by_id(Edge, edge_id)
+        return None
 
     def issue_kinds(self):
         return gm_holder.meta_item_manager.items(IssueKind)
 
     def issue_kind(self, issue_kind_id):
-        return gm_holder.meta_item_manager.item_by_id(IssueKind, issue_kind_id)
+        if issue_kind_id:
+            return gm_holder.meta_item_manager.item_by_id(IssueKind, issue_kind_id)
+        return None
 
     def field_kinds(self):
         return gm_holder.meta_item_manager.items(FieldKind)
 
     def field_kind(self, field_kind_id):
-        return gm_holder.meta_item_manager.item_by_id(FieldKind, field_kind_id)
+        if field_kind_id:
+            return gm_holder.meta_item_manager.item_by_id(FieldKind, field_kind_id)
+        return None
 
     def value_types(self):
         return ValueTypes
@@ -89,7 +113,9 @@ class ProjectManager:
         return gm_holder.meta_item_manager.items(Issue)
 
     def issue(self, issue_id):
-        return gm_holder.meta_item_manager.item_by_id(Issue, issue_id)
+        if issue_id:
+            return gm_holder.meta_item_manager.item_by_id(Issue, issue_id)
+        return None
 
 
     def user_by_id(self, id):
@@ -102,6 +128,8 @@ class ProjectManager:
         return None
 
     def user_by_login(self, login):
+        if not login:
+            return None
         for user in self.users:
             if login == user.login:
                 return user
