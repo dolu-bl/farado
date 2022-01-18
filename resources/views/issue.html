@@ -16,14 +16,25 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
     <li class="breadcrumb-item"><a href="/issues">Issues</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Issue {{ target_issue.id }}</li>
+
+    {% for parent_issue in project_manager.parent_issues(target_issue.parent_id) | reverse %}
+      <li class="breadcrumb-item">
+        <a href="/issues/issue/{{ parent_issue.id }}">
+          #{{ parent_issue.id }} {{ parent_issue.caption }}
+        </a>
+      </li>
+    {% endfor %}
+
+    <li class="breadcrumb-item active" aria-current="page">
+      #{{ target_issue.id }} {{ target_issue.caption }}
+    </li>
   </ol>
 {% endblock %}
 
 
 {% block content %}
 
-  <h2 class="page-header">Issue</h2>
+  <h2 class="page-header">#{{ target_issue.id }} {{ target_issue.caption }}</h2>
 
   {% if operation_result -%}
     <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
@@ -66,20 +77,12 @@
           role="tabpanel"
           aria-labelledby="pills-view-tab">
 
-        <!-- Issue.id -->
-        <div class="col-12">
-          Id: {{ target_issue.id }}
-        </div>
-
-        <!-- Issue.caption -->
-        <div class="col-12">
-          Caption: {{ target_issue.caption }}
-        </div>
-
         <!-- Issue.content -->
         <div class="col-12">
-          Content: <div id="contentView"></div>
+          <div id="contentView"></div>
         </div>
+
+        <hr/>
 
         <!-- Issue.fields -->
         {% for field in target_issue.fields %}
@@ -103,12 +106,7 @@
           aria-labelledby="pills-edit-tab">
 
         <form class="row g-3" action="/issues/issue" method="post">
-
-          <!-- Issue.id -->
-          <div class="col-12">
-            <label for="inputId" class="form-label">Id</label>
-            <input type="text" name="target_issue_id" class="form-control" id="inputId" value="{{ target_issue.id }}" readonly>
-          </div>
+          <input type="hidden" name="target_issue_id" value="{{ target_issue.id }}">
 
           <!-- Issue.caption -->
           <div class="col-12">
@@ -165,7 +163,9 @@
               </div>
             </div>
           </div>
-          
+
+          <hr/>
+
           <!-- Issue.fields -->
           {% for field in target_issue.fields %}
             <div class="col-12">
@@ -188,43 +188,47 @@
 
           {% if restriction.is_save_enabled %}
             <div class="col-12">
-              <div class="btn-group" role="group" aria-label="Manage current issue">
-                <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-                <a  href="/issues/remove_issue?target_issue_id='{{ target_issue.id }}'"
-                    title="Remove issue"
-                    class="btn btn-danger"
-                    role="button"
-                    aria-pressed="true">Remove</a>
-              </div>
-              <div class="btn-group" role="group" aria-label="More issue modifications">
-                {% if restriction.is_create_enabled %}
-                  <button
-                      class="btn btn-outline-dark dropdown-toggle"
-                      type="button"
-                      id="dropdownMenuAddIssue"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false">New sub issue</button>
-                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuAddIssue">
-                    {% for issue_kind in project_manager.issue_kinds() %}
-                    <li>
-                      <a  class="dropdown-item"
-                          href="/issues/add_issue?issue_kind_id={{ issue_kind.id -}}
-                            &parent_id={{ target_issue.id -}}
-                            &project_id={{ target_issue.project_id }}">
-                        {{- issue_kind.caption -}}
-                      </a>
-                    </li>
-                  {% endfor %}
-                  </ul>
-                {% endif %}
-              </div>
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+              <a  href="/issues/remove_issue?target_issue_id='{{ target_issue.id }}'"
+                  title="Remove issue"
+                  class="btn btn-danger"
+                  role="button"
+                  aria-pressed="true">Remove</a>
             </div>
           {% endif %}
 
         </form>
       </div>
-    </div>
 
+      <hr/>
+
+      <!-- Additional issue modification tools -->
+      <div class="col-12">
+        <div class="btn-group" role="group" aria-label="Additional issue modification tools">
+          {% if restriction.is_create_enabled %}
+            <button
+                class="btn btn-outline-dark dropdown-toggle"
+                type="button"
+                id="dropdownMenuAddIssue"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">New sub issue</button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuAddIssue">
+              {% for issue_kind in project_manager.issue_kinds() %}
+              <li>
+                <a  class="dropdown-item"
+                    href="/issues/add_issue?issue_kind_id={{ issue_kind.id -}}
+                      &parent_id={{ target_issue.id -}}
+                      &project_id={{ target_issue.project_id }}">
+                  {{- issue_kind.caption -}}
+                </a>
+              </li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
   </div>
 {% endblock %}
 
