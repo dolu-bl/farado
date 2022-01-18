@@ -1,0 +1,337 @@
+{% extends "base_template.html" %}
+
+
+
+{% block title %}Farado — Issue{% endblock %}
+
+{% set active_menu = 'issues' %}
+
+
+{% block styles %}
+  <link href="/static/css/datatables.min.css" rel="stylesheet" type="text/css" />
+  <link href="/static/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/issues">Issues</a></li>
+
+    {% for parent_issue in project_manager.parent_issues(target_issue.parent_id) | reverse %}
+      <li class="breadcrumb-item">
+        <a href="/issues/issue/{{ parent_issue.id }}">
+          #{{ parent_issue.id }} {{ parent_issue.caption }}
+        </a>
+      </li>
+    {% endfor %}
+
+    <li class="breadcrumb-item active" aria-current="page">
+      #{{ target_issue.id }} {{ target_issue.caption }}
+    </li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">#{{ target_issue.id }} {{ target_issue.caption }}</h2>
+
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+
+    <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button
+            class="nav-link active"
+            id="pills-view-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-view"
+            type="button"
+            role="tab"
+            aria-controls="pills-view"
+            aria-selected="true">View</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+            class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
+            id="pills-edit-tab"
+            data-bs-toggle="pill"
+            data-bs-target="#pills-edit"
+            type="button"
+            role="tab"
+            aria-controls="pills-edit"
+            {% if not restriction.is_save_enabled %}disabled{% endif %}
+            aria-selected="false">Edit</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="pillsTabContent">
+      <!-- VIEW -->
+      <div
+          class="tab-pane fade show active"
+          id="pills-view"
+          role="tabpanel"
+          aria-labelledby="pills-view-tab">
+
+        <!-- Issue.content -->
+        <div class="col-12">
+          <div id="contentView"></div>
+        </div>
+
+        <hr/>
+
+        <!-- Issue.fields -->
+        {% for field in target_issue.fields %}
+          <div class="col-12">
+            {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+            {{- field_kind.caption if field_kind is not none else '—' -}}
+            :
+            {{ field.value }}
+          </div>
+        {% endfor %}
+
+        <!-- TODO : Issue.files -->
+
+      </div>
+
+      <!-- EDIT -->
+      <div
+          class="tab-pane fade"
+          id="pills-edit"
+          role="tabpanel"
+          aria-labelledby="pills-edit-tab">
+
+        <form class="row g-3" action="/issues/issue" method="post">
+          <input type="hidden" name="target_issue_id" value="{{ target_issue.id }}">
+
+          <!-- Issue.caption -->
+          <div class="col-12">
+            <label for="inputCaption" class="form-label">Caption</label>
+            <input type="text" name="target_issue_caption" class="form-control" id="inputCaption" value="{{ target_issue.caption }}" required>
+          </div>
+
+          <!-- Issue.content -->
+          <div class="col-12">
+            <label for="contentTab" class="form-label">Content</label>
+            <ul class="nav nav-tabs" id="contentTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link active"
+                  id="content-edit-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#content-edit"
+                  type="button"
+                  role="tab"
+                  aria-controls="content-edit"
+                  aria-selected="true">Edit</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button
+                  class="nav-link"
+                  id="content-view-tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#content-view"
+                  type="button"
+                  role="tab"
+                  aria-controls="content-view"
+                  aria-selected="false">View</button>
+              </li>
+            </ul>
+            <div class="tab-content" id="contentTabContent">
+              <div
+                class="tab-pane fade show active"
+                id="content-edit"
+                role="tabpanel"
+                aria-labelledby="content-edit-tab">
+                  <textarea
+                    name="target_issue_content"
+                    class="form-control"
+                    id="textareaContent"
+                    rows="9"
+                    onchange="contentMarkdownToHtml('contentViewResult')">{{ target_issue.content }}</textarea>
+              </div>
+              <div
+                class="tab-pane fade"
+                id="content-view"
+                role="tabpanel"
+                aria-labelledby="content-view-tab">
+                  <div id="contentViewResult"></div>
+              </div>
+            </div>
+          </div>
+
+          <hr/>
+
+          <!-- Issue.fields -->
+          {% for field in target_issue.fields %}
+            <div class="col-12">
+              {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+              {% if field_kind %}
+                <label
+                    for="inputField_{{ field_kind.id }}"
+                    class="form-label">{{ field_kind.caption }}</label>
+                <input
+                    type="text"
+                    name="field_kind_{{ field_kind.id }}"
+                    class="form-control"
+                    id="inputField_{{ field_kind.id }}"
+                    value="{{ field.value }}">
+              {% endif %}
+            </div>
+          {% endfor %}
+
+          <!-- TODO : Issue.files -->
+
+          {% if restriction.is_save_enabled %}
+            <div class="col-12">
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+              <a  href="/issues/remove_issue?target_issue_id='{{ target_issue.id }}'"
+                  title="Remove issue"
+                  class="btn btn-danger"
+                  role="button"
+                  aria-pressed="true">Remove</a>
+            </div>
+          {% endif %}
+
+        </form>
+      </div>
+
+      <hr/>
+
+      <!-- Additional issue modification tools -->
+      <div class="col-12">
+        <div class="btn-group" role="group" aria-label="Additional issue modification tools">
+          {% if restriction.is_create_enabled %}
+            <button
+                class="btn btn-outline-dark dropdown-toggle"
+                type="button"
+                id="dropdownMenuAddIssue"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">New sub issue</button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuAddIssue">
+              {% for issue_kind in project_manager.issue_kinds() %}
+              <li>
+                <a  class="dropdown-item"
+                    href="/issues/add_issue?issue_kind_id={{ issue_kind.id -}}
+                      &parent_id={{ target_issue.id -}}
+                      &project_id={{ target_issue.project_id }}">
+                  {{- issue_kind.caption -}}
+                </a>
+              </li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Sub issues -->
+      <div class="col-12">
+        <table
+            class="table table-striped table-sm table-bordered table-hover"
+            style="width:100%"
+            id="sub_issues_table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 1%">Id</th>
+              <th scope="col" style="width: 1%">Kind</th>
+              <th scope="col">Caption</th>
+              <th scope="col" style="width: 1%"></th>
+            </tr>
+          </thead>
+          {% for sub_issue in project_manager.sub_issues(target_issue.id) %}
+            <tr>
+              <td>
+                {{ sub_issue.id }}
+              </td>
+
+              <td>
+                {{ project_manager.issue_kind(sub_issue.issue_kind_id).caption }}
+              </td>
+
+              <td>
+                <a href="/issues/issue/{{ sub_issue.id }}" title="Open issue">{{ sub_issue.caption}}</a>
+              </td>
+
+              <td>
+                <a href="/issues/remove_issue?target_issue_id={{ sub_issue.id }}" title="Remove issue">
+                  <span class="badge bg-danger">x</span>
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+          <tfoot>
+            <tr>
+              <th>Id</th>
+              <th>Kind</th>
+              <th>Caption</th>
+              <th></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/showdown.min.js"></script>
+<script src="/static/js/datatables.min.js"></script>
+<script src="/static/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+converter = new showdown.Converter(),
+converter.setOption('tables', true);
+converter.setOption('tasklists', true);
+
+function contentMarkdownToHtml(id) {
+  $("#" + id).html(
+    converter.makeHtml(
+      $("#textareaContent").val()
+    )
+  );
+}
+
+$(document).ready(function() {
+  [].slice.call(document.querySelectorAll('#pillsTab a')).forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
+
+  [].slice.call(document.querySelectorAll('#contentTab a')).forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
+
+  contentMarkdownToHtml('contentView');
+  contentMarkdownToHtml('contentViewResult');
+
+  // Issues table initialization
+  $('#sub_issues_table').DataTable({
+    "processing": false,
+    "serverSide": false,
+    "searching": true,
+    "ordering": true,
+    "lengthChange": false,
+    "order": [[ 1, "asc" ]]
+  });
+});
+</script>
+{% endblock %}

@@ -4,7 +4,7 @@
 
 {% block title %}Farado — Issue kind{% endblock %}
 
-{% block issue_kinds_active %}active{% endblock %}
+{% set active_menu = 'issue_kinds' %}
 
 
 {% block styles %}
@@ -69,10 +69,10 @@
     </form>
 
     {% if target_issue_kind %}
-      <!-- States -->
+      <!-- Field_kinds -->
       <div class="col-12">
         <h5 class="page-header">
-          States
+          Field kinds
           {# FIXME : If you add a new field kind, all issue_kind changes on this page are discarded. #}
           <a href="/issue_kinds/add_field_kind?target_issue_kind_id={{ target_issue_kind.id }}" class="btn btn-sm btn-dark" type="submit">+</a>
         </h5>

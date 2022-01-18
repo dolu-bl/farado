@@ -1,0 +1,192 @@
+{% extends "base_template.html" %}
+
+
+
+{% block title %}Farado — Issues{% endblock %}
+
+{% set active_menu = 'issues' %}
+
+
+{% block styles %}
+  <link href="/static/css/datatables.min.css" rel="stylesheet" type="text/css" />
+  <link href="/static/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Issues</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">
+    Issues
+    {% if restriction.is_create_enabled %}
+      <button
+          class="btn btn-sm btn-outline-dark dropdown-toggle"
+          type="button"
+          id="dropdownMenuAddIssue"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">+</button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuAddIssue">
+        {% for issue_kind in project_manager.issue_kinds() %}
+        <li>
+          <a  class="dropdown-item"
+              href="/issues/add_issue?issue_kind_id={{ issue_kind.id }}">
+            {{- issue_kind.caption -}}
+          </a>
+        </li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+  </h2>
+
+  {% if operation_result -%}
+    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
+      {{- operation_result.caption -}}
+    </div>
+  {%- endif %}
+
+  <div class="row placeholders">
+
+    <table
+        class="table table-striped table-sm table-bordered table-hover"
+        style="width:100%"
+        id="issues_table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 1%">Id</th>
+          <th scope="col" style="width: 1%">Kind</th>
+          <th scope="col">Caption</th>
+          <th scope="col">Parent</th>
+          <th scope="col">Project</th>
+          <th scope="col" style="width: 1%"></th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <th>Id</th>
+          <th>Kind</th>
+          <th>Caption</th>
+          <th>Parent</th>
+          <th>Project</th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/datatables.min.js"></script>
+<script src="/static/js/jquery.dataTables.min.js"></script>
+<script src="/static/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  // Issues table initialization
+  $('#issues_table').DataTable({
+    "processing": true,
+    "serverSide": true,
+    "ajax": {
+      "url": "issues_data",
+      "type": "POST"
+    },
+    "searching": true,
+    "ordering": true,
+    "pageLength": 20,
+    "lengthChange": false,
+    "order": [[ 2, "asc" ]],
+    "columns": [
+      {
+        data: 'id',
+        orderable: true
+      },
+      {
+        data: 'kind',
+        render: render_kind,
+        orderable: false
+      },
+      {
+        data: 'caption',
+        render: render_caption,
+        orderable: true
+      },
+      {
+        data: 'parent',
+        render: render_parent,
+        orderable: false
+      },
+      {
+        data: 'project',
+        render: render_project,
+        orderable: false
+      },
+      {
+        data: 'management',
+        render: render_management,
+        orderable: false
+      }
+    ]
+  });
+});
+
+function render_kind(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (data[0] === 'false') {
+    return '';
+  }
+  return data[1];
+}
+
+function render_caption(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (data === 'false') {
+    return '';
+  }
+  return '<a href="/issues/issue/' + row.id + '" title="Open issue">' + data + '</a>';
+}
+
+function render_parent(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (data[0] === null) {
+    return '';
+  }
+  return '<a href="/issues/issue/' + data[0] + '" title="Open issue">' + data[1] + '</a>';
+}
+
+function render_project(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (data[0] === null) {
+    return '';
+  }
+  return '<a href="/projects/project/' + data[0] + '" title="Open project">' + data[1] + '</a>';
+}
+
+function render_management(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (!data) {
+    return '';
+  }
+  return '<a href="/issues/remove_issue?target_issue_id=' + row.id + '" title="Remove issue"><span class="badge bg-danger">x</span></a>';
+}
+</script>
+{% endblock %}
