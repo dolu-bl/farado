@@ -163,7 +163,7 @@ function render_parent(data, type, row) {
   if (type !== 'display') {
     return data;
   }
-  if (data[0] === 'false') {
+  if (data[0] === null) {
     return '';
   }
   return '<a href="/issues/issue/' + data[0] + '" title="Open issue">' + data[1] + '</a>';
@@ -173,7 +173,7 @@ function render_project(data, type, row) {
   if (type !== 'display') {
     return data;
   }
-  if (data[0] === 'false') {
+  if (data[0] === null) {
     return '';
   }
   return '<a href="/projects/project/' + data[0] + '" title="Open project">' + data[1] + '</a>';

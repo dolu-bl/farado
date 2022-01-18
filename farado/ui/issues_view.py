@@ -83,6 +83,7 @@ class IssuesView(BaseView):
             target_issue_id=None,
             target_issue_caption='',
             target_issue_content='',
+            target_issue_project_id='',
             issue_kind_id=None,
             **args
             ):
@@ -111,6 +112,8 @@ class IssuesView(BaseView):
 
             target_issue.caption = target_issue_caption
             target_issue.content = target_issue_content
+            if target_issue_project_id.isdigit():
+                target_issue.project_id = int(target_issue_project_id)
 
             # Appling fields values
             for field in target_issue.fields:
@@ -153,7 +156,7 @@ class IssuesView(BaseView):
             )
 
     @cherrypy.expose
-    def remove_issue_kind(self, target_issue_id):
+    def remove_issue(self, target_issue_id):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()

@@ -1,4 +1,5 @@
 {% extends "base_template.html" %}
+{% import "base_macros.html" as macros %}
 
 
 
@@ -28,6 +29,15 @@
   <div class="row placeholders">
     <form class="row g-3" action="/issues/issue" method="post">
       <input type="hidden" name="issue_kind_id" value="{{ new_issue.issue_kind_id }}">
+
+      <!-- Issue.project_id -->
+      <div class="col-12">
+        <label for="textareaDescription" class="form-label">Project</label>
+        {{ macros.select(
+          'target_issue_project_id',
+          project_manager.projects(),
+          new_issue.project_id ) }}
+      </div>
 
       <!-- Issue.caption -->
       <div class="col-12">
