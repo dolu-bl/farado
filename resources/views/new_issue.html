@@ -29,6 +29,7 @@
   <div class="row placeholders">
     <form class="row g-3" action="/issues/issue" method="post">
       <input type="hidden" name="issue_kind_id" value="{{ new_issue.issue_kind_id }}">
+      <input type="hidden" name="target_issue_parent_id" value="{{ new_issue.parent_id }}">
 
       <!-- Issue.project_id -->
       <div class="col-12">

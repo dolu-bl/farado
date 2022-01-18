@@ -84,6 +84,7 @@ class IssuesView(BaseView):
             target_issue_caption='',
             target_issue_content='',
             target_issue_project_id='',
+            target_issue_parent_id='',
             issue_kind_id=None,
             **args
             ):
@@ -112,8 +113,10 @@ class IssuesView(BaseView):
 
             target_issue.caption = target_issue_caption
             target_issue.content = target_issue_content
-            if target_issue_project_id.isdigit():
+            if target_issue_project_id.isdigit() and bool(int(target_issue_project_id)):
                 target_issue.project_id = int(target_issue_project_id)
+            if target_issue_parent_id.isdigit() and bool(int(target_issue_parent_id)):
+                target_issue.parent_id = int(target_issue_parent_id)
 
             # Appling fields values
             for field in target_issue.fields:
@@ -132,11 +135,13 @@ class IssuesView(BaseView):
             restriction=UiUserRestrictions(
                 is_admin=self.is_admin(user.id),
                 is_save_enabled=bool(PermissionFlag.editor <= rights),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
                 )
             )
 
     @cherrypy.expose
-    def add_issue(self, issue_kind_id):
+    def add_issue(self, issue_kind_id, parent_id=None, project_id=None):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
@@ -144,6 +149,10 @@ class IssuesView(BaseView):
         # TODO: issue_kind_rights
         rights = self.project_rights(user.id)
         temporary_issue = gm_holder.project_manager.create_issue(issue_kind_id)
+        if parent_id:
+            temporary_issue.parent_id = int(parent_id)
+        if project_id:
+            temporary_issue.project_id = int(project_id)
 
         return view_renderer["new_issue"].render(
             user=user,

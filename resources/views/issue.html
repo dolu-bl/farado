@@ -167,12 +167,7 @@
           </div>
           
           <!-- Issue.fields -->
-          {% if target_issue %}
-            {% set fields = target_issue.fields %}
-          {% else %}
-            {% set fields = new_issue.fields %}
-          {% endif %}
-          {% for field in fields %}
+          {% for field in target_issue.fields %}
             <div class="col-12">
               {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
               {% if field_kind %}
@@ -193,7 +188,36 @@
 
           {% if restriction.is_save_enabled %}
             <div class="col-12">
-              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+              <div class="btn-group" role="group" aria-label="Manage current issue">
+                <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+                <a  href="/issues/remove_issue?target_issue_id='{{ target_issue.id }}'"
+                    title="Remove issue"
+                    class="btn btn-danger"
+                    role="button"
+                    aria-pressed="true">Remove</a>
+              </div>
+              <div class="btn-group" role="group" aria-label="More issue modifications">
+                {% if restriction.is_create_enabled %}
+                  <button
+                      class="btn btn-outline-dark dropdown-toggle"
+                      type="button"
+                      id="dropdownMenuAddIssue"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false">New sub issue</button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenuAddIssue">
+                    {% for issue_kind in project_manager.issue_kinds() %}
+                    <li>
+                      <a  class="dropdown-item"
+                          href="/issues/add_issue?issue_kind_id={{ issue_kind.id -}}
+                            &parent_id={{ target_issue.id -}}
+                            &project_id={{ target_issue.project_id }}">
+                        {{- issue_kind.caption -}}
+                      </a>
+                    </li>
+                  {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
             </div>
           {% endif %}
 
@@ -207,6 +231,7 @@
 
 
 {% block scripts %}
+<script src="/static/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/showdown.min.js"></script>
 
 <script>
