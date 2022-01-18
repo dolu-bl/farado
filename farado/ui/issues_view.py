@@ -78,6 +78,39 @@ class IssuesView(BaseView):
         return json.dumps(result, indent=2)
 
     @cherrypy.expose
+    def sub_issues_data(self, target_issue_id, **args):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+        table_args = DataTableArgs(args)
+
+        data = []
+        for issue in gm_holder.project_manager.sub_issues(target_issue_id):
+            issue_kind = gm_holder.project_manager.issue_kind(issue.issue_kind_id)
+            parent_issue = gm_holder.project_manager.issue(issue.parent_id)
+            project = gm_holder.project_manager.project(issue.project_id)
+            data.append({
+                'id': issue.id,
+                'caption': issue.caption,
+                'kind': [issue.issue_kind_id, issue_kind.caption if issue_kind else '—'],
+                'parent': [issue.parent_id, parent_issue.caption if parent_issue else '—'],
+                'project': [issue.project_id, project.caption if project else "—"],
+                'management': bool(PermissionFlag.deleter <= rights)
+                })
+
+        issues_count = len(data)
+        result = {
+            "draw": table_args.draw,
+            "recordsTotal": issues_count,
+            "recordsFiltered": issues_count,
+            "data": data,
+        }
+        return json.dumps(result, indent=2)
+
+    @cherrypy.expose
     def issue(
             self,
             target_issue_id=None,

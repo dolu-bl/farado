@@ -117,6 +117,11 @@ class ProjectManager:
             return gm_holder.meta_item_manager.item_by_id(Issue, issue_id)
         return None
 
+    def sub_issues(self, issue_id):
+        if issue_id:
+            return gm_holder.meta_item_manager.items_by_value(Issue, 'parent_id', issue_id)
+        return []
+
     def parent_issues(self, parent_issue_id):
         if parent_issue_id:
             issue = gm_holder.meta_item_manager.item_by_id(Issue, parent_issue_id)
