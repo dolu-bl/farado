@@ -60,8 +60,8 @@
       <thead>
         <tr>
           <th scope="col" style="width: 1%">Id</th>
+          <th scope="col" style="width: 1%">Kind</th>
           <th scope="col">Caption</th>
-          <th scope="col">Kind</th>
           <th scope="col">Parent</th>
           <th scope="col">Project</th>
           <th scope="col" style="width: 1%"></th>
@@ -70,8 +70,8 @@
       <tfoot>
         <tr>
           <th>Id</th>
-          <th>Caption</th>
           <th>Kind</th>
+          <th>Caption</th>
           <th>Parent</th>
           <th>Project</th>
           <th></th>
@@ -104,11 +104,16 @@ $(document).ready(function() {
     "ordering": true,
     "pageLength": 20,
     "lengthChange": false,
-    "order": [[ 1, "asc" ]],
+    "order": [[ 2, "asc" ]],
     "columns": [
       {
         data: 'id',
         orderable: true
+      },
+      {
+        data: 'kind',
+        render: render_kind,
+        orderable: false
       },
       {
         data: 'caption',
@@ -116,19 +121,14 @@ $(document).ready(function() {
         orderable: true
       },
       {
-        data: 'kind',
-        render: render_kind,
-        orderable: true
-      },
-      {
         data: 'parent',
         render: render_parent,
-        orderable: true
+        orderable: false
       },
       {
         data: 'project',
         render: render_project,
-        orderable: true
+        orderable: false
       },
       {
         data: 'management',
@@ -139,16 +139,6 @@ $(document).ready(function() {
   });
 });
 
-function render_caption(data, type, row) {
-  if (type !== 'display') {
-    return data;
-  }
-  if (data === 'false') {
-    return '';
-  }
-  return '<a href="/issues/issue/' + row.id + '" title="Open issue">' + data + '</a>';
-}
-
 function render_kind(data, type, row) {
   if (type !== 'display') {
     return data;
@@ -157,6 +147,16 @@ function render_kind(data, type, row) {
     return '';
   }
   return data[1];
+}
+
+function render_caption(data, type, row) {
+  if (type !== 'display') {
+    return data;
+  }
+  if (data === 'false') {
+    return '';
+  }
+  return '<a href="/issues/issue/' + row.id + '" title="Open issue">' + data + '</a>';
 }
 
 function render_parent(data, type, row) {

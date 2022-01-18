@@ -238,8 +238,8 @@
           <thead>
             <tr>
               <th scope="col" style="width: 1%">Id</th>
+              <th scope="col" style="width: 1%">Kind</th>
               <th scope="col">Caption</th>
-              <th scope="col">Kind</th>
               <th scope="col" style="width: 1%"></th>
             </tr>
           </thead>
@@ -248,12 +248,15 @@
               <td>
                 {{ sub_issue.id }}
               </td>
-              <td>
-                <a href="/issues/issue/{{ sub_issue.id }}" title="Open issue">{{ sub_issue.caption}}</a>
-              </td>
+
               <td>
                 {{ project_manager.issue_kind(sub_issue.issue_kind_id).caption }}
               </td>
+
+              <td>
+                <a href="/issues/issue/{{ sub_issue.id }}" title="Open issue">{{ sub_issue.caption}}</a>
+              </td>
+
               <td>
                 <a href="/issues/remove_issue?target_issue_id={{ sub_issue.id }}" title="Remove issue">
                   <span class="badge bg-danger">x</span>
@@ -264,8 +267,8 @@
           <tfoot>
             <tr>
               <th>Id</th>
-              <th>Caption</th>
               <th>Kind</th>
+              <th>Caption</th>
               <th></th>
             </tr>
           </tfoot>

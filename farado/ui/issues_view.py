@@ -46,10 +46,11 @@ class IssuesView(BaseView):
         rights = self.project_rights(user.id)
         table_args = DataTableArgs(args)
 
+        # TODO : order by parent, project and kind
         issues_count = gm_holder.meta_item_manager.items_count(Issue)
         issues = gm_holder.meta_item_manager.ordered_items(
             item_type = Issue,
-            order_by = "caption" if 1 == table_args.order_column else "id",
+            order_by = "caption" if 2 == table_args.order_column else "id",
             is_order_ascending = table_args.is_order_ascending,
             slice_start = table_args.start,
             slice_stop = table_args.start + table_args.length,
@@ -62,46 +63,13 @@ class IssuesView(BaseView):
             project = gm_holder.project_manager.project(issue.project_id)
             data.append({
                 'id': issue.id,
-                'caption': issue.caption,
                 'kind': [issue.issue_kind_id, issue_kind.caption if issue_kind else '—'],
+                'caption': issue.caption,
                 'parent': [issue.parent_id, parent_issue.caption if parent_issue else '—'],
                 'project': [issue.project_id, project.caption if project else "—"],
                 'management': bool(PermissionFlag.deleter <= rights)
                 })
 
-        result = {
-            "draw": table_args.draw,
-            "recordsTotal": issues_count,
-            "recordsFiltered": issues_count,
-            "data": data,
-        }
-        return json.dumps(result, indent=2)
-
-    @cherrypy.expose
-    def sub_issues_data(self, target_issue_id, **args):
-        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
-        if not user:
-            return view_renderer["login"].render()
-
-        # TODO: issue_kind_rights
-        rights = self.project_rights(user.id)
-        table_args = DataTableArgs(args)
-
-        data = []
-        for issue in gm_holder.project_manager.sub_issues(target_issue_id):
-            issue_kind = gm_holder.project_manager.issue_kind(issue.issue_kind_id)
-            parent_issue = gm_holder.project_manager.issue(issue.parent_id)
-            project = gm_holder.project_manager.project(issue.project_id)
-            data.append({
-                'id': issue.id,
-                'caption': issue.caption,
-                'kind': [issue.issue_kind_id, issue_kind.caption if issue_kind else '—'],
-                'parent': [issue.parent_id, parent_issue.caption if parent_issue else '—'],
-                'project': [issue.project_id, project.caption if project else "—"],
-                'management': bool(PermissionFlag.deleter <= rights)
-                })
-
-        issues_count = len(data)
         result = {
             "draw": table_args.draw,
             "recordsTotal": issues_count,
