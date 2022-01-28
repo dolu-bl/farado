@@ -57,6 +57,15 @@
           target_issue_kind.workflow_id ) }}
       </div>
 
+      <!-- IssueKind.default_state_id -->
+      <div class="col-12">
+        <label for="textareaDescription" class="form-label">Default state</label>
+        {{ macros.select(
+          'target_issue_kind_default_state_id',
+          project_manager.states(),
+          target_issue_kind.default_state_id ) }}
+      </div>
+
       <div class="col-12">
         <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
       </div>

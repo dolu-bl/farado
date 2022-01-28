@@ -35,7 +35,20 @@
 
 {% block content %}
 
-  <h2 class="page-header">#{{ target_issue.id }} {{ target_issue.caption }}</h2>
+  <h2 class="page-header">{{ target_issue.caption }}</h2>
+
+  <div class="row">
+    <!-- Issue.id -->
+    <div class="col">
+      #{{ target_issue.id }}
+    </div>
+
+    <!-- Issue.state -->
+    <div class="col-10">
+      {% set state = project_manager.state(target_issue.state_id) %}
+      {{- state.caption if state is not none else '—' -}}
+    </div>
+  </div>
 
   {% if operation_result -%}
     <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
@@ -108,6 +121,7 @@
 
         <form class="row g-3" action="/issues/issue" method="post">
           <input type="hidden" name="target_issue_id" value="{{ target_issue.id }}">
+          <input type="hidden" name="target_issue_state_id" value="{{ target_issue.state_id }}">
 
           <!-- Issue.caption -->
           <div class="col-12">

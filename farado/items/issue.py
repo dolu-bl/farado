@@ -8,13 +8,15 @@ class Issue():
             content=None,
             issue_kind_id=None,
             parent_id=None,
-            project_id=None):
+            project_id=None,
+            state_id=None):
         self.id = None
         self.caption = caption
         self.content = content
         self.issue_kind_id = issue_kind_id
         self.parent_id = parent_id
         self.project_id = project_id
+        self.state_id = state_id
         # creates by sqlalchemy.orm.mapper:
         # self.fields = []
         # self.files = []
@@ -27,6 +29,7 @@ class Issue():
                 }',\n issue_kind_id='{ self.issue_kind_id
                 }',\n parent_id='{ self.parent_id
                 }',\n project_id='{ self.project_id
+                }',\n state_id='{ self.state_id
                 }')>'''
             )
 

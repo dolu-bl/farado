@@ -86,6 +86,7 @@ class IssuesView(BaseView):
             target_issue_content='',
             target_issue_project_id='',
             target_issue_parent_id='',
+            target_issue_state_id='',
             issue_kind_id=None,
             **args
             ):
@@ -118,6 +119,8 @@ class IssuesView(BaseView):
                 target_issue.project_id = int(target_issue_project_id)
             if target_issue_parent_id.isdigit() and bool(int(target_issue_parent_id)):
                 target_issue.parent_id = int(target_issue_parent_id)
+            if target_issue_state_id.isdigit() and bool(int(target_issue_state_id)):
+                target_issue.state_id = int(target_issue_state_id)
 
             # Appling fields values
             for field in target_issue.fields:

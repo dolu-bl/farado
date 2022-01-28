@@ -166,6 +166,7 @@ class ProjectManager:
 
         issue = Issue()
         issue.issue_kind_id = issue_kind.id
+        issue.state_id = issue_kind.default_state_id
         for field_kind in issue_kind.field_kinds:
             issue.fields.append(Field(field_kind_id=field_kind.id))
         return issue
