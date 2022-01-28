@@ -50,7 +50,7 @@ class IssuesView(BaseView):
         issues_count = gm_holder.meta_item_manager.items_count(Issue)
         issues = gm_holder.meta_item_manager.ordered_items(
             item_type = Issue,
-            order_by = "caption" if 2 == table_args.order_column else "id",
+            order_by = "caption" if 3 == table_args.order_column else "id",
             is_order_ascending = table_args.is_order_ascending,
             slice_start = table_args.start,
             slice_stop = table_args.start + table_args.length,
@@ -59,11 +59,13 @@ class IssuesView(BaseView):
         data = []
         for issue in issues:
             issue_kind = gm_holder.project_manager.issue_kind(issue.issue_kind_id)
+            state = gm_holder.project_manager.state(issue.state_id)
             parent_issue = gm_holder.project_manager.issue(issue.parent_id)
             project = gm_holder.project_manager.project(issue.project_id)
             data.append({
                 'id': issue.id,
                 'kind': [issue.issue_kind_id, issue_kind.caption if issue_kind else '—'],
+                'state': [issue.state_id, state.caption if state else '—'],
                 'caption': issue.caption,
                 'parent': [issue.parent_id, parent_issue.caption if parent_issue else '—'],
                 'project': [issue.project_id, project.caption if project else "—"],
