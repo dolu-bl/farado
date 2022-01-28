@@ -6,16 +6,22 @@ class Rule():
             self,
             caption='',
             is_admin=False,
+            role_id=None,
+            project_id=None,
+            project_rights=None,
+            issue_kind_id=None,
+            workflow_id=None,
+            issue_rights=None,
             ):
         self.id = None
         self.caption = caption
-        self.role_id = None
+        self.role_id = role_id
         self.is_admin = is_admin
-        self.project_id = None
-        self.project_rights = None
-        self.issue_kind_id = None
-        self.workflow_id = None
-        self.issue_rights = None
+        self.project_id = project_id
+        self.project_rights = project_rights
+        self.issue_kind_id = issue_kind_id
+        self.workflow_id = workflow_id
+        self.issue_rights = issue_rights
 
     def __repr__(self):
         return str(
