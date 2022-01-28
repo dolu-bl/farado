@@ -46,7 +46,27 @@
     <!-- Issue.state -->
     <div class="col-10">
       {% set state = project_manager.state(target_issue.state_id) %}
-      {{- state.caption if state is not none else '—' -}}
+      <button
+          class="btn btn-outline-dark dropdown-toggle"
+          type="button"
+          id="dropdownMenuState"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">{{ state.caption if state is not none else '—' }}</button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuState">
+        {% for state in project_manager.new_states_for_issue(target_issue.id) %}
+          <li>
+            <a  class="dropdown-item"
+                href="/issues/issue/{{ target_issue.id -}}?issue_state_id={{ state.id -}}">
+              {{- state.caption -}}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+
+    </div>
+
+    <div class="col">
+      #{{ target_issue.id }}
     </div>
   </div>
 
@@ -119,14 +139,12 @@
           role="tabpanel"
           aria-labelledby="pills-edit-tab">
 
-        <form class="row g-3" action="/issues/issue" method="post">
-          <input type="hidden" name="target_issue_id" value="{{ target_issue.id }}">
-          <input type="hidden" name="target_issue_state_id" value="{{ target_issue.state_id }}">
+        <form class="row g-3" action="/issues/issue/{{ target_issue.id }}" method="post">
 
           <!-- Issue.caption -->
           <div class="col-12">
             <label for="inputCaption" class="form-label">Caption</label>
-            <input type="text" name="target_issue_caption" class="form-control" id="inputCaption" value="{{ target_issue.caption }}" required>
+            <input type="text" name="issue_caption" class="form-control" id="inputCaption" value="{{ target_issue.caption }}" required>
           </div>
 
           <!-- Issue.content -->
@@ -163,7 +181,7 @@
                 role="tabpanel"
                 aria-labelledby="content-edit-tab">
                   <textarea
-                    name="target_issue_content"
+                    name="issue_content"
                     class="form-control"
                     id="textareaContent"
                     rows="9"
@@ -204,7 +222,7 @@
           {% if restriction.is_save_enabled %}
             <div class="col-12">
               <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-              <a  href="/issues/remove_issue?target_issue_id='{{ target_issue.id }}'"
+              <a  href="/issues/remove_issue?target_issue_id={{ target_issue.id }}"
                   title="Remove issue"
                   class="btn btn-danger"
                   role="button"
