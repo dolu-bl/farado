@@ -15,6 +15,10 @@ class ValueTypes(enum.IntEnum):
     issue_id = 100
     user_id = 101
     project_id = 102
+    # reserved
+    issues_ids = 200
+    users_ids = 201
+    projects_ids = 202
 
 class FieldKind():
     def __init__(
