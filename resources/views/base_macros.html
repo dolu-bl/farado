@@ -10,6 +10,8 @@
   </div>
 {%- endmacro %}
 
+
+
 {#
   Item required properties:
   * item.id
@@ -28,4 +30,102 @@
       </option>
     {% endfor %}
   </select>
+{%- endmacro %}
+
+
+
+{#
+  Arguments:
+  * tab_id - unique tab identifier, use it to switch tabs in tab_switcher_document_ready_part()
+  * result_id - unique result div identifier, use it in your markdownToHtml(source_id, target_id)
+  * field_name - target item field name and unique textarea identifier
+  * field_value - current item field value
+#}
+{% macro markdown_textarea(tab_id, result_id, field_name, field_value) -%}
+  <ul class="nav nav-tabs" id="{{ tab_id }}" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link active"
+        id="{{ tab_id }}-edit-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#{{ tab_id }}-edit"
+        type="button"
+        role="tab"
+        aria-controls="{{ tab_id }}-edit"
+        aria-selected="true">Edit</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="{{ tab_id }}-view-tab"
+        data-bs-toggle="tab"
+        data-bs-target="#{{ tab_id }}-view"
+        type="button"
+        role="tab"
+        aria-controls="{{ tab_id }}-view"
+        aria-selected="false">View</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="{{ tab_id }}Content">
+    <div
+      class="tab-pane fade show active"
+      id="{{ tab_id }}-edit"
+      role="tabpanel"
+      aria-labelledby="{{ tab_id }}-edit-tab">
+        <textarea
+          name="{{ field_name }}"
+          class="form-control"
+          id="{{ field_name }}"
+          rows="9"
+          onchange="markdownToHtml('{{ field_name }}', '{{ result_id }}')">{{ field_value }}</textarea>
+    </div>
+    <div
+        class="tab-pane fade"
+        id="{{ tab_id }}-view"
+        role="tabpanel"
+        aria-labelledby="{{ tab_id }}-view-tab">
+      <div id="{{ result_id }}"></div>
+    </div>
+  </div>
+{%- endmacro %}
+
+
+
+{#
+  Use once per page.
+  Adding markdownToHtml(source_id, target_id) function.
+#}
+{% macro markdown_textarea_script() -%}
+  <script src="/static/js/showdown.min.js"></script>
+  <script>
+    converter = new showdown.Converter(),
+    converter.setOption('tables', true);
+    converter.setOption('tasklists', true);
+    
+    function markdownToHtml(source_id, target_id) {
+      $("#" + target_id).html(
+        converter.makeHtml(
+          $("#" + source_id).val()
+        )
+      );
+    }
+  </script>
+{%- endmacro %}
+
+
+
+{#
+  Add to your document ready function.
+  Arguments:
+  * tab_id - unique tab identifier
+#}
+{% macro tab_switcher_document_ready_part(tab_id) -%}
+  [].slice.call(document.querySelectorAll('#{{ tab_id }} a')).forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
 {%- endmacro %}

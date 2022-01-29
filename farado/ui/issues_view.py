@@ -131,6 +131,9 @@ class IssuesView(BaseView):
                 if issue_state_id.isdigit() and bool(int(issue_state_id)):
                     target_issue.state_id = int(issue_state_id)
 
+            # Clearing fields values
+            for field in target_issue.fields:
+                field.value = None
             # Appling fields values
             for field in target_issue.fields:
                 field_kind_argument = f'field_kind_{field.field_kind_id}'
