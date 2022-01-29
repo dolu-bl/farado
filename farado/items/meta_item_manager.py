@@ -68,6 +68,7 @@ class MetaItemManager:
             , sqlalchemy.Column('issue_kind_id', sqlalchemy.Integer)
             , sqlalchemy.Column('parent_id', sqlalchemy.ForeignKey('issues.id'), index=True)
             , sqlalchemy.Column('project_id', sqlalchemy.ForeignKey('projects.id'), index=True)
+            , sqlalchemy.Column('state_id', sqlalchemy.ForeignKey('states.id'), index=True)
             , sqlalchemy.Column('caption', sqlalchemy.String)
             , sqlalchemy.Column('content', sqlalchemy.String)
         )
@@ -76,6 +77,7 @@ class MetaItemManager:
             , self.metadata
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
             , sqlalchemy.Column('workflow_id', sqlalchemy.ForeignKey('workflows.id'), index=True)
+            , sqlalchemy.Column('default_state_id', sqlalchemy.ForeignKey('states.id'), index=True)
             , sqlalchemy.Column('caption', sqlalchemy.String)
         )
 

@@ -82,6 +82,21 @@ class ProjectManager:
             return gm_holder.meta_item_manager.item_by_id(State, state_id)
         return None
 
+    def new_states_for_issue(self, issue_id):
+        if not issue_id:
+            return []
+        issue = self.issue(issue_id)
+        if not issue:
+            return []
+        issue_kind = self.issue_kind(issue.issue_kind_id)
+        if not issue_kind:
+            return []
+        workflow = self.workflow(issue_kind.workflow_id)
+        if not workflow:
+            return []
+        states_ids = [edge.to_state_id for edge in workflow.edges if issue.state_id == edge.from_state_id]
+        return [state for state in workflow.states if state.id in states_ids]
+
     def edges(self):
         return gm_holder.meta_item_manager.items(Edge)
 
@@ -166,6 +181,7 @@ class ProjectManager:
 
         issue = Issue()
         issue.issue_kind_id = issue_kind.id
+        issue.state_id = issue_kind.default_state_id
         for field_kind in issue_kind.field_kinds:
             issue.fields.append(Field(field_kind_id=field_kind.id))
         return issue

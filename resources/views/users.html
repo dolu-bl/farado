@@ -29,12 +29,6 @@
     <a href="/users/add_user" class="btn btn-sm btn-outline-dark" role="button" aria-pressed="true">+</a>
   </h2>
 
-  {% if operation_result -%}
-    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
-      {{- operation_result.caption -}}
-    </div>
-  {%- endif %}
-
   <div class="row placeholders">
 
     <table class="table">

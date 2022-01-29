@@ -6,10 +6,12 @@ class IssueKind():
             self,
             caption='',
             workflow_id=None,
+            default_state_id=None,
             ):
         self.id = None
         self.caption = caption
         self.workflow_id = workflow_id
+        self.default_state_id = default_state_id
         # creates by sqlalchemy.orm.mapper:
         # self.field_kinds = []
 
@@ -18,5 +20,6 @@ class IssueKind():
             f'''<IssueKind(id='{ self.id
                 }',\n caption='{ self.caption
                 }',\n workflow_id='{ self.workflow_id
+                }',\n default_state_id='{ self.default_state_id
                 }')>'''
             )

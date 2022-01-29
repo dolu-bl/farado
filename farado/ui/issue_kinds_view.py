@@ -41,6 +41,7 @@ class IssueKindsView(BaseView):
             target_issue_kind_id,
             target_issue_kind_caption=None,
             target_issue_kind_workflow_id=None,
+            target_issue_kind_default_state_id=None
             ):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
@@ -59,6 +60,7 @@ class IssueKindsView(BaseView):
 
             target_issue_kind.caption = target_issue_kind_caption
             target_issue_kind.workflow_id = int(target_issue_kind_workflow_id)
+            target_issue_kind.default_state_id = int(target_issue_kind_default_state_id)
             gm_holder.project_manager.save_item(target_issue_kind)
             operation_result = OperationResult(caption="Issue kind saved", kind="success")
 

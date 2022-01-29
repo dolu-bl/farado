@@ -29,13 +29,14 @@
   <div class="row placeholders">
     <form class="row g-3" action="/issues/issue" method="post">
       <input type="hidden" name="issue_kind_id" value="{{ new_issue.issue_kind_id }}">
-      <input type="hidden" name="target_issue_parent_id" value="{{ new_issue.parent_id }}">
+      <input type="hidden" name="issue_parent_id" value="{{ new_issue.parent_id }}">
+      <input type="hidden" name="issue_state_id" value="{{ new_issue.state_id }}">
 
       <!-- Issue.project_id -->
       <div class="col-12">
         <label for="textareaDescription" class="form-label">Project</label>
         {{ macros.select(
-          'target_issue_project_id',
+          'issue_project_id',
           project_manager.projects(),
           new_issue.project_id ) }}
       </div>
@@ -43,7 +44,7 @@
       <!-- Issue.caption -->
       <div class="col-12">
         <label for="inputCaption" class="form-label">Caption</label>
-        <input type="text" name="target_issue_caption" class="form-control" id="inputCaption" value="" required>
+        <input type="text" name="issue_caption" class="form-control" id="inputCaption" value="" required>
       </div>
 
       <!-- Issue.content -->
@@ -80,7 +81,7 @@
             role="tabpanel"
             aria-labelledby="content-edit-tab">
               <textarea
-                name="target_issue_content"
+                name="issue_content"
                 class="form-control"
                 id="textareaContent"
                 rows="9"
@@ -142,7 +143,7 @@ function contentMarkdownToHtml(id) {
   );
 }
 
-$(document).ready(function() {
+document_ready_function = function() {
   [].slice.call(document.querySelectorAll('#contentTab a')).forEach(function (triggerEl) {
     var tabTrigger = new bootstrap.Tab(triggerEl);
 
@@ -153,8 +154,6 @@ $(document).ready(function() {
   });
 
   contentMarkdownToHtml('contentViewResult');
-});
-
-
+}
 </script>
 {% endblock %}

@@ -35,41 +35,66 @@
 
 {% block content %}
 
-  <h2 class="page-header">#{{ target_issue.id }} {{ target_issue.caption }}</h2>
+  <h2 class="page-header">{{ target_issue.caption }}</h2>
 
-  {% if operation_result -%}
-    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
-      {{- operation_result.caption -}}
+  <div class="row">
+    <!-- Issue.state -->
+    <div class="col">
+      {% set state = project_manager.state(target_issue.state_id) %}
+      <button
+          class="btn btn-outline-dark dropdown-toggle"
+          type="button"
+          id="dropdownMenuState"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">{{ state.caption if state is not none else '—' }}</button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenuState">
+        {% for state in project_manager.new_states_for_issue(target_issue.id) %}
+          <li>
+            <a  class="dropdown-item"
+                href="/issues/issue/{{ target_issue.id -}}?issue_state_id={{ state.id -}}">
+              {{- state.caption -}}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
-  {%- endif %}
+
+    <!-- Issue.id -->
+    <div class="col-md-auto">
+      <h3>#{{ target_issue.id }}</h3>
+    </div>
+
+    <!-- Issue view/edit switch -->
+    <div class="col">
+      <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link active"
+              id="pills-view-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-view"
+              type="button"
+              role="tab"
+              aria-controls="pills-view"
+              aria-selected="true">View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
+              id="pills-edit-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-edit"
+              type="button"
+              role="tab"
+              aria-controls="pills-edit"
+              {% if not restriction.is_save_enabled %}disabled{% endif %}
+              aria-selected="false">Edit</button>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   <div class="row placeholders">
-
-    <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button
-            class="nav-link active"
-            id="pills-view-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#pills-view"
-            type="button"
-            role="tab"
-            aria-controls="pills-view"
-            aria-selected="true">View</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button
-            class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
-            id="pills-edit-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#pills-edit"
-            type="button"
-            role="tab"
-            aria-controls="pills-edit"
-            {% if not restriction.is_save_enabled %}disabled{% endif %}
-            aria-selected="false">Edit</button>
-      </li>
-    </ul>
     <div class="tab-content" id="pillsTabContent">
       <!-- VIEW -->
       <div
@@ -106,13 +131,12 @@
           role="tabpanel"
           aria-labelledby="pills-edit-tab">
 
-        <form class="row g-3" action="/issues/issue" method="post">
-          <input type="hidden" name="target_issue_id" value="{{ target_issue.id }}">
+        <form class="row g-3" action="/issues/issue/{{ target_issue.id }}" method="post">
 
           <!-- Issue.caption -->
           <div class="col-12">
             <label for="inputCaption" class="form-label">Caption</label>
-            <input type="text" name="target_issue_caption" class="form-control" id="inputCaption" value="{{ target_issue.caption }}" required>
+            <input type="text" name="issue_caption" class="form-control" id="inputCaption" value="{{ target_issue.caption }}" required>
           </div>
 
           <!-- Issue.content -->
@@ -149,7 +173,7 @@
                 role="tabpanel"
                 aria-labelledby="content-edit-tab">
                   <textarea
-                    name="target_issue_content"
+                    name="issue_content"
                     class="form-control"
                     id="textareaContent"
                     rows="9"
@@ -190,7 +214,7 @@
           {% if restriction.is_save_enabled %}
             <div class="col-12">
               <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-              <a  href="/issues/remove_issue?target_issue_id='{{ target_issue.id }}'"
+              <a  href="/issues/remove_issue?target_issue_id={{ target_issue.id }}"
                   title="Remove issue"
                   class="btn btn-danger"
                   role="button"
@@ -301,7 +325,7 @@ function contentMarkdownToHtml(id) {
   );
 }
 
-$(document).ready(function() {
+document_ready_function = function() {
   [].slice.call(document.querySelectorAll('#pillsTab a')).forEach(function (triggerEl) {
     var tabTrigger = new bootstrap.Tab(triggerEl);
 
@@ -332,6 +356,6 @@ $(document).ready(function() {
     "lengthChange": false,
     "order": [[ 1, "asc" ]]
   });
-});
+}
 </script>
 {% endblock %}
