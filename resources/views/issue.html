@@ -70,12 +70,6 @@
     </div>
   </div>
 
-  {% if operation_result -%}
-    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
-      {{- operation_result.caption -}}
-    </div>
-  {%- endif %}
-
   <div class="row placeholders">
 
     <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
@@ -333,7 +327,7 @@ function contentMarkdownToHtml(id) {
   );
 }
 
-$(document).ready(function() {
+document_ready_function = function() {
   [].slice.call(document.querySelectorAll('#pillsTab a')).forEach(function (triggerEl) {
     var tabTrigger = new bootstrap.Tab(triggerEl);
 
@@ -364,6 +358,6 @@ $(document).ready(function() {
     "lengthChange": false,
     "order": [[ 1, "asc" ]]
   });
-});
+}
 </script>
 {% endblock %}

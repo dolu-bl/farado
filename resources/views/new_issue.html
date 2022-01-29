@@ -143,7 +143,7 @@ function contentMarkdownToHtml(id) {
   );
 }
 
-$(document).ready(function() {
+document_ready_function = function() {
   [].slice.call(document.querySelectorAll('#contentTab a')).forEach(function (triggerEl) {
     var tabTrigger = new bootstrap.Tab(triggerEl);
 
@@ -154,8 +154,6 @@ $(document).ready(function() {
   });
 
   contentMarkdownToHtml('contentViewResult');
-});
-
-
+}
 </script>
 {% endblock %}

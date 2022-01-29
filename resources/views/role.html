@@ -27,12 +27,6 @@
 
   <h2 class="page-header">Role</h2>
 
-  {% if operation_result -%}
-    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
-      {{- operation_result.caption -}}
-    </div>
-  {%- endif %}
-
   <div class="row placeholders">
     <form class="row g-3" action="/roles/role" method="post">
       <div class="col-12">

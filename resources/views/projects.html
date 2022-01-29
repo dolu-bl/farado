@@ -30,12 +30,6 @@
     {% endif %}
   </h2>
 
-  {% if operation_result -%}
-    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
-      {{- operation_result.caption -}}
-    </div>
-  {%- endif %}
-
   <div class="row placeholders">
 
     <table
@@ -69,8 +63,8 @@
 <script src="/static/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-// Projects table initialization
-$(document).ready(function() {
+document_ready_function = function() {
+  // Projects table initialization
   $('#projects_table').DataTable({
     "processing": true,
     "serverSide": true,
@@ -100,7 +94,7 @@ $(document).ready(function() {
       }
     ]
   });
-});
+}
 
 function render_caption(data, type, row) {
   if (type !== 'display') {

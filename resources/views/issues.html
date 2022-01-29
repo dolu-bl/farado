@@ -45,12 +45,6 @@
     {% endif %}
   </h2>
 
-  {% if operation_result -%}
-    <div class="alert alert-{{ operation_result.kind }} alert-dismissible" role="alert">
-      {{- operation_result.caption -}}
-    </div>
-  {%- endif %}
-
   <div class="row placeholders">
 
     <table
@@ -93,7 +87,7 @@
 <script src="/static/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-$(document).ready(function() {
+document_ready_function = function() {
   // Issues table initialization
   $('#issues_table').DataTable({
     "processing": true,
@@ -145,7 +139,7 @@ $(document).ready(function() {
       }
     ]
   });
-});
+}
 
 function render_kind(data, type, row) {
   if (type !== 'display') {
