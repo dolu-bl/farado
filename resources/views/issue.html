@@ -1,10 +1,12 @@
 {% extends "base_template.html" %}
+{% import "base_macros.html" as macros %}
 
 
 
 {% block title %}Farado — Issue{% endblock %}
 
 {% set active_menu = 'issues' %}
+{% set value_types = project_manager.value_types() %}
 
 
 {% block styles %}
@@ -114,9 +116,21 @@
         {% for field in target_issue.fields %}
           <div class="col-12">
             {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+            {% if field_kind %}
+              {{ field_kind.caption }}:
+              {% if value_types.integer == field_kind.value_type %}
+                {{ field.value }}
+              {% else %}
+                {{ field.value }}
+              {% endif %}
+            {% endif %}
+
+            {#
             {{- field_kind.caption if field_kind is not none else '—' -}}
             :
             {{ field.value }}
+            #}
+
           </div>
         {% endfor %}
 
@@ -142,51 +156,11 @@
           <!-- Issue.content -->
           <div class="col-12">
             <label for="contentTab" class="form-label">Content</label>
-            <ul class="nav nav-tabs" id="contentTab" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link active"
-                  id="content-edit-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#content-edit"
-                  type="button"
-                  role="tab"
-                  aria-controls="content-edit"
-                  aria-selected="true">Edit</button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button
-                  class="nav-link"
-                  id="content-view-tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#content-view"
-                  type="button"
-                  role="tab"
-                  aria-controls="content-view"
-                  aria-selected="false">View</button>
-              </li>
-            </ul>
-            <div class="tab-content" id="contentTabContent">
-              <div
-                class="tab-pane fade show active"
-                id="content-edit"
-                role="tabpanel"
-                aria-labelledby="content-edit-tab">
-                  <textarea
-                    name="issue_content"
-                    class="form-control"
-                    id="textareaContent"
-                    rows="9"
-                    onchange="contentMarkdownToHtml('contentViewResult')">{{ target_issue.content }}</textarea>
-              </div>
-              <div
-                class="tab-pane fade"
-                id="content-view"
-                role="tabpanel"
-                aria-labelledby="content-view-tab">
-                  <div id="contentViewResult"></div>
-              </div>
-            </div>
+            {{ macros.markdown_textarea(
+                  'contentTab',
+                  'issue_content_result',
+                  'issue_content',
+                  target_issue.content ) }}
           </div>
 
           <hr/>
@@ -199,12 +173,29 @@
                 <label
                     for="inputField_{{ field_kind.id }}"
                     class="form-label">{{ field_kind.caption }}</label>
-                <input
-                    type="text"
-                    name="field_kind_{{ field_kind.id }}"
-                    class="form-control"
-                    id="inputField_{{ field_kind.id }}"
-                    value="{{ field.value }}">
+
+                {% if value_types.string == field_kind.value_type %}
+                  <input
+                      type="text"
+                      name="field_kind_{{ field_kind.id }}"
+                      class="form-control"
+                      id="inputField_{{ field_kind.id }}"
+                      value="{{ field.value }}">
+                {% elif value_types.markdown_text == field_kind.value_type %}
+                  <input
+                      type="text"
+                      name="field_kind_{{ field_kind.id }}"
+                      class="form-control"
+                      id="inputField_{{ field_kind.id }}"
+                      value="{{ field.value }}">
+                {% elif value_types.integer == field_kind.value_type %}
+                  <input
+                      type="text"
+                      name="field_kind_{{ field_kind.id }}"
+                      class="form-control"
+                      id="inputField_{{ field_kind.id }}"
+                      value="{{ field.value }}">
+                {% endif %}
               {% endif %}
             </div>
           {% endfor %}
@@ -307,45 +298,19 @@
 
 {% block scripts %}
 <script src="/static/js/bootstrap.bundle.min.js"></script>
-<script src="/static/js/showdown.min.js"></script>
 <script src="/static/js/datatables.min.js"></script>
 <script src="/static/js/jquery.dataTables.min.js"></script>
 <script src="/static/js/dataTables.bootstrap5.min.js"></script>
 
+{{ macros.markdown_textarea_script() }}
+
 <script>
-converter = new showdown.Converter(),
-converter.setOption('tables', true);
-converter.setOption('tasklists', true);
-
-function contentMarkdownToHtml(id) {
-  $("#" + id).html(
-    converter.makeHtml(
-      $("#textareaContent").val()
-    )
-  );
-}
-
 document_ready_function = function() {
-  [].slice.call(document.querySelectorAll('#pillsTab a')).forEach(function (triggerEl) {
-    var tabTrigger = new bootstrap.Tab(triggerEl);
+  {{ macros.tab_switcher_document_ready_part('pillsTab') }}
+  {{ macros.tab_switcher_document_ready_part('contentTab') }}
 
-    triggerEl.addEventListener('click', function (event) {
-      event.preventDefault();
-      tabTrigger.show();
-    });
-  });
-
-  [].slice.call(document.querySelectorAll('#contentTab a')).forEach(function (triggerEl) {
-    var tabTrigger = new bootstrap.Tab(triggerEl);
-
-    triggerEl.addEventListener('click', function (event) {
-      event.preventDefault();
-      tabTrigger.show();
-    });
-  });
-
-  contentMarkdownToHtml('contentView');
-  contentMarkdownToHtml('contentViewResult');
+  markdownToHtml('issue_content', 'contentView');
+  markdownToHtml('issue_content', 'issue_content_result');
 
   // Issues table initialization
   $('#sub_issues_table').DataTable({
