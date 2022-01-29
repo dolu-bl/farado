@@ -113,26 +113,77 @@
         <hr/>
 
         <!-- Issue.fields -->
-        {% for field in target_issue.fields %}
-          <div class="col-12">
-            {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
-            {% if field_kind %}
-              {{ field_kind.caption }}:
-              {% if value_types.integer == field_kind.value_type %}
-                {{ field.value }}
-              {% else %}
-                {{ field.value }}
-              {% endif %}
-            {% endif %}
-
-            {#
-            {{- field_kind.caption if field_kind is not none else '—' -}}
-            :
-            {{ field.value }}
-            #}
-
-          </div>
-        {% endfor %}
+        <div class="col-12">
+          <table class="table table-striped" style="width:100%">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 1%">Field</th>
+                <th scope="col">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for field in target_issue.fields %}
+                {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+                {% if field_kind %}
+                  <tr>
+                    <th scope="row">
+                      {{ field_kind.caption }}
+                    </th>
+                    <td>
+                      {% if value_types.string == field_kind.value_type %}
+                        {{ field.value }}
+                      {% elif value_types.markdown_text == field_kind.value_type %}
+                        <div id="field_kind_{{ field_kind.id }}_view"></div>
+                      {% elif value_types.integer == field_kind.value_type %}
+                        {{ field.value }}
+                      {% elif value_types.float == field_kind.value_type %}
+                        {{ field.value }}
+                      {% elif value_types.bool == field_kind.value_type %}
+                        {% if field.value %}On{% else %}Off{% endif %}
+                      {% elif value_types.date_time == field_kind.value_type %}
+                        {{ field.value }}
+                      {% elif value_types.uri == field_kind.value_type %}
+                        <a href="{{ field.value }}" role="button" class="btn btn-link">{{ field.value }}</a>
+                      {% elif value_types.issue_id == field_kind.value_type %}
+                        {% set issue = project_manager.issue(field.value) %}
+                        {% if issue %}
+                          <a href="/issues/issue/{{ issue.id }}"
+                              role="button"
+                              class="btn btn-link">
+                            {{ project_manager.issue_kind(issue.issue_kind_id).caption }}
+                            #{{ issue.id }} {{ issue.caption}}
+                          </a>
+                        {% endif %}
+                      {% elif value_types.user_id == field_kind.value_type %}
+                        {% set user = project_manager.user_by_id(field.value) %}
+                        {% if user %}
+                          <a href="/users/user/{{ user.id }}"
+                              role="button"
+                              class="btn btn-link">
+                            {{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}
+                            -
+                            @{{ user.id }} {{ user.login }}
+                          </a>
+                        {% endif %}
+                      {% elif value_types.project_id == field_kind.value_type %}
+                        {% set project = project_manager.project(field.value) %}
+                        {% if project %}
+                          <a href="/projects/project/{{ project.id }}"
+                              role="button"
+                              class="btn btn-link">
+                            ${{ project.id }} - {{ project.caption }}
+                          </a>
+                        {% endif %}
+                      {% else %}
+                        {{ field.value }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 
         <!-- TODO : Issue.files -->
 
@@ -170,32 +221,104 @@
             <div class="col-12">
               {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
               {% if field_kind %}
-                <label
-                    for="inputField_{{ field_kind.id }}"
-                    class="form-label">{{ field_kind.caption }}</label>
+                <div class="form-group row">
+                  <label
+                      for="inputField_{{ field_kind.id }}"
+                      class="col-sm-2 col-form-label">{{ field_kind.caption }}</label>
 
-                {% if value_types.string == field_kind.value_type %}
-                  <input
-                      type="text"
-                      name="field_kind_{{ field_kind.id }}"
-                      class="form-control"
-                      id="inputField_{{ field_kind.id }}"
-                      value="{{ field.value }}">
-                {% elif value_types.markdown_text == field_kind.value_type %}
-                  <input
-                      type="text"
-                      name="field_kind_{{ field_kind.id }}"
-                      class="form-control"
-                      id="inputField_{{ field_kind.id }}"
-                      value="{{ field.value }}">
-                {% elif value_types.integer == field_kind.value_type %}
-                  <input
-                      type="text"
-                      name="field_kind_{{ field_kind.id }}"
-                      class="form-control"
-                      id="inputField_{{ field_kind.id }}"
-                      value="{{ field.value }}">
-                {% endif %}
+                  <div class="col-sm-10">
+                    {% if value_types.string == field_kind.value_type %}
+                      <input
+                          type="text"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.markdown_text == field_kind.value_type %}
+                      {{ macros.markdown_textarea(
+                            'inputField_' + field_kind.id | string + '',
+                            'field_kind_' + field_kind.id | string + '_result',
+                            'field_kind_' + field_kind.id | string,
+                            field.value ) }}
+                      <script>
+                        document_ready_functions.push(function() {
+                          {{ macros.tab_switcher_document_ready_part(
+                                'inputField_' + field_kind.id | string ) }};
+                          markdownToHtml(
+                              'field_kind_{{ field_kind.id }}',
+                              'field_kind_{{ field_kind.id }}_result');
+                          markdownToHtml(
+                              'field_kind_{{ field_kind.id }}',
+                              'field_kind_{{ field_kind.id }}_view');
+                        });
+                      </script>
+                    {% elif value_types.integer == field_kind.value_type %}
+                      <!--TODO: integer numbers only-->
+                      <input
+                          type="number"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.float == field_kind.value_type %}
+                      <input
+                          type="number"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.bool == field_kind.value_type %}
+                      <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id="inputField_{{ field_kind.id }}"
+                            name="field_kind_{{ field_kind.id }}"
+                            {% if field.value %}checked{% endif %} />
+                      </div>
+                    {% elif value_types.date_time == field_kind.value_type %}
+                      <!--TODO: bootstrap datetimepicker-->
+                      <input
+                          type="datetime-local"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.uri == field_kind.value_type %}
+                      <input
+                          type="url"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.issue_id == field_kind.value_type %}
+                      <!--TODO: search by issue id and caption-->
+                      <input
+                          type="number"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.user_id == field_kind.value_type %}
+                      <!--TODO: search by user id and caption-->
+                      <input
+                          type="number"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% elif value_types.project_id == field_kind.value_type %}
+                      <!--TODO: search by project id and caption-->
+                      <input
+                          type="number"
+                          name="field_kind_{{ field_kind.id }}"
+                          class="form-control"
+                          id="inputField_{{ field_kind.id }}"
+                          value="{{ field.value }}">
+                    {% endif %}
+                  </div>
+                </div>
               {% endif %}
             </div>
           {% endfor %}

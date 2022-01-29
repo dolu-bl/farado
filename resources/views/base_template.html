@@ -12,6 +12,9 @@
   <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
   <link href="/static/css/page_template.css" rel="stylesheet">
   {% block styles %}{% endblock %}
+  <script>
+    var document_ready_functions = [];
+  </script>
 </head>
 
 <body>
@@ -216,6 +219,10 @@
 
       if (document_ready_function instanceof Function) {
         document_ready_function();
+      }
+
+      if (Array.isArray(document_ready_functions)) {
+        document_ready_functions.forEach(element => element());
       }
     });
   </script>
