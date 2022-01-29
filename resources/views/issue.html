@@ -38,13 +38,8 @@
   <h2 class="page-header">{{ target_issue.caption }}</h2>
 
   <div class="row">
-    <!-- Issue.id -->
-    <div class="col">
-      #{{ target_issue.id }}
-    </div>
-
     <!-- Issue.state -->
-    <div class="col-10">
+    <div class="col">
       {% set state = project_manager.state(target_issue.state_id) %}
       <button
           class="btn btn-outline-dark dropdown-toggle"
@@ -62,41 +57,44 @@
           </li>
         {% endfor %}
       </ul>
-
     </div>
 
+    <!-- Issue.id -->
+    <div class="col-md-auto">
+      <h3>#{{ target_issue.id }}</h3>
+    </div>
+
+    <!-- Issue view/edit switch -->
     <div class="col">
-      #{{ target_issue.id }}
+      <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link active"
+              id="pills-view-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-view"
+              type="button"
+              role="tab"
+              aria-controls="pills-view"
+              aria-selected="true">View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
+              id="pills-edit-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-edit"
+              type="button"
+              role="tab"
+              aria-controls="pills-edit"
+              {% if not restriction.is_save_enabled %}disabled{% endif %}
+              aria-selected="false">Edit</button>
+        </li>
+      </ul>
     </div>
   </div>
 
   <div class="row placeholders">
-
-    <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button
-            class="nav-link active"
-            id="pills-view-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#pills-view"
-            type="button"
-            role="tab"
-            aria-controls="pills-view"
-            aria-selected="true">View</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button
-            class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
-            id="pills-edit-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#pills-edit"
-            type="button"
-            role="tab"
-            aria-controls="pills-edit"
-            {% if not restriction.is_save_enabled %}disabled{% endif %}
-            aria-selected="false">Edit</button>
-      </li>
-    </ul>
     <div class="tab-content" id="pillsTabContent">
       <!-- VIEW -->
       <div
