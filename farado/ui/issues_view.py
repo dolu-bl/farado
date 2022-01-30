@@ -5,6 +5,7 @@ import cherrypy
 from cherrypy.lib.static import serve_file
 
 import json
+import uuid
 
 from farado.logger import dlog
 from farado.ui.renderer import view_renderer
@@ -113,6 +114,22 @@ class IssuesView(BaseView):
                 # TODO : say issue_kind not found to user
                 if not target_issue and is_reading:
                     return view_renderer["404"].render()
+                
+                if 'issue_files_editor' in args:
+                    gm_holder.project_manager.save_item(target_issue)
+                    for file_data in args['issue_files_editor']:
+                        file_id = str(uuid.uuid4())
+                        file_path = f'issue_{target_issue.id}'
+                        gm_holder.project_manager.file_manager.save_uploaded_file(
+                            file_path,
+                            file_id,
+                            file_data.file.read())
+
+                        target_issue.files.append(File(
+                            file_data.filename,
+                            file_id,
+                            file_path
+                        ))
 
             if 'issue_caption' in args:
                 target_issue.caption = args['issue_caption']
@@ -219,8 +236,8 @@ class IssuesView(BaseView):
         if not target_issue:
             return view_renderer["404"].render()
 
-        file_data = args['file_data']
-        file_id = args['fileId']
+        file_data = args['issue_files_editor']
+        file_id = str(uuid.uuid4())
         file_path = f'issue_{target_issue_id}'
         gm_holder.project_manager.file_manager.save_uploaded_file(
             file_path,

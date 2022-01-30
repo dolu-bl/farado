@@ -6,9 +6,9 @@
     });
 #}
 
-{% macro INPUT(id) -%}
+{% macro INPUT(id, min_file_count=1) -%}
   <div class="file-loading">
-    <input id="{{ id }}" type="file" multiple data-min-file-count="1">
+    <input id="{{ id }}" name="{{ id }}" type="file" multiple data-min-file-count="{{ min_file_count }}">
   </div>
 {%- endmacro %}
 

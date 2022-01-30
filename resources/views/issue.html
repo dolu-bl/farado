@@ -71,7 +71,7 @@
     <!-- Issue view/edit switch -->
     <div class="col">
       <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
-        <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation" id="view_button_place">
           <button
               class="nav-link active"
               id="pills-view-tab"
@@ -111,8 +111,6 @@
         <div class="col-12">
           <div id="contentView"></div>
         </div>
-
-        <hr/>
 
         <!-- Issue.fields -->
         <div class="col-12">
@@ -197,6 +195,7 @@
               showUpload: false,
               showBrowse: false,
               showRemove: false,
+              dropZoneEnabled: false,
               showDownload: true,
               initialPreviewDownloadUrl: "/issues/file/{{ target_issue.id }}",
               initialPreview: [
@@ -207,7 +206,7 @@
               initialPreviewConfig: [
                 {% for file in target_issue.files -%}
                   {
-                    {% set file_type = project_manager.file_manager.file_type(file.name) %}
+                    {% set file_type = project_manager.file_manager.file_type(file.caption) %}
                     caption: "{{ file.caption }}",
                     size: {{ project_manager.file_manager.file_size(file) }},
                     type: "{{ file_type }}",
@@ -356,6 +355,21 @@
             </div>
           {% endfor %}
 
+          {% if restriction.is_save_enabled %}
+            <div class="col-12">
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+              <a  href="/issues/remove_issue?target_issue_id={{ target_issue.id }}"
+                  title="Remove issue"
+                  class="btn btn-danger"
+                  role="button"
+                  aria-pressed="true">Remove</a>
+            </div>
+          {% endif %}
+        </form>
+
+        <hr/>
+
+        <div class="col-12">
           <!-- Issue.files -->
           {{ FILE_INPUT.INPUT('issue_files_editor') }}
           <script>
@@ -376,7 +390,7 @@
                 initialPreviewConfig: [
                   {% for file in target_issue.files -%}
                     {
-                      {% set file_type = project_manager.file_manager.file_type(file.name) %}
+                      {% set file_type = project_manager.file_manager.file_type(file.caption) %}
                       caption: "{{ file.caption }}",
                       size: {{ project_manager.file_manager.file_size(file) }},
                       type: "{{ file_type }}",
@@ -386,21 +400,20 @@
                   {%- endfor %}
                 ]
               });
+              $("#issue_files_editor").on('filedeleted', function(event, key, jqXHR, data) {
+                viewButtonToUpdate();
+              });
+              $('#issue_files_editor').on('fileuploaded', function(event, previewId, index, fileId) {
+                viewButtonToUpdate()
+              });
             });
+            // {# HACK: for update FILE_INPUT in view #}
+            function viewButtonToUpdate() {
+              $("#view_button_place").html('<a class="nav-link" href="/issues/issue/{{ target_issue.id }}">View</a>');
+            };
           </script>
-  
-          {% if restriction.is_save_enabled %}
-            <div class="col-12">
-              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-              <a  href="/issues/remove_issue?target_issue_id={{ target_issue.id }}"
-                  title="Remove issue"
-                  class="btn btn-danger"
-                  role="button"
-                  aria-pressed="true">Remove</a>
-            </div>
-          {% endif %}
+        </div>
 
-        </form>
       </div>
 
       <hr/>

@@ -1,5 +1,6 @@
 {% extends "base_template.html" %}
 {% import "base_macros.html" as macros %}
+{% import "macros/file_input.html" as FILE_INPUT %}
 
 
 
@@ -10,7 +11,7 @@
 
 
 {% block styles %}
-  <!-- styles -->
+  {{ FILE_INPUT.STYLES() }}
 {% endblock %}
 
 
@@ -28,7 +29,7 @@
   <h2 class="page-header">New issue</h2>
 
   <div class="row placeholders">
-    <form class="row g-3" action="/issues/issue" method="post">
+    <form class="row g-3" action="/issues/issue" method="post" enctype="multipart/form-data">
       <input type="hidden" name="issue_kind_id" value="{{ new_issue.issue_kind_id }}">
       <input type="hidden" name="issue_parent_id" value="{{ new_issue.parent_id }}">
       <input type="hidden" name="issue_state_id" value="{{ new_issue.state_id }}">
@@ -155,7 +156,23 @@
         </div>
       {% endfor %}
 
-      <!-- TODO : Issue.files -->
+      <hr/>
+
+      <div class="col-12">
+        <!-- Issue.files -->
+        {{ FILE_INPUT.INPUT('issue_files_editor', 0) }}
+        <script>
+          document_ready_functions.push(function() {
+            $("#issue_files_editor").fileinput({
+              previewFileType: 'any',
+              overwriteInitial: false,
+              showUpload: false,
+            });
+          });
+        </script>
+      </div>
+
+      <hr/>
 
       <div class="col-12">
         <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
@@ -168,5 +185,6 @@
 
 
 {% block scripts %}
-{{ macros.markdown_textarea_script() }}
+  {{ FILE_INPUT.SCRIPTS() }}
+  {{ macros.markdown_textarea_script() }}
 {% endblock %}
