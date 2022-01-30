@@ -15,12 +15,14 @@ from farado.items.issue_kind import IssueKind
 from farado.items.field_kind import FieldKind, ValueTypes
 from farado.items.user_role import UserRole
 from farado.general_manager_holder import gm_holder
+from farado.file_manager import FileManager
 
 
 
 class ProjectManager:
     def __init__(self):
         self.users = []
+        self.file_manager = FileManager()
 
     def read_permanent_items(self):
         self.users = gm_holder.meta_item_manager.items(User)

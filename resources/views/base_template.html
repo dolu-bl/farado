@@ -9,8 +9,9 @@
     <link rel="icon" href="/static/images/logo.png">
   -->
   <title>{% block title %}{% endblock %}</title>
-  <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="/static/css/page_template.css" rel="stylesheet">
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="/static/css/page_template.css" rel="stylesheet"/>
+  <link href="/static/bootstrap-icons/bootstrap-icons.css" rel="stylesheet"/>
   {% block styles %}{% endblock %}
   <script>
     var document_ready_functions = [];
@@ -47,7 +48,7 @@
                     class="nav-link"
                   {%- endif %}
                   href="/projects">
-                Projects
+                <i class="bi bi-briefcase-fill"></i> Projects
               </a>
             </li>
 
@@ -58,7 +59,7 @@
                     class="nav-link"
                   {%- endif %}
                   href="/issues">
-                Issues
+                <i class="bi bi-card-heading"></i> Issues
               </a>
             </li>
 
@@ -69,7 +70,7 @@
                     class="nav-link"
                   {%- endif %}
                   href="/board">
-                Board
+                <i class="bi bi-kanban"></i> Boards
               </a>
             </li>
 
@@ -80,7 +81,7 @@
                     class="nav-link"
                   {%- endif %}
                   href="/roadmap">
-                Roadmap
+                <i class="bi bi-map"></i> Roadmap
               </a>
             </li>
 
@@ -100,7 +101,7 @@
                     class="nav-link"
                   {%- endif %}
                   href="/users">
-                  Users
+                  <i class="bi bi-people-fill"></i> Users
                 </a>
               </li>
 
@@ -111,7 +112,7 @@
                       class="nav-link"
                     {%- endif %}
                     href="/roles">
-                  Roles
+                  <i class="bi bi-shield-shaded"></i> Roles
                 </a>
               </li>
 
@@ -122,7 +123,7 @@
                       class="nav-link"
                     {%- endif %}
                     href="/workflows">
-                  Workflows
+                  <i class="bi bi-diagram-3"></i> Workflows
                 </a>
               </li>
 
@@ -133,7 +134,7 @@
                       class="nav-link"
                     {%- endif %}
                     href="/issue_kinds">
-                  Issue kinds
+                  <i class="bi bi-card-checklist"></i> Issue kinds
                 </a>
               </li>
 
@@ -144,7 +145,7 @@
                       class="nav-link"
                     {%- endif %}
                     href="/logs">
-                  Logs
+                  <i class="bi bi-terminal"></i> Logs
                 </a>
               </li>
 
@@ -212,6 +213,8 @@
 
   <script src="/static/js/jquery-3.6.0.min.js"></script>
   <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/bootstrap.bundle.min.js"></script>
+
   <script>
     var document_ready_function;
     $(document).ready(function() {

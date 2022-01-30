@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 class File():
-    def __init__( self
-                , caption
-                , name
-                , path
-                , description = ""
-                , issue_id = None
-                ):
+    def __init__(
+            self,
+            caption,
+            name,
+            path,
+            description="",
+            issue_id = None
+            ):
         self.id = None
         self.caption = caption
         self.name = name
