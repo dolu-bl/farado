@@ -19,42 +19,57 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
     <li class="breadcrumb-item"><a href="/projects">Projects</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Project {{ target_project.id }}</li>
+    <li class="breadcrumb-item active" aria-current="page">${{ target_project.id }} {{ target_project.caption }}</li>
   </ol>
 {% endblock %}
 
 
 {% block content %}
 
-  <h2 class="page-header">Project</h2>
+  <h2 class="page-header">{{ target_project.caption }}</h2>
+
+  <div class="row">
+
+    <div class="col">
+      <!--reserved-->
+    </div>
+
+    <!-- Project.id -->
+    <div class="col-md-auto">
+      <h3>#{{ target_project.id }}</h3>
+    </div>
+
+    <!-- Project view/edit switch -->
+    <div class="col">
+      <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link active"
+              id="pills-view-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-view"
+              type="button"
+              role="tab"
+              aria-controls="pills-view"
+              aria-selected="true">View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
+              id="pills-edit-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-edit"
+              type="button"
+              role="tab"
+              aria-controls="pills-edit"
+              {% if not restriction.is_save_enabled %}disabled{% endif %}
+              aria-selected="false">Edit</button>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   <div class="row placeholders">
-
-    <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button
-            class="nav-link active"
-            id="pills-view-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#pills-view"
-            type="button"
-            role="tab"
-            aria-controls="pills-view"
-            aria-selected="true">View</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button
-            class="nav-link {% if not restriction.is_save_enabled %}disabled{% endif %}"
-            id="pills-edit-tab"
-            data-bs-toggle="pill"
-            data-bs-target="#pills-edit"
-            type="button"
-            role="tab"
-            aria-controls="pills-edit"
-            {% if not restriction.is_save_enabled %}disabled{% endif %}
-            aria-selected="false">Edit</button>
-      </li>
-    </ul>
     <div class="tab-content" id="pillsTabContent">
       <!-- VIEW -->
       <div
@@ -63,16 +78,9 @@
           role="tabpanel"
           aria-labelledby="pills-view-tab">
 
+        <!-- Project.content -->
         <div class="col-12">
-          Id: {{ target_project.id }}
-        </div>
-
-        <div class="col-12">
-          Caption: {{ target_project.caption }}
-        </div>
-
-        <div class="col-12">
-          Content: <div id="contentView"></div>
+          <div id="contentView"></div>
         </div>
       </div>
 
@@ -83,13 +91,7 @@
           role="tabpanel"
           aria-labelledby="pills-edit-tab">
 
-        <form class="row g-3" action="/projects/project" method="post">
-
-          <!-- Project.id -->
-          <div class="col-12">
-            <label for="inputId" class="form-label">Id</label>
-            <input type="text" name="target_project_id" class="form-control" id="inputId" value="{{ target_project.id }}" readonly>
-          </div>
+        <form class="row g-3" action="/projects/project/{{ target_project.id }}" method="post">
 
           <!-- Project.caption -->
           <div class="col-12">
