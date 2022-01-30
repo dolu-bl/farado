@@ -34,7 +34,19 @@ class Issue():
             )
 
     def field(self, field_kind_id):
+        if not field_kind_id:
+            return None
+        field_kind_id = int(field_kind_id)
         for field in self.fields:
             if field_kind_id == field.field_kind_id:
                 return field
+        return None
+
+    def file(self, file_id):
+        if not file_id:
+            return None
+        file_id = int(file_id)
+        for file in self.files:
+            if file_id == file.id:
+                return file
         return None

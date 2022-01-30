@@ -1,5 +1,6 @@
 {% extends "base_template.html" %}
 {% import "base_macros.html" as macros %}
+{% import "macros/file_input.html" as FILE_INPUT %}
 
 
 
@@ -12,6 +13,7 @@
 {% block styles %}
   <link href="/static/css/datatables.min.css" rel="stylesheet" type="text/css" />
   <link href="/static/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+  {{ FILE_INPUT.STYLES() }}
 {% endblock %}
 
 
@@ -185,7 +187,38 @@
           </table>
         </div>
 
-        <!-- TODO : Issue.files -->
+        <!-- Issue.files -->
+        {{ FILE_INPUT.INPUT('issue_files') }}
+        <script>
+          document_ready_functions.push(function() {
+            $("#issue_files").fileinput({
+              previewFileType: 'any',
+              overwriteInitial: false,
+              showUpload: false,
+              showBrowse: false,
+              showRemove: false,
+              showDownload: true,
+              initialPreviewDownloadUrl: "/issues/file/{{ target_issue.id }}",
+              initialPreview: [
+                {% for file in target_issue.files -%}
+                  "/issues/file/{{ target_issue.id }}?file_id={{ file.id }}",
+                {%- endfor %}
+              ],
+              initialPreviewConfig: [
+                {% for file in target_issue.files -%}
+                  {
+                    {% set file_type = project_manager.file_manager.file_type(file.name) %}
+                    caption: "{{ file.caption }}",
+                    size: {{ project_manager.file_manager.file_size(file) }},
+                    type: "{{ file_type }}",
+                    previewAsData: {% if 'image' == file_type %}true{% else %}false{% endif %},
+                    key: {{ file.id }}
+                  },
+                {%- endfor %}
+              ]
+            });
+          });
+        </script>
 
       </div>
 
@@ -323,8 +356,39 @@
             </div>
           {% endfor %}
 
-          <!-- TODO : Issue.files -->
-
+          <!-- Issue.files -->
+          {{ FILE_INPUT.INPUT('issue_files_editor') }}
+          <script>
+            document_ready_functions.push(function() {
+              $("#issue_files_editor").fileinput({
+                uploadUrl: '/issues/upload/{{ target_issue.id }}',
+                previewFileType: 'any',
+                overwriteInitial: false,
+                showUpload: true,
+                showDownload: true,
+                initialPreviewDownloadUrl: "/issues/file/{{ target_issue.id }}",
+                deleteUrl: "/issues/remove_file/{{ target_issue.id }}",
+                initialPreview: [
+                  {% for file in target_issue.files -%}
+                    "/issues/file/{{ target_issue.id }}?file_id={{ file.id }}",
+                  {%- endfor %}
+                ],
+                initialPreviewConfig: [
+                  {% for file in target_issue.files -%}
+                    {
+                      {% set file_type = project_manager.file_manager.file_type(file.name) %}
+                      caption: "{{ file.caption }}",
+                      size: {{ project_manager.file_manager.file_size(file) }},
+                      type: "{{ file_type }}",
+                      previewAsData: {% if 'image' == file_type %}true{% else %}false{% endif %},
+                      key: {{ file.id }}
+                    },
+                  {%- endfor %}
+                ]
+              });
+            });
+          </script>
+  
           {% if restriction.is_save_enabled %}
             <div class="col-12">
               <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
@@ -420,10 +484,11 @@
 
 
 {% block scripts %}
-<script src="/static/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/datatables.min.js"></script>
 <script src="/static/js/jquery.dataTables.min.js"></script>
 <script src="/static/js/dataTables.bootstrap5.min.js"></script>
+
+{{ FILE_INPUT.SCRIPTS() }}
 
 {{ macros.markdown_textarea_script() }}
 

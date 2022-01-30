@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+from cherrypy.lib.static import serve_file
+
 import json
 
 from farado.logger import dlog
@@ -9,6 +11,7 @@ from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder
 from farado.items.issue import Issue
+from farado.items.file import File
 from farado.ui.operation_result import OperationResult
 from farado.permission_manager import PermissionFlag
 from farado.ui.base_view import BaseView, UiUserRestrictions, DataTableArgs
@@ -202,3 +205,84 @@ class IssuesView(BaseView):
                 is_delete_enabled=bool(PermissionFlag.deleter <= rights),
                 )
             )
+
+    @cherrypy.expose
+    def upload(self, target_issue_id, **args):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+
+        target_issue = gm_holder.project_manager.issue(target_issue_id)
+        if not target_issue:
+            return view_renderer["404"].render()
+
+        file_data = args['file_data']
+        file_id = args['fileId']
+        file_path = f'issue_{target_issue_id}'
+        gm_holder.project_manager.file_manager.save_uploaded_file(
+            file_path,
+            file_id,
+            file_data.file.read())
+
+        target_issue.files.append(File(
+            file_data.filename,
+            file_id,
+            file_path
+        ))
+        gm_holder.project_manager.save_item(target_issue)
+
+        return "{}"
+
+    @cherrypy.expose
+    def file(self, target_issue_id, file_id=None, key=None):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+
+        target_issue = gm_holder.project_manager.issue(target_issue_id)
+        if not target_issue:
+            return view_renderer["404"].render()
+
+        if not file_id:
+            file_id = key
+
+        file = target_issue.file(file_id)
+        if not file:
+            return view_renderer["404"].render()
+
+        file_path = gm_holder.project_manager.file_manager.file_path(file)
+        return serve_file(
+            file_path,
+            "application/x-download",
+            "attachment",
+            file.caption)
+
+    @cherrypy.expose
+    def remove_file(self, target_issue_id, file_id=None, key=None):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+
+        target_issue = gm_holder.project_manager.issue(target_issue_id)
+        if not target_issue:
+            return view_renderer["404"].render()
+
+        if not file_id:
+            file_id = key
+
+        file = target_issue.file(file_id)
+        if not file:
+            return view_renderer["404"].render()
+
+        gm_holder.project_manager.file_manager.remove_uploaded_file(file.path, file.name)
+        gm_holder.project_manager.remove_item(File, file_id)
+        return "{}"

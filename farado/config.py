@@ -25,5 +25,8 @@ application_config = {
 farado_config = {
     'database': {
         'connection_string' : 'sqlite:///resources/database.sqlite',
-    }
+    },
+    'uploads': {
+        'path' : './resources/uploads'
+    },
 }

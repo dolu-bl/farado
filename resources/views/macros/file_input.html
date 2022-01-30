@@ -1,0 +1,23 @@
+{#
+  Initialization needed:
+    $("#file_input_id").fileinput({
+      'uploadUrl': '/upload/',
+      'previewFileType': 'any'
+    });
+#}
+
+{% macro INPUT(id) -%}
+  <div class="file-loading">
+    <input id="{{ id }}" type="file" multiple data-min-file-count="1">
+  </div>
+{%- endmacro %}
+
+{% macro STYLES() -%}
+  <link href="/static/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css"/>
+{%- endmacro %}
+
+{% macro SCRIPTS() -%}
+  <script src="/static/js/fileinput/plugins/piexif.min.js" type="text/javascript"></script>
+  <script src="/static/js/fileinput/plugins/sortable.min.js" type="text/javascript"></script>
+  <script src="/static/js/fileinput/fileinput.min.js" type="text/javascript"></script>
+{%- endmacro %}
