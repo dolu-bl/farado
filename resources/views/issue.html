@@ -206,7 +206,7 @@
               initialPreviewConfig: [
                 {% for file in target_issue.files -%}
                   {
-                    {% set file_type = project_manager.file_manager.file_type(file.name) %}
+                    {% set file_type = project_manager.file_manager.file_type(file.caption) %}
                     caption: "{{ file.caption }}",
                     size: {{ project_manager.file_manager.file_size(file) }},
                     type: "{{ file_type }}",
@@ -390,7 +390,7 @@
                 initialPreviewConfig: [
                   {% for file in target_issue.files -%}
                     {
-                      {% set file_type = project_manager.file_manager.file_type(file.name) %}
+                      {% set file_type = project_manager.file_manager.file_type(file.caption) %}
                       caption: "{{ file.caption }}",
                       size: {{ project_manager.file_manager.file_size(file) }},
                       type: "{{ file_type }}",
