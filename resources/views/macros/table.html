@@ -1,0 +1,46 @@
+{#
+  Initialization example:
+    $('#table_id').DataTable({
+      "processing": true,
+      "serverSide": true,
+      "ajax": {
+        "url": "/path",
+        "type": "POST"
+      },
+      "searching": true,
+      "ordering": true,
+      "pageLength": 20,
+      "lengthChange": false,
+      "order": [[ 1, "asc" ]],
+      "columns": [
+        {
+          data: 'id',
+          orderable: true
+        },
+        {
+          data: 'caption',
+          render: render,
+          orderable: true
+        },
+        {
+          data: 'management',
+          render: render,
+          orderable: false
+        }
+      ]
+    });
+    function render(data, type, row) {
+      return '<a href="/projects/project/' + row.id + '" title="Modify project">' + data + '</a>';
+    }
+#}
+
+{% macro STYLES() -%}
+  <link href="/static/css/datatables.min.css" rel="stylesheet" type="text/css" />
+  <link href="/static/css/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+{%- endmacro %}
+
+{% macro SCRIPTS() -%}
+  <script src="/static/js/datatables.min.js"></script>
+  <script src="/static/js/jquery.dataTables.min.js"></script>
+  <script src="/static/js/dataTables.bootstrap5.min.js"></script>
+{%- endmacro %}
