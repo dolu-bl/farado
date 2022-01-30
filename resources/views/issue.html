@@ -71,7 +71,7 @@
     <!-- Issue view/edit switch -->
     <div class="col">
       <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
-        <li class="nav-item" role="presentation">
+        <li class="nav-item" role="presentation" id="view_button_place">
           <button
               class="nav-link active"
               id="pills-view-tab"
@@ -400,7 +400,17 @@
                   {%- endfor %}
                 ]
               });
+              $("#issue_files_editor").on('filedeleted', function(event, key, jqXHR, data) {
+                viewButtonToUpdate();
+              });
+              $('#issue_files_editor').on('fileuploaded', function(event, previewId, index, fileId) {
+                viewButtonToUpdate()
+              });
             });
+            // {# HACK: for update FILE_INPUT in view #}
+            function viewButtonToUpdate() {
+              $("#view_button_place").html('<a class="nav-link" href="/issues/issue/{{ target_issue.id }}">View</a>');
+            };
           </script>
         </div>
 
