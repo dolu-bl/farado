@@ -1,4 +1,5 @@
 {% extends "base_template.html" %}
+{% import "macros/table.html" as TABLE %}
 
 
 
@@ -8,9 +9,7 @@
 
 
 {% block styles %}
-  <!--
-    <link href="/static/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
-  -->
+  {{ TABLE.STYLES() }}
 {% endblock %}
 
 
@@ -31,18 +30,21 @@
 
   <div class="row placeholders">
 
-    <table class="table">
-      <thead class="table-dark">
+    <table 
+        class="table table-striped table-sm table-bordered table-hover"
+        style="width:100%"
+        id="users_table">
+      <thead>
         <tr>
           <th scope="col" style="width: 1%">Id</th>
           <th scope="col">Login</th>
           <th scope="col">First name</th>
-          <th scope="col">middle_name</th>
-          <th scope="col">last_name</th>
-          <th scope="col">email</th>
-          <th scope="col">need_change_password</th>
-          <th scope="col">is_blocked</th>
-          <th scope="col">online_state</th>
+          <th scope="col">Middle name</th>
+          <th scope="col">Last name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Need change password</th>
+          <th scope="col">Blocked</th>
+          <th scope="col">Online</th>
           <th scope="col" style="width: 1%"></th>
         </tr>
       </thead>
@@ -57,9 +59,20 @@
           <td>{{ user.middle_name }}</td>
           <td>{{ user.last_name }}</td>
           <td>{{ user.email }}</td>
-          <td>{{ user.need_change_password }}</td>
-          <td>{{ user.is_blocked }}</td>
-          <td>{{ user.online_state }}</td>
+          <td>
+            {% if user.need_change_password %}
+              <i class="bi bi-check-square-fill"></i>
+            {% endif %}
+          <td>
+            {% if user.is_blocked %}
+              Blocked
+            {% endif %}
+          </td>
+          <td>
+            {% if user.online_state %}
+              Online
+            {% endif %}
+          </td>
           <td>
             <a href="/users/remove_user?target_user_id={{ user.id }}" title="Remove user">
               <span class="badge bg-danger">x</span>
@@ -76,6 +89,60 @@
 
 
 {% block scripts %}
+  {{ TABLE.SCRIPTS() }}
   <script>
+    document_ready_function = function() {
+      $('#users_table').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "searching": true,
+        "ordering": true,
+        "pageLength": 20,
+        "lengthChange": false,
+        "order": [[ 1, "asc" ]],
+        "columns": [
+          {
+            data: 'id',
+            orderable: true
+          },
+          {
+            data: 'login',
+            orderable: true
+          },
+          {
+            data: 'first_name',
+            orderable: true
+          },
+          {
+            data: 'middle_name',
+            orderable: true
+          },
+          {
+            data: 'last_name',
+            orderable: true
+          },
+          {
+            data: 'email',
+            orderable: true
+          },
+          {
+            data: 'need_change_password',
+            orderable: true
+          },
+          {
+            data: 'is_blocked',
+            orderable: true
+          },
+          {
+            data: 'online_state',
+            orderable: true
+          },
+          {
+            data: 'management',
+            orderable: false
+          }
+        ]
+      });
+    }
   </script>
 {% endblock %}
