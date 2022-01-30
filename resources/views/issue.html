@@ -112,8 +112,6 @@
           <div id="contentView"></div>
         </div>
 
-        <hr/>
-
         <!-- Issue.fields -->
         <div class="col-12">
           <table class="table table-striped" style="width:100%">
@@ -197,6 +195,7 @@
               showUpload: false,
               showBrowse: false,
               showRemove: false,
+              dropZoneEnabled: false,
               showDownload: true,
               initialPreviewDownloadUrl: "/issues/file/{{ target_issue.id }}",
               initialPreview: [
@@ -356,6 +355,21 @@
             </div>
           {% endfor %}
 
+          {% if restriction.is_save_enabled %}
+            <div class="col-12">
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+              <a  href="/issues/remove_issue?target_issue_id={{ target_issue.id }}"
+                  title="Remove issue"
+                  class="btn btn-danger"
+                  role="button"
+                  aria-pressed="true">Remove</a>
+            </div>
+          {% endif %}
+        </form>
+
+        <hr/>
+
+        <div class="col-12">
           <!-- Issue.files -->
           {{ FILE_INPUT.INPUT('issue_files_editor') }}
           <script>
@@ -388,19 +402,8 @@
               });
             });
           </script>
-  
-          {% if restriction.is_save_enabled %}
-            <div class="col-12">
-              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
-              <a  href="/issues/remove_issue?target_issue_id={{ target_issue.id }}"
-                  title="Remove issue"
-                  class="btn btn-danger"
-                  role="button"
-                  aria-pressed="true">Remove</a>
-            </div>
-          {% endif %}
+        </div>
 
-        </form>
       </div>
 
       <hr/>
