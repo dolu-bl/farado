@@ -1,0 +1,105 @@
+{% extends "base_template.html" %}
+{% import "macros/table.html" as TABLE %}
+
+
+
+{% block title %}Farado — Boards{% endblock %}
+
+{% set active_menu = 'boards' %}
+
+
+{% block styles %}
+  {{ TABLE.STYLES() }}
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Boards</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">
+    Boards
+    {% if restriction.is_admin %}
+      <a href="/boards/add_board" class="btn btn-sm btn-outline-dark" role="button" aria-pressed="true">+</a>
+    {% endif %}
+  </h2>
+
+  <div class="row placeholders">
+
+    <table
+        class="table table-striped table-sm table-bordered table-hover"
+        style="width:100%"
+        id="projects_table">
+      <thead>
+        <tr>
+          <th scope="col" style="width: 1%">Id</th>
+          <th scope="col">Caption</th>
+          <th scope="col" style="width: 1%"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for board in project_manager.boards() %}
+        <tr>
+          <th scope="row">{{ board.id }}</th>
+          <td>
+            <a href="/boards/board/{{ board.id }}">{{ board.caption }}</a>
+          </td>
+          <td>
+            <a href="/boards/remove_board?target_board_id={{ board.id }}" title="Remove board">
+              <span class="badge bg-danger">x</span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Id</th>
+          <th>Caption</th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  {{ TABLE.SCRIPTS() }}
+  <script>
+    document_ready_function = function() {
+      // Projects table initialization
+      $('#projects_table').DataTable({
+        "processing": true,
+        "serverSide": false,
+        "searching": true,
+        "ordering": true,
+        "pageLength": 20,
+        "lengthChange": false,
+        "order": [[ 1, "asc" ]],
+        "columns": [
+          {
+            data: 'id',
+            orderable: true
+          },
+          {
+            data: 'caption',
+            orderable: true
+          },
+          {
+            data: 'management',
+            orderable: false
+          }
+        ]
+      });
+    }
+  </script>
+{% endblock %}

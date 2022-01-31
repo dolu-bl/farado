@@ -7,6 +7,7 @@ from farado.config import global_config, application_config
 from farado.logger import dlog
 from farado.ui.users_view import UsersView
 from farado.ui.projects_view import ProjectsView
+from farado.ui.boards_view import BoardsView
 from farado.ui.roles_view import RolesView
 from farado.ui.workflows_view import WorkflowsView
 from farado.ui.issue_kinds_view import IssueKindsView
@@ -24,10 +25,12 @@ class WebService(BaseView):
         super().__init__()
         self.users_view = UsersView()
         self.projects_view = ProjectsView()
+        self.boards_view = BoardsView()
         self.roles_view = RolesView()
         self.workflows_view = WorkflowsView()
         self.issue_kinds_view = IssueKindsView()
         self.issues_view = IssuesView()
+
 
 
     @cherrypy.expose
@@ -93,6 +96,7 @@ class WebService(BaseView):
         cherrypy.log.screen = False
         cherrypy.tree.mount(self.users_view, '/users', application_config)
         cherrypy.tree.mount(self.projects_view, '/projects', application_config)
+        cherrypy.tree.mount(self.boards_view, '/boards', application_config)
         cherrypy.tree.mount(self.roles_view, '/roles', application_config)
         cherrypy.tree.mount(self.workflows_view, '/workflows', application_config)
         cherrypy.tree.mount(self.issue_kinds_view, '/issue_kinds', application_config)

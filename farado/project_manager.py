@@ -3,6 +3,7 @@
 
 from farado.logger import dlog
 from farado.items.project import Project
+from farado.items.board import Board
 from farado.items.issue import Issue
 from farado.items.field import Field
 from farado.items.user import User
@@ -38,6 +39,14 @@ class ProjectManager:
     def project_issues(self, project_id):
         if project_id:
             return gm_holder.meta_item_manager.items_by_value(Issue, "project_id", project_id)
+        return None
+
+    def boards(self):
+        return gm_holder.meta_item_manager.items(Board)
+
+    def board(self, board_id):
+        if board_id:
+            return gm_holder.meta_item_manager.item_by_id(Board, board_id)
         return None
 
     def roles(self):

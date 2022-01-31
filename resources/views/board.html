@@ -1,0 +1,137 @@
+{% extends "base_template.html" %}
+{% import "macros/markdown_textarea.html" as MARKDOWN_TEXTAREA %}
+{% import "macros/tab_switcher.html" as TAB_SWITCHER %}
+
+
+
+{% block title %}Farado — Board{% endblock %}
+
+{% set active_menu = 'boards' %}
+
+
+{% block styles %}
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/boards">Boards</a></li>
+    <li class="breadcrumb-item active" aria-current="page">%{{ target_board.id }} {{ target_board.caption }}</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">{{ target_board.caption }}</h2>
+
+  <div class="row">
+
+    <div class="col">
+      <!--reserved-->
+    </div>
+
+    <!-- Board.id -->
+    <div class="col-md-auto">
+      <h3>%{{ target_board.id }}</h3>
+    </div>
+
+    <!-- Board view/edit switch -->
+    <div class="col">
+      <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link active"
+              id="pills-view-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-view"
+              type="button"
+              role="tab"
+              aria-controls="pills-view"
+              aria-selected="true">View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link {% if not restriction.is_admin %}disabled{% endif %}"
+              id="pills-edit-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-edit"
+              type="button"
+              role="tab"
+              aria-controls="pills-edit"
+              {% if not restriction.is_admin %}disabled{% endif %}
+              aria-selected="false">Edit</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row placeholders">
+    <div class="tab-content" id="pillsTabContent">
+      <!-- VIEW -->
+      <div
+          class="tab-pane fade show active"
+          id="pills-view"
+          role="tabpanel"
+          aria-labelledby="pills-view-tab">
+
+        <!-- Board.description -->
+        <div class="col-12">
+          <div id="descriptionView"></div>
+        </div>
+      </div>
+
+      <!-- EDIT -->
+      <div
+          class="tab-pane fade"
+          id="pills-edit"
+          role="tabpanel"
+          aria-labelledby="pills-edit-tab">
+
+        <form class="row g-3" action="/boards/board/{{ target_board.id }}" method="post">
+
+          <!-- Board.caption -->
+          <div class="col-12">
+            <label for="inputCaption" class="form-label">Caption</label>
+            <input type="text" name="target_board_caption" class="form-control" id="inputCaption" value="{{ target_board.caption }}" required>
+          </div>
+
+          <!-- Board.description -->
+          <div class="col-12">
+            <label for="descriptionTab" class="form-label">Description</label>
+            {{ MARKDOWN_TEXTAREA.INPUT(
+                  'descriptionTab',
+                  'target_board_description_result',
+                  'target_board_description',
+                  target_board.description ) }}
+          </div>
+
+          {% if restriction.is_admin %}
+            <div class="col-12">
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+            </div>
+          {% endif %}
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  {{ MARKDOWN_TEXTAREA.SCRIPTS() }}
+
+  <script>
+    document_ready_function = function() {
+      {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('pillsTab') }}
+      {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('descriptionTab') }}
+
+      markdownToHtml('target_board_description', 'descriptionView');
+      markdownToHtml('target_board_description', 'target_board_description_result');
+    }
+  </script>
+{% endblock %}

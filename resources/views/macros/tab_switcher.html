@@ -1,0 +1,15 @@
+{#
+  Add to your document ready function.
+  Arguments:
+  * tab_id - unique tab identifier
+#}
+{% macro DOCUMENT_READY_SCRIPT(tab_id) -%}
+  [].slice.call(document.querySelectorAll('#{{ tab_id }} a')).forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl);
+
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault();
+      tabTrigger.show();
+    });
+  });
+{%- endmacro %}
