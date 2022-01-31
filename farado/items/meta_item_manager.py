@@ -170,6 +170,7 @@ class MetaItemManager:
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
             , sqlalchemy.Column('board_id', sqlalchemy.ForeignKey('boards.id'), index=True)
             , sqlalchemy.Column('state_id', sqlalchemy.ForeignKey('states.id'), index=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
             , sqlalchemy.Column('order', sqlalchemy.Integer)
         )
 

@@ -32,36 +32,43 @@ class BoardsView(BaseView):
             )
 
     @cherrypy.expose
-    def board(
-            self,
-            target_board_id=None,
-            target_board_caption='',
-            target_board_description='',
-            ):
+    def board(self, target_board_id=None, **args):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
 
+        is_reading = bool(len(args) == 0)
+
         # TODO : rights
 
         target_board = gm_holder.project_manager.board(target_board_id)
-        if not target_board and not target_board_caption:
+        if not target_board and is_reading:
             return view_renderer["404"].render()
 
         operation_result = None
-        if target_board_caption:
+        if not is_reading:
             if not target_board:
                 if not self.is_admin(user.id):
                     return view_renderer["403"].render()
                 target_board = Board()
 
-            target_board.caption = target_board_caption
-            target_board.description = target_board_description
+            if 'target_board_caption' in args:
+                target_board.caption = args['target_board_caption']
+
+            if 'target_board_description' in args:
+                target_board.description = args['target_board_description']
+
+            if 'target_board_workflow_id' in args:
+                target_board_workflow_id = args['target_board_workflow_id']
+                if target_board_workflow_id.isdigit() and bool(int(target_board_workflow_id)):
+                    target_board.workflow_id = int(target_board_workflow_id)
+
             gm_holder.project_manager.save_item(target_board)
             operation_result = OperationResult(caption="Board saved", kind="success")
 
         return view_renderer["board"].render(
             user=user,
+            project_manager=gm_holder.project_manager,
             target_board=target_board,
             operation_result=operation_result,
             restriction=UiUserRestrictions(
@@ -80,6 +87,7 @@ class BoardsView(BaseView):
 
         return view_renderer["board"].render(
             user=user,
+            project_manager=gm_holder.project_manager,
             target_board=None,
             save_result=None,
             restriction=UiUserRestrictions(

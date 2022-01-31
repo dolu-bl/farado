@@ -1,6 +1,7 @@
 {% extends "base_template.html" %}
 {% import "macros/markdown_textarea.html" as MARKDOWN_TEXTAREA %}
 {% import "macros/tab_switcher.html" as TAB_SWITCHER %}
+{% import "macros/select.html" as SELECT %}
 
 
 
@@ -105,6 +106,15 @@
                   'target_board_description_result',
                   'target_board_description',
                   target_board.description ) }}
+          </div>
+
+          <!-- Board.workflow_id -->
+          <div class="col-12">
+            <label for="textareaDescription" class="form-label">Workflow</label>
+            {{ SELECT.INPUT(
+                  'target_board_workflow_id',
+                  project_manager.workflows(),
+                  target_board.workflow_id ) }}
           </div>
 
           {% if restriction.is_admin %}
