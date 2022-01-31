@@ -74,7 +74,7 @@ class ProjectsView(BaseView):
     @cherrypy.expose
     def project(
             self,
-            target_project_id,
+            target_project_id=None,
             target_project_caption='',
             target_project_content='',
             ):
