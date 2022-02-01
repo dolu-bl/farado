@@ -23,3 +23,22 @@ class BoardColumn():
                 }',\n order='{ self.order
                 }')>'''
             )
+
+    def reset_properties(self, properties):
+        '''
+        properties example:
+        {'state_id': '2', 'caption': 'asdf', 'order': '3'}
+        '''
+        for key, value in properties.items():
+            if key in 'caption':
+                self.caption = value
+            elif key in 'state_id':
+                self.state_id = to_int_or_none(value)
+            elif key in 'order':
+                self.order = to_int_or_none(value)
+
+def to_int_or_none(value):
+    try:
+        return int(value)
+    except:
+        return None

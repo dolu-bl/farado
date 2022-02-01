@@ -18,24 +18,19 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
     <li class="breadcrumb-item"><a href="/boards">Boards</a></li>
-    <li class="breadcrumb-item active" aria-current="page">%{{ target_board.id }} {{ target_board.caption }}</li>
+    <li class="breadcrumb-item active" aria-current="page">Board-{{ target_board.id }}: {{ target_board.caption }}</li>
   </ol>
 {% endblock %}
 
 
 {% block content %}
 
-  <h2 class="page-header">{{ target_board.caption }}</h2>
+  <h2 class="page-header">Board-{{ target_board.id }}: {{ target_board.caption }}</h2>
 
   <div class="row">
 
     <div class="col">
       <!--reserved-->
-    </div>
-
-    <!-- Board.id -->
-    <div class="col-md-auto">
-      <h3>%{{ target_board.id }}</h3>
     </div>
 
     <!-- Board view/edit switch -->
@@ -117,9 +112,83 @@
                   target_board.workflow_id ) }}
           </div>
 
+          <table
+              class="table table-striped table-sm table-bordered table-hover"
+              style="width:100%"
+              id="projects_table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 1%">Id</th>
+                <th scope="col">State</th>
+                <th scope="col">Caption</th>
+                <th scope="col">Order</th>
+                <th scope="col" style="width: 1%"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for board_column in target_board.board_columns %}
+                <tr id="board_column_row_{{ board_column.id }}">
+                  <th scope="row">
+                    <input
+                        type="hidden"
+                        name="board_column_id_{{ board_column.id }}"
+                        class="form-control form-select-sm"
+                        value="{{ board_column.id }}">
+                    {{ board_column.id }}
+                  </th>
+                  <td>
+                    {{ SELECT.INPUT(
+                          'board_column_state_id_' + board_column.id | string,
+                          project_manager.states(),
+                          board_column.state_id,
+                          need_zero_value=False,
+                          class="form-select form-select-sm" ) }}
+                  </td>
+                  <td>
+                    <input
+                        type="text"
+                        name="board_column_caption_{{ board_column.id }}"
+                        class="form-control form-select-sm"
+                        value="{{ board_column.caption }}">
+                  </td>
+                  <td>
+                    <input
+                        type="number"
+                        name="board_column_order_{{ board_column.id }}"
+                        class="form-control form-select-sm"
+                        value="{{ board_column.order }}">
+                  </td>
+                  <td>
+                    <a href="#"
+                        class="btn btn-danger btn-sm"
+                        title="Remove board column"
+                        onclick="$('#board_column_row_{{ board_column.id }}').remove();">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Id</th>
+                <th>State</th>
+                <th>Caption</th>
+                <th>Order</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+
           {% if restriction.is_admin %}
             <div class="col-12">
               <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+
+              {# FIXME : If you add a new column, all board changes on this page are discarded. #}
+              <a  href="/boards/add_board_column?target_board_id={{ target_board.id }}"
+                  class="btn btn-outline-dark">
+                Create new board column
+              </a>
             </div>
           {% endif %}
 

@@ -3,9 +3,9 @@
   * item.id
   * item.caption
 #}
-{% macro INPUT(name, items, selected_id=None, need_zero_value=True) -%}
+{% macro INPUT(name, items, selected_id=None, need_zero_value=True, class="form-select") -%}
   <select
-      class="form-select form-select-sm"
+      class="{{ class }}"
       name="{{ name }}"
       id="{{ name }}">
 

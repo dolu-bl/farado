@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from farado.items.board_column import BoardColumn
 from farado.logger import dlog
 from farado.items.project import Project
 from farado.items.board import Board
@@ -47,6 +48,19 @@ class ProjectManager:
     def board(self, board_id):
         if board_id:
             return gm_holder.meta_item_manager.item_by_id(Board, board_id)
+        return None
+
+    def board_columns_by_board(self, board_id):
+        if board_id:
+            return gm_holder.meta_item_manager.items_by_value(BoardColumn, "board_id", board_id)
+        return None
+
+    def board_columns(self):
+        return gm_holder.meta_item_manager.items(BoardColumn)
+
+    def board_column(self, board_column_id):
+        if board_column_id:
+            return gm_holder.meta_item_manager.item_by_id(BoardColumn, board_column_id)
         return None
 
     def roles(self):
