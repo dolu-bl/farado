@@ -19,7 +19,7 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
     <li class="breadcrumb-item"><a href="/projects">Projects</a></li>
-    <li class="breadcrumb-item active" aria-current="page">${{ target_project.id }} {{ target_project.caption }}</li>
+    <li class="breadcrumb-item active" aria-current="page">{{ target_project.caption }} [{{ target_project.id }}]</li>
   </ol>
 {% endblock %}
 
@@ -32,11 +32,6 @@
 
     <div class="col">
       <!--reserved-->
-    </div>
-
-    <!-- Project.id -->
-    <div class="col-md-auto">
-      <h3>${{ target_project.id }}</h3>
     </div>
 
     <!-- Project view/edit switch -->
