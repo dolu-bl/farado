@@ -33,4 +33,6 @@ class Board():
         return None
 
     def ordered_board_columns(self):
-        return self.board_columns.sort(key=lambda column: column.order)
+        return sorted(
+            self.board_columns,
+            key=lambda column: column.order)

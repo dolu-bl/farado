@@ -162,6 +162,11 @@ class ProjectManager:
             return gm_holder.meta_item_manager.items_by_value(Issue, 'parent_id', issue_id)
         return []
 
+    def issues_by_state(self, state_id):
+        if state_id:
+            return gm_holder.meta_item_manager.items_by_value(Issue, 'state_id', state_id)
+        return []
+
     def parent_issues(self, parent_issue_id):
         if parent_issue_id:
             issue = gm_holder.meta_item_manager.item_by_id(Issue, parent_issue_id)
