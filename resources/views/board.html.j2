@@ -128,48 +128,50 @@
               </tr>
             </thead>
             <tbody>
-              {% for board_column in target_board.ordered_board_columns() %}
-                <tr id="board_column_row_{{ board_column.id }}">
-                  <th scope="row">
-                    <input
-                        type="hidden"
-                        name="board_column_id_{{ board_column.id }}"
-                        class="form-control form-select-sm"
-                        value="{{ board_column.id }}">
-                    {{ board_column.id }}
-                  </th>
-                  <td>
-                    {{ SELECT.INPUT(
-                          'board_column_state_id_' + board_column.id | string,
-                          project_manager.states(),
-                          board_column.state_id,
-                          need_zero_value=False,
-                          class="form-select form-select-sm" ) }}
-                  </td>
-                  <td>
-                    <input
-                        type="text"
-                        name="board_column_caption_{{ board_column.id }}"
-                        class="form-control form-select-sm"
-                        value="{{ board_column.caption }}">
-                  </td>
-                  <td>
-                    <input
-                        type="number"
-                        name="board_column_order_{{ board_column.id }}"
-                        class="form-control form-select-sm"
-                        value="{{ board_column.order }}">
-                  </td>
-                  <td>
-                    <a href="#"
-                        class="btn btn-danger btn-sm"
-                        title="Remove board column"
-                        onclick="$('#board_column_row_{{ board_column.id }}').remove();">
-                      <i class="bi bi-trash"></i>
-                    </a>
-                  </td>
-                </tr>
-              {% endfor %}
+              {% if target_board %}
+                {% for board_column in target_board.ordered_board_columns() %}
+                  <tr id="board_column_row_{{ board_column.id }}">
+                    <th scope="row">
+                      <input
+                          type="hidden"
+                          name="board_column_id_{{ board_column.id }}"
+                          class="form-control form-select-sm"
+                          value="{{ board_column.id }}">
+                      {{ board_column.id }}
+                    </th>
+                    <td>
+                      {{ SELECT.INPUT(
+                            'board_column_state_id_' + board_column.id | string,
+                            project_manager.states(),
+                            board_column.state_id,
+                            need_zero_value=False,
+                            class="form-select form-select-sm" ) }}
+                    </td>
+                    <td>
+                      <input
+                          type="text"
+                          name="board_column_caption_{{ board_column.id }}"
+                          class="form-control form-select-sm"
+                          value="{{ board_column.caption }}">
+                    </td>
+                    <td>
+                      <input
+                          type="number"
+                          name="board_column_order_{{ board_column.id }}"
+                          class="form-control form-select-sm"
+                          value="{{ board_column.order }}">
+                    </td>
+                    <td>
+                      <a href="#"
+                          class="btn btn-danger btn-sm"
+                          title="Remove board column"
+                          onclick="$('#board_column_row_{{ board_column.id }}').remove();">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
             </tbody>
             <tfoot>
               <tr>
@@ -203,78 +205,80 @@
   <hr>
 
   <div class="row">
-    {% for board_column in target_board.ordered_board_columns() %}
-      <div class="col">
-        <div class="alert alert-secondary" role="alert">
-          {{ board_column.caption }}
-        </div>
+    {% if target_board %}
+      {% for board_column in target_board.ordered_board_columns() %}
+        <div class="col">
+          <div class="alert alert-secondary" role="alert">
+            {{ board_column.caption }}
+          </div>
 
-        {# Scrollable area #}
-        <div style="overflow: auto; max-height: 85vh;">
-          {% for issue in project_manager.issues_by_state(board_column.state_id) %}
-            <div class="card bg-light mb-3">
-              <div class="card-header">
+          {# Scrollable area #}
+          <div style="overflow: auto; max-height: 85vh;">
+            {% for issue in project_manager.issues_by_state(board_column.state_id) %}
+              <div class="card bg-light mb-3">
+                <div class="card-header">
 
-                <div class="row">
-                  <div class="col">
-                    <a href="/issues/issue/{{ issue.id }}">
-                      {{ project_manager.issue_kind(issue.issue_kind_id).caption }} #{{ issue.id }}
-                    </a>
+                  <div class="row">
+                    <div class="col">
+                      <a href="/issues/issue/{{ issue.id }}">
+                        {{ project_manager.issue_kind(issue.issue_kind_id).caption }} #{{ issue.id }}
+                      </a>
+                    </div>
+
+                    <div class="col text-end">
+                      {% set state = project_manager.state(issue.state_id) %}
+                      <a
+                          class="badge alert-dark"
+                          id="dropdownMenuState"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"><i class="bi bi-chevron-down"></i></a>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuState">
+                        {% for state in project_manager.new_states_for_issue(issue.id) %}
+                          <li>
+                            <a  class="dropdown-item"
+                                href="/boards/board/{{ target_board.id -}}
+                                  ?function='/issues/issue/{{ issue.id -}}
+                                      ?issue_state_id={{ state.id -}}'">
+                              {{- state.caption -}}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
                   </div>
 
-                  <div class="col text-end">
-                    {% set state = project_manager.state(issue.state_id) %}
-                    <a
-                        class="badge alert-dark"
-                        id="dropdownMenuState"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"><i class="bi bi-chevron-down"></i></a>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuState">
-                      {% for state in project_manager.new_states_for_issue(issue.id) %}
-                        <li>
-                          <a  class="dropdown-item"
-                              href="/boards/board/{{ target_board.id -}}
-                                ?function='/issues/issue/{{ issue.id -}}
-                                    ?issue_state_id={{ state.id -}}'">
-                            {{- state.caption -}}
-                          </a>
-                        </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
+                </div>
+                <div class="card-body">
+                  <h6 class="card-title">
+                    {{ issue.caption }}
+                  </h6>
                 </div>
 
-              </div>
-              <div class="card-body">
-                <h6 class="card-title">
-                  {{ issue.caption }}
-                </h6>
-              </div>
+                <ul class="list-group list-group-flush">
+                    {% for field in issue.fields %}
+                    {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+                    {% if field_kind and field_kind.is_system %}
+                      <li class="list-group-item"
+                          data-toggle="tooltip"
+                          title="{{ field_kind.caption }}">
+                        {{ ISSUE_FIELD.TAG(
+                              field,
+                              field_kind,
+                              project_manager,
+                              value_types ) }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
 
-              <ul class="list-group list-group-flush">
-                  {% for field in issue.fields %}
-                  {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
-                  {% if field_kind and field_kind.is_system %}
-                    <li class="list-group-item"
-                        data-toggle="tooltip"
-                        title="{{ field_kind.caption }}">
-                      {{ ISSUE_FIELD.TAG(
-                            field,
-                            field_kind,
-                            project_manager,
-                            value_types ) }}
-                    </li>
-                  {% endif %}
-                {% endfor %}
-              </ul>
+              </div>
+            {% endfor %}
+          </div>
+          {# /Scrollable area #}
 
-            </div>
-          {% endfor %}
         </div>
-        {# /Scrollable area #}
-
-      </div>
-    {% endfor %}
+      {% endfor %}
+    {% endif %}
   </div>
 {% endblock %}
 
