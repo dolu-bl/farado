@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from farado.items.board_column import BoardColumn
-from farado.logger import dlog
+from farado.logger import logger
 from farado.items.project import Project
 from farado.items.board import Board
 from farado.items.issue import Issue

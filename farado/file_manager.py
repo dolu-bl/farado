@@ -4,7 +4,7 @@
 import os
 import pathlib
 
-from farado.logger import dlog
+from farado.logger import logger
 from farado.config import farado_config
 
 
@@ -22,7 +22,7 @@ class FileManager:
         target_file_name = os.path.join(target_path, filename)
         with open(target_file_name, "wb") as file:
             file.write(data)
-            dlog.info(F'Uploaded file {target_file_name} saved')
+            logger.info(F'Uploaded file {target_file_name} saved')
 
     def remove_uploaded_file(self, path, filename):
         abs_file_name = os.path.abspath(
@@ -32,7 +32,7 @@ class FileManager:
                 filename))
         if abs_file_name and os.path.isfile(abs_file_name):
             os.remove(abs_file_name)
-            dlog.info(F'Uploaded file {abs_file_name} removed')
+            logger.info(F'Uploaded file {abs_file_name} removed')
 
     def file_path(self, file):
         return os.path.abspath(
