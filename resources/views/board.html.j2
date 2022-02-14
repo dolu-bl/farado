@@ -222,19 +222,20 @@
                     </a>
                   </div>
 
-                  <div class="col">
+                  <div class="col text-end">
                     {% set state = project_manager.state(issue.state_id) %}
-                    <button
-                        class="btn btn-outline-dark dropdown-toggle btn-sm"
-                        type="button"
+                    <a
+                        class="badge alert-dark"
                         id="dropdownMenuState"
                         data-bs-toggle="dropdown"
-                        aria-expanded="false">{{ state.caption if state is not none else '—' }}</button>
+                        aria-expanded="false"><i class="bi bi-chevron-down"></i></a>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuState">
                       {% for state in project_manager.new_states_for_issue(issue.id) %}
                         <li>
                           <a  class="dropdown-item"
-                              href="/issues/issue/{{ issue.id -}}?issue_state_id={{ state.id -}}">
+                              href="/boards/board/{{ target_board.id -}}
+                                ?function='/issues/issue/{{ issue.id -}}
+                                    ?issue_state_id={{ state.id -}}'">
                             {{- state.caption -}}
                           </a>
                         </li>

@@ -4,7 +4,7 @@
 import cherrypy
 import json
 
-from farado.logger import dlog
+from farado.logger import logger
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder
@@ -33,10 +33,13 @@ class BoardsView(BaseView):
             )
 
     @cherrypy.expose
-    def board(self, target_board_id=None, **args):
+    def board(self, target_board_id=None, function=None, **args):
         user = gm_holder.permission_manager.user_by_session_id(current_session_id())
         if not user:
             return view_renderer["login"].render()
+
+        if function:
+            self.process_function(user, function)
 
         is_reading = bool(len(args) == 0)
 
