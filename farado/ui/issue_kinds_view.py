@@ -3,7 +3,7 @@
 
 import cherrypy
 
-from farado.logger import dlog
+from farado.logger import logger
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder

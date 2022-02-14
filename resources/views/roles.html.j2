@@ -1,10 +1,10 @@
-{% extends "base_template.html" %}
+{% extends "base_template.html.j2" %}
 
 
 
-{% block title %}Farado — Workflows{% endblock %}
+{% block title %}Farado — Roles{% endblock %}
 
-{% set active_menu = 'workflows' %}
+{% set active_menu = 'roles' %}
 
 
 {% block styles %}
@@ -17,7 +17,7 @@
 {% block breadcrumb %}
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Workflows</li>
+    <li class="breadcrumb-item active" aria-current="page">Roles</li>
   </ol>
 {% endblock %}
 
@@ -25,8 +25,8 @@
 {% block content %}
 
   <h2 class="page-header">
-    Workflows
-    <a href="/workflows/add_workflow" class="btn btn-sm btn-outline-dark" role="button" aria-pressed="true">+</a>
+    Roles
+    <a href="/roles/add_role" class="btn btn-sm btn-outline-dark" role="button" aria-pressed="true">+</a>
   </h2>
 
   <div class="row placeholders">
@@ -40,14 +40,14 @@
         </tr>
       </thead>
       <tbody>
-        {% for workflow in project_manager.workflows() %}
+        {% for role in project_manager.roles() %}
         <tr>
-          <th scope="row">{{ workflow.id }}</th>
+          <th scope="row">{{ role.id }}</th>
           <td>
-            <a href="/workflows/workflow?target_workflow_id={{ workflow.id }}" title="Modify workflow">{{ workflow.caption }}</a>
+            <a href="/roles/role?target_role_id={{ role.id }}" title="Modify role">{{ role.caption }}</a>
           </td>
           <td>
-            <a href="/workflows/remove_workflow?target_workflow_id={{ workflow.id }}" title="Remove workflow">
+            <a href="/roles/remove_role?target_role_id={{ role.id }}" title="Remove role">
               <span class="badge bg-danger">x</span>
             </a>
           </td>

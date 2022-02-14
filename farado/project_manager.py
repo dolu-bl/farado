@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from farado.logger import dlog
+from farado.items.board_column import BoardColumn
+from farado.logger import logger
 from farado.items.project import Project
+from farado.items.board import Board
 from farado.items.issue import Issue
 from farado.items.field import Field
 from farado.items.user import User
@@ -38,6 +40,27 @@ class ProjectManager:
     def project_issues(self, project_id):
         if project_id:
             return gm_holder.meta_item_manager.items_by_value(Issue, "project_id", project_id)
+        return None
+
+    def boards(self):
+        return gm_holder.meta_item_manager.items(Board)
+
+    def board(self, board_id):
+        if board_id:
+            return gm_holder.meta_item_manager.item_by_id(Board, board_id)
+        return None
+
+    def board_columns_by_board(self, board_id):
+        if board_id:
+            return gm_holder.meta_item_manager.items_by_value(BoardColumn, "board_id", board_id)
+        return None
+
+    def board_columns(self):
+        return gm_holder.meta_item_manager.items(BoardColumn)
+
+    def board_column(self, board_column_id):
+        if board_column_id:
+            return gm_holder.meta_item_manager.item_by_id(BoardColumn, board_column_id)
         return None
 
     def roles(self):
@@ -137,6 +160,11 @@ class ProjectManager:
     def sub_issues(self, issue_id):
         if issue_id:
             return gm_holder.meta_item_manager.items_by_value(Issue, 'parent_id', issue_id)
+        return []
+
+    def issues_by_state(self, state_id):
+        if state_id:
+            return gm_holder.meta_item_manager.items_by_value(Issue, 'state_id', state_id)
         return []
 
     def parent_issues(self, parent_issue_id):

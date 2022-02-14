@@ -1,0 +1,48 @@
+
+{% macro TAG(
+      field,
+      field_kind,
+      project_manager,
+      value_types) -%}
+
+  {% if value_types.string == field_kind.value_type %}
+    {{ field.value }}
+  {% elif value_types.markdown_text == field_kind.value_type %}
+    <div id="field_kind_{{ field_kind.id }}_view"></div>
+  {% elif value_types.integer == field_kind.value_type %}
+    {{ field.value }}
+  {% elif value_types.float == field_kind.value_type %}
+    {{ field.value }}
+  {% elif value_types.bool == field_kind.value_type %}
+    {% if field.value %}On{% else %}Off{% endif %}
+  {% elif value_types.date_time == field_kind.value_type %}
+    {{ field.value }}
+  {% elif value_types.uri == field_kind.value_type %}
+    <a href="{{ field.value }}">{{ field.value }}</a>
+  {% elif value_types.issue_id == field_kind.value_type %}
+    {% set sub_issue = project_manager.issue(field.value) %}
+    {% if sub_issue %}
+      <a href="/issues/issue/{{ sub_issue.id }}">
+        {{ project_manager.issue_kind(sub_issue.issue_kind_id).caption }}
+        #{{ sub_issue.id }}: {{ sub_issue.caption}}
+      </a>
+    {% endif %}
+  {% elif value_types.user_id == field_kind.value_type %}
+    {% set user = project_manager.user_by_id(field.value) %}
+    {% if user %}
+      <a href="/users/user/{{ user.id }}">
+        {{ user.first_name }} {{ user.last_name }}
+      </a>
+    {% endif %}
+  {% elif value_types.project_id == field_kind.value_type %}
+    {% set project = project_manager.project(field.value) %}
+    {% if project %}
+      <a href="/projects/project/{{ project.id }}">
+        {{ project.caption }} [{{ project.id }}]
+      </a>
+    {% endif %}
+  {% else %}
+    {{ field.value }}
+  {% endif %}
+
+{%- endmacro %}

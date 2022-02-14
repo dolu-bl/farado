@@ -16,6 +16,8 @@ from farado.items.edge import Edge
 from farado.items.role import Role
 from farado.items.rule import Rule
 from farado.items.user_role import UserRole
+from farado.items.board import Board
+from farado.items.board_column import BoardColumn
 
 
 
@@ -155,6 +157,24 @@ class MetaItemManager:
                 sqlalchemy.ForeignKey('roles.id', ondelete="CASCADE"), index=True)
         )
 
+        self.boards_table = sqlalchemy.Table('boards'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+            , sqlalchemy.Column('description', sqlalchemy.String)
+            , sqlalchemy.Column('workflow_id', sqlalchemy.ForeignKey('workflows.id'), index=True)
+        )
+
+        self.board_columns_table = sqlalchemy.Table('board_columns'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('board_id', sqlalchemy.ForeignKey('boards.id'), index=True)
+            , sqlalchemy.Column('state_id', sqlalchemy.ForeignKey('states.id'), index=True)
+            , sqlalchemy.Column('caption', sqlalchemy.String)
+            , sqlalchemy.Column('order', sqlalchemy.Integer)
+        )
+
+
     def map_tables(self):
         sqlalchemy.orm.mapper(Project, self.projects_table,
             properties={
@@ -236,6 +256,17 @@ class MetaItemManager:
             )
         sqlalchemy.orm.mapper(Rule, self.rules_table)
         sqlalchemy.orm.mapper(UserRole, self.user_roles_table)
+        sqlalchemy.orm.mapper(Board, self.boards_table,
+            properties={
+                'board_columns': sqlalchemy.orm.relationship(
+                    BoardColumn,
+                    cascade='all,delete',
+                    backref="column_board",
+                    lazy='immediate'),
+                }
+            )
+        sqlalchemy.orm.mapper(BoardColumn, self.board_columns_table)
+
 
     def add_item(self, item):
         with self.mutex:

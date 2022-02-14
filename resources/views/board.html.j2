@@ -1,0 +1,303 @@
+{% extends "base_template.html.j2" %}
+{% import "macros/markdown_textarea.html.j2" as MARKDOWN_TEXTAREA %}
+{% import "macros/tab_switcher.html.j2" as TAB_SWITCHER %}
+{% import "macros/select.html.j2" as SELECT %}
+{% import "macros/issue_field.html.j2" as ISSUE_FIELD %}
+
+
+
+{% block title %}Farado — Board{% endblock %}
+
+{% set active_menu = 'boards' %}
+{% set value_types = project_manager.value_types() %}
+
+
+{% block styles %}
+{% endblock %}
+
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/">Home</a></li>
+    <li class="breadcrumb-item"><a href="/boards">Boards</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Board-{{ target_board.id }}: {{ target_board.caption }}</li>
+  </ol>
+{% endblock %}
+
+
+{% block content %}
+
+  <h2 class="page-header">Board-{{ target_board.id }}: {{ target_board.caption }}</h2>
+
+  <div class="row">
+
+    <div class="col">
+      <!--reserved-->
+    </div>
+
+    <!-- Board view/edit switch -->
+    <div class="col">
+      <ul class="nav nav-pills mb-3 justify-content-end" id="pillsTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link active"
+              id="pills-view-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-view"
+              type="button"
+              role="tab"
+              aria-controls="pills-view"
+              aria-selected="true">View</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+              class="nav-link {% if not restriction.is_admin %}disabled{% endif %}"
+              id="pills-edit-tab"
+              data-bs-toggle="pill"
+              data-bs-target="#pills-edit"
+              type="button"
+              role="tab"
+              aria-controls="pills-edit"
+              {% if not restriction.is_admin %}disabled{% endif %}
+              aria-selected="false">Edit</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row placeholders">
+    <div class="tab-content" id="pillsTabContent">
+      <!-- VIEW -->
+      <div
+          class="tab-pane fade show active"
+          id="pills-view"
+          role="tabpanel"
+          aria-labelledby="pills-view-tab">
+
+        <!-- Board.description -->
+        <div class="col-12">
+          <div id="descriptionView"></div>
+        </div>
+      </div>
+
+      <!-- EDIT -->
+      <div
+          class="tab-pane fade"
+          id="pills-edit"
+          role="tabpanel"
+          aria-labelledby="pills-edit-tab">
+
+        <form class="row g-3" action="/boards/board/{{ target_board.id }}" method="post">
+
+          <!-- Board.caption -->
+          <div class="col-12">
+            <label for="inputCaption" class="form-label">Caption</label>
+            <input type="text" name="target_board_caption" class="form-control" id="inputCaption" value="{{ target_board.caption }}" required>
+          </div>
+
+          <!-- Board.description -->
+          <div class="col-12">
+            <label for="descriptionTab" class="form-label">Description</label>
+            {{ MARKDOWN_TEXTAREA.INPUT(
+                  'descriptionTab',
+                  'target_board_description_result',
+                  'target_board_description',
+                  target_board.description ) }}
+          </div>
+
+          <!-- Board.workflow_id -->
+          <div class="col-12">
+            <label for="textareaDescription" class="form-label">Workflow</label>
+            {{ SELECT.INPUT(
+                  'target_board_workflow_id',
+                  project_manager.workflows(),
+                  target_board.workflow_id ) }}
+          </div>
+
+          <table
+              class="table table-striped table-sm table-bordered table-hover"
+              style="width:100%"
+              id="projects_table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 1%">Id</th>
+                <th scope="col">State</th>
+                <th scope="col">Caption</th>
+                <th scope="col">Order</th>
+                <th scope="col" style="width: 1%"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if target_board %}
+                {% for board_column in target_board.ordered_board_columns() %}
+                  <tr id="board_column_row_{{ board_column.id }}">
+                    <th scope="row">
+                      <input
+                          type="hidden"
+                          name="board_column_id_{{ board_column.id }}"
+                          class="form-control form-select-sm"
+                          value="{{ board_column.id }}">
+                      {{ board_column.id }}
+                    </th>
+                    <td>
+                      {{ SELECT.INPUT(
+                            'board_column_state_id_' + board_column.id | string,
+                            project_manager.states(),
+                            board_column.state_id,
+                            need_zero_value=False,
+                            class="form-select form-select-sm" ) }}
+                    </td>
+                    <td>
+                      <input
+                          type="text"
+                          name="board_column_caption_{{ board_column.id }}"
+                          class="form-control form-select-sm"
+                          value="{{ board_column.caption }}">
+                    </td>
+                    <td>
+                      <input
+                          type="number"
+                          name="board_column_order_{{ board_column.id }}"
+                          class="form-control form-select-sm"
+                          value="{{ board_column.order }}">
+                    </td>
+                    <td>
+                      <a href="#"
+                          class="btn btn-danger btn-sm"
+                          title="Remove board column"
+                          onclick="$('#board_column_row_{{ board_column.id }}').remove();">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% endif %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Id</th>
+                <th>State</th>
+                <th>Caption</th>
+                <th>Order</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          </table>
+
+          {% if restriction.is_admin %}
+            <div class="col-12">
+              <button type="submit" id="saveButton" class="btn btn-primary">Save</button>
+
+              {# FIXME : If you add a new column, all board changes on this page are discarded. #}
+              <a  href="/boards/add_board_column?target_board_id={{ target_board.id }}"
+                  class="btn btn-outline-dark">
+                Create new board column
+              </a>
+            </div>
+          {% endif %}
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <div class="row">
+    {% if target_board %}
+      {% for board_column in target_board.ordered_board_columns() %}
+        <div class="col">
+          <div class="alert alert-secondary" role="alert">
+            {{ board_column.caption }}
+          </div>
+
+          {# Scrollable area #}
+          <div style="overflow: auto; max-height: 85vh;">
+            {% for issue in project_manager.issues_by_state(board_column.state_id) %}
+              <div class="card bg-light mb-3">
+                <div class="card-header">
+
+                  <div class="row">
+                    <div class="col">
+                      <a href="/issues/issue/{{ issue.id }}">
+                        {{ project_manager.issue_kind(issue.issue_kind_id).caption }} #{{ issue.id }}
+                      </a>
+                    </div>
+
+                    <div class="col text-end">
+                      {% set state = project_manager.state(issue.state_id) %}
+                      <a
+                          class="badge alert-dark"
+                          id="dropdownMenuState"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"><i class="bi bi-chevron-down"></i></a>
+                      <ul class="dropdown-menu" aria-labelledby="dropdownMenuState">
+                        {% for state in project_manager.new_states_for_issue(issue.id) %}
+                          <li>
+                            <a  class="dropdown-item"
+                                href="/boards/board/{{ target_board.id -}}
+                                  ?function='/issues/issue/{{ issue.id -}}
+                                      ?issue_state_id={{ state.id -}}'">
+                              {{- state.caption -}}
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="card-body">
+                  <h6 class="card-title">
+                    {{ issue.caption }}
+                  </h6>
+                </div>
+
+                <ul class="list-group list-group-flush">
+                    {% for field in issue.fields %}
+                    {% set field_kind = project_manager.field_kind(field.field_kind_id) %}
+                    {% if field_kind and field_kind.is_system %}
+                      <li class="list-group-item"
+                          data-toggle="tooltip"
+                          title="{{ field_kind.caption }}">
+                        {{ ISSUE_FIELD.TAG(
+                              field,
+                              field_kind,
+                              project_manager,
+                              value_types ) }}
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+
+              </div>
+            {% endfor %}
+          </div>
+          {# /Scrollable area #}
+
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+  {{ MARKDOWN_TEXTAREA.SCRIPTS() }}
+
+  <script>
+    document_ready_function = function() {
+      {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('pillsTab') }}
+      {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('descriptionTab') }}
+
+      markdownToHtml('target_board_description', 'descriptionView');
+      markdownToHtml('target_board_description', 'target_board_description_result');
+
+      $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+    }
+  </script>
+{% endblock %}

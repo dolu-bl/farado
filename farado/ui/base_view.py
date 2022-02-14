@@ -23,6 +23,10 @@ class BaseView:
         self.project_rights = gm_holder.permission_manager.project_rights
         self.is_admin = gm_holder.permission_manager.check_is_admin
 
+    # overridden by the logic above
+    def process_function(self, user, function):
+        pass
+
 class DataTableArgs:
     def __init__(self, args) -> None:
         self._args = args

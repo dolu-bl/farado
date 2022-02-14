@@ -1,4 +1,4 @@
-{% extends "base_template.html" %}
+{% extends "base_template.html.j2" %}
 
 
 
@@ -18,7 +18,9 @@
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="/">Home</a></li>
     <li class="breadcrumb-item"><a href="/users">Users</a></li>
-    <li class="breadcrumb-item active" aria-current="page">User {{ target_user.id }}</li>
+    <li class="breadcrumb-item active" aria-current="page">
+      {{ target_user.first_name }} {{ target_user.last_name }}
+    </li>
   </ol>
 {% endblock %}
 

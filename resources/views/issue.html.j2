@@ -1,6 +1,7 @@
-{% extends "base_template.html" %}
-{% import "base_macros.html" as macros %}
-{% import "macros/file_input.html" as FILE_INPUT %}
+{% extends "base_template.html.j2" %}
+{% import "base_macros.html.j2" as macros %}
+{% import "macros/file_input.html.j2" as FILE_INPUT %}
+{% import "macros/issue_field.html.j2" as ISSUE_FIELD %}
 
 
 
@@ -25,13 +26,15 @@
     {% for parent_issue in project_manager.parent_issues(target_issue.parent_id) | reverse %}
       <li class="breadcrumb-item">
         <a href="/issues/issue/{{ parent_issue.id }}">
-          #{{ parent_issue.id }} {{ parent_issue.caption }}
+          {{ project_manager.issue_kind(parent_issue.issue_kind_id).caption }}
+          #{{ parent_issue.id }}: {{ parent_issue.caption }}
         </a>
       </li>
     {% endfor %}
 
     <li class="breadcrumb-item active" aria-current="page">
-      #{{ target_issue.id }} {{ target_issue.caption }}
+      {{ project_manager.issue_kind(target_issue.issue_kind_id).caption }}
+      #{{ target_issue.id }}: {{ target_issue.caption }}
     </li>
   </ol>
 {% endblock %}
@@ -39,7 +42,11 @@
 
 {% block content %}
 
-  <h2 class="page-header">{{ target_issue.caption }}</h2>
+  <h2 class="page-header">
+    {{ project_manager.issue_kind(target_issue.issue_kind_id).caption }}
+    #{{ target_issue.id }}:
+    {{ target_issue.caption }}
+  </h2>
 
   <div class="row">
     <!-- Issue.state -->
@@ -61,11 +68,6 @@
           </li>
         {% endfor %}
       </ul>
-    </div>
-
-    <!-- Issue.id -->
-    <div class="col-md-auto">
-      <h3>#{{ target_issue.id }}</h3>
     </div>
 
     <!-- Issue view/edit switch -->
@@ -130,53 +132,11 @@
                       {{ field_kind.caption }}
                     </th>
                     <td>
-                      {% if value_types.string == field_kind.value_type %}
-                        {{ field.value }}
-                      {% elif value_types.markdown_text == field_kind.value_type %}
-                        <div id="field_kind_{{ field_kind.id }}_view"></div>
-                      {% elif value_types.integer == field_kind.value_type %}
-                        {{ field.value }}
-                      {% elif value_types.float == field_kind.value_type %}
-                        {{ field.value }}
-                      {% elif value_types.bool == field_kind.value_type %}
-                        {% if field.value %}On{% else %}Off{% endif %}
-                      {% elif value_types.date_time == field_kind.value_type %}
-                        {{ field.value }}
-                      {% elif value_types.uri == field_kind.value_type %}
-                        <a href="{{ field.value }}" role="button" class="btn btn-link">{{ field.value }}</a>
-                      {% elif value_types.issue_id == field_kind.value_type %}
-                        {% set issue = project_manager.issue(field.value) %}
-                        {% if issue %}
-                          <a href="/issues/issue/{{ issue.id }}"
-                              role="button"
-                              class="btn btn-link">
-                            {{ project_manager.issue_kind(issue.issue_kind_id).caption }}
-                            #{{ issue.id }} {{ issue.caption}}
-                          </a>
-                        {% endif %}
-                      {% elif value_types.user_id == field_kind.value_type %}
-                        {% set user = project_manager.user_by_id(field.value) %}
-                        {% if user %}
-                          <a href="/users/user/{{ user.id }}"
-                              role="button"
-                              class="btn btn-link">
-                            {{ user.first_name }} {{ user.middle_name }} {{ user.last_name }}
-                            -
-                            @{{ user.id }} {{ user.login }}
-                          </a>
-                        {% endif %}
-                      {% elif value_types.project_id == field_kind.value_type %}
-                        {% set project = project_manager.project(field.value) %}
-                        {% if project %}
-                          <a href="/projects/project/{{ project.id }}"
-                              role="button"
-                              class="btn btn-link">
-                            ${{ project.id }} - {{ project.caption }}
-                          </a>
-                        {% endif %}
-                      {% else %}
-                        {{ field.value }}
-                      {% endif %}
+                      {{ ISSUE_FIELD.TAG(
+                            field,
+                            field_kind,
+                            project_manager,
+                            value_types ) }}
                     </td>
                   </tr>
                 {% endif %}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from farado.logger import dlog
+from farado.logger import logger
 from farado.config import farado_config
 from farado.ui.web_service import WebService
 from farado.project_manager import ProjectManager
@@ -14,7 +14,7 @@ from farado.general_manager_holder import gm_holder
 class Stem:
     def __init__(self):
         self.log_splash()
-        dlog.info('Now starting...')
+        logger.info('Now starting...')
 
         self.meta_item_manager = MetaItemManager(farado_config['database']['connection_string'])
         self.project_manager = ProjectManager()
@@ -29,13 +29,13 @@ class Stem:
 
     def run(self):
         self.web_service.run()
-        dlog.info('Farado finished')
+        logger.info('Farado finished')
 
     def log_splash(self):
-        dlog.info('''                                         ''')
-        dlog.info('''    _|                                   ''')
-        dlog.info('''   |                           |         ''')
-        dlog.info('''   __|   _` |   __|  _` |   _` |   _ \   ''')
-        dlog.info('''   |    (   |  |    (   |  (   |  (   |  ''')
-        dlog.info('''  _|   \__,_| _|   \__,_| \__,_| \___/   ''')
-        dlog.info('''                                         ''')
+        logger.info('''                                         ''')
+        logger.info('''    _|                                   ''')
+        logger.info('''   |                           |         ''')
+        logger.info('''   __|   _` |   __|  _` |   _` |   _ \   ''')
+        logger.info('''   |    (   |  |    (   |  (   |  (   |  ''')
+        logger.info('''  _|   \__,_| _|   \__,_| \__,_| \___/   ''')
+        logger.info('''                                         ''')

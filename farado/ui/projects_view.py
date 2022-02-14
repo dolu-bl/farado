@@ -4,7 +4,7 @@
 import cherrypy
 import json
 
-from farado.logger import dlog
+from farado.logger import logger
 from farado.ui.renderer import view_renderer
 from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder
@@ -74,7 +74,7 @@ class ProjectsView(BaseView):
     @cherrypy.expose
     def project(
             self,
-            target_project_id,
+            target_project_id=None,
             target_project_caption='',
             target_project_content='',
             ):

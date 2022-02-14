@@ -5,7 +5,7 @@ import uuid
 import time
 import threading
 
-from farado.logger import dlog
+from farado.logger import logger
 
 
 
@@ -57,7 +57,7 @@ class SessionManager:
             '''
             result = bool((time.time() - self.last_action_time) <= self.duration)
             if not result and self.user:
-                dlog.info(f'User session has expired: {self.user.login}')
+                logger.info(f'User session has expired: {self.user.login}')
                 self.user.online_state = False
             return result
 
