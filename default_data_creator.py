@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sqlalchemy.util.compat import u
 from farado.items.user import User
 from farado.items.role import Role
 from farado.items.rule import Rule
@@ -11,6 +10,9 @@ from farado.items.project import Project
 from farado.items.workflow import Workflow
 from farado.items.state import State
 from farado.items.edge import Edge
+
+from farado.items.board import Board
+from farado.items.board_column import BoardColumn
 
 from farado.items.issue import Issue
 from farado.items.issue_kind import IssueKind
@@ -30,6 +32,7 @@ def main():
     data_creator = DefaultDataCreator()
     data_creator.create_users()
     data_creator.create_workflow()
+    data_creator.create_board()
     data_creator.create_issues()
 
 class DefaultDataCreator:
@@ -76,7 +79,40 @@ class DefaultDataCreator:
         workflow.edges.append(Edge(state_03.id, state_04.id))
         self.add_item(workflow)
         self.default_state_id = state_01.id
+        self.state_id_02 = state_02.id
+        self.state_id_03 = state_03.id
+        self.state_id_04 = state_04.id
         self.default_workflow_id = workflow.id
+
+    def create_board(self):
+        board = Board(
+                caption="Main board",
+                workflow_id=self.default_workflow_id)
+        board.board_columns.append(
+            BoardColumn(
+                state_id=self.default_state_id,
+                caption='ToDo (Opened)',
+                order=1
+            ))
+        board.board_columns.append(
+            BoardColumn(
+                state_id=self.state_id_02,
+                caption='In Progress',
+                order=2
+            ))
+        board.board_columns.append(
+            BoardColumn(
+                state_id=self.state_id_03,
+                caption='In Test',
+                order=3
+            ))
+        board.board_columns.append(
+            BoardColumn(
+                state_id=self.state_id_04,
+                caption='Done',
+                order=4
+            ))
+        self.add_item(board)
 
     def create_issues(self):
         issue_kind = IssueKind("Task")
