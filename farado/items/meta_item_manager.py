@@ -8,6 +8,7 @@ from farado.items.field_kind import FieldKind
 from farado.items.file import File
 from farado.items.issue import Issue
 from farado.items.issue_kind import IssueKind
+from farado.items.comment import Comment
 from farado.items.project import Project
 from farado.items.user import User
 from farado.items.workflow import Workflow
@@ -114,6 +115,17 @@ class MetaItemManager:
             , sqlalchemy.Column('description', sqlalchemy.String)
         )
 
+        self.comments_table = sqlalchemy.Table('comments'
+            , self.metadata
+            , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
+            , sqlalchemy.Column('issue_id',
+                sqlalchemy.ForeignKey('issues.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('user_id',
+                sqlalchemy.ForeignKey('users.id', ondelete="CASCADE"), index=True)
+            , sqlalchemy.Column('creation_datetime', sqlalchemy.DateTime)
+            , sqlalchemy.Column('content', sqlalchemy.String)
+        )
+
         self.users_table = sqlalchemy.Table('users'
             , self.metadata
             , sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True)
@@ -214,6 +226,11 @@ class MetaItemManager:
                     cascade='all,delete',
                     backref="issue",
                     lazy='immediate')
+                , 'comments': sqlalchemy.orm.relationship(
+                    Comment,
+                    cascade='all,delete',
+                    backref="issue",
+                    lazy='immediate')
                 , 'children': sqlalchemy.orm.relationship(
                     Issue,
                     lazy='noload')
@@ -231,6 +248,7 @@ class MetaItemManager:
         sqlalchemy.orm.mapper(Field, self.fields_table)
         sqlalchemy.orm.mapper(FieldKind, self.field_kinds_table)
         sqlalchemy.orm.mapper(File, self.files_table)
+        sqlalchemy.orm.mapper(Comment, self.comments_table)
         sqlalchemy.orm.mapper(User, self.users_table,
             properties={
                 'user_roles': sqlalchemy.orm.relationship(
