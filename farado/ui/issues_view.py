@@ -6,6 +6,7 @@ from cherrypy.lib.static import serve_file
 
 import json
 import uuid
+import datetime
 
 from farado.logger import logger
 from farado.ui.renderer import view_renderer
@@ -13,6 +14,7 @@ from farado.ui.cookie_helper import current_session_id
 from farado.general_manager_holder import gm_holder
 from farado.items.issue import Issue
 from farado.items.file import File
+from farado.items.comment import Comment
 from farado.ui.operation_result import OperationResult
 from farado.permission_manager import PermissionFlag
 from farado.ui.base_view import BaseView, UiUserRestrictions, DataTableArgs
@@ -303,3 +305,33 @@ class IssuesView(BaseView):
         gm_holder.project_manager.file_manager.remove_uploaded_file(file.path, file.name)
         gm_holder.project_manager.remove_item(File, file_id)
         return "{}"
+
+    @cherrypy.expose
+    def add_comment(self, target_issue_id, new_comment_value):
+        user = gm_holder.permission_manager.user_by_session_id(current_session_id())
+        if not user:
+            return view_renderer["login"].render()
+
+        # TODO: issue_kind_rights
+        rights = self.project_rights(user.id)
+
+        comment = Comment(
+            issue_id=int(target_issue_id),
+            user_id=int(user.id),
+            creation_datetime=datetime.datetime.now(),
+            content=new_comment_value)
+        gm_holder.project_manager.save_item(comment)
+
+        return view_renderer["issue"].render(
+            user=user,
+            target_issue=gm_holder.project_manager.issue(target_issue_id),
+            project_manager=gm_holder.project_manager,
+            operation_result=OperationResult(caption="Comment saved", kind="success"),
+            restriction=UiUserRestrictions(
+                is_admin=self.is_admin(user.id),
+                is_save_enabled=bool(PermissionFlag.editor <= rights),
+                is_create_enabled=bool(PermissionFlag.creator <= rights),
+                is_delete_enabled=bool(PermissionFlag.deleter <= rights),
+                )
+            )
+
