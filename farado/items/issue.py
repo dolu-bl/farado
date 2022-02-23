@@ -20,6 +20,7 @@ class Issue():
         # creates by sqlalchemy.orm.mapper:
         # self.fields = []
         # self.files = []
+        # self.comments = []
 
     def __repr__(self):
         return str(
@@ -50,3 +51,8 @@ class Issue():
             if file_id == file.id:
                 return file
         return None
+
+    def ordered_comments(self):
+        return sorted(
+            self.comments,
+            key=lambda column: column.creation_datetime)

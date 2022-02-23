@@ -23,3 +23,7 @@ class Comment():
                 }',\n content='{ self.content
                 }')>'''
             )
+
+    def formated_creation_datetime(self):
+        # TODO: add date format selection in config
+        return f'{self.creation_datetime:%d.%m.%Y %H:%M:%S}'
