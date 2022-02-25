@@ -495,7 +495,7 @@
         {% endfor %}
       </div>
 
-      <!-- Add comment form!!! -->
+      <!-- Add new comment form -->
       {% if restriction.is_save_enabled %}
         <form class="row g-3" action="/issues/add_comment/{{ target_issue.id }}" method="post">
           <div class="col-12">
@@ -509,13 +509,16 @@
                 markdownToHtml('new_comment_value', 'new_comment_result');
               });
             </script>
+          </div>
 
+          <div class="col-12">
             <button
                 class="btn btn-outline-dark"
                 type="submit">New comment</button>
           </div>
         </form>
       {% endif %}
+      <!-- /Add new comment form -->
 
       <hr/>
 
