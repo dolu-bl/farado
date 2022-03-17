@@ -1,7 +1,9 @@
 {% extends "base_template.html.j2" %}
-{% import "base_macros.html.j2" as macros %}
+
 {% import "macros/file_input.html.j2" as FILE_INPUT %}
 {% import "macros/issue_field.html.j2" as ISSUE_FIELD %}
+{% import "macros/markdown_textarea.html.j2" as MARKDOWN_TEXTAREA %}
+{% import "macros/tab_switcher.html.j2" as TAB_SWITCHER %}
 
 
 
@@ -199,11 +201,18 @@
           <!-- Issue.content -->
           <div class="col-12">
             <label for="contentTab" class="form-label">Content</label>
-            {{ macros.markdown_textarea(
+            {{ MARKDOWN_TEXTAREA.INPUT(
                   'contentTab',
                   'issue_content_result',
                   'issue_content',
                   target_issue.content ) }}
+            <script>
+              document_ready_functions.push(function() {
+                {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('contentTab') }}
+                markdownToHtml('issue_content', 'issue_content_result');
+                markdownToHtml('issue_content', 'contentView');
+              });
+            </script>
           </div>
 
           <hr/>
@@ -227,14 +236,14 @@
                           id="inputField_{{ field_kind.id }}"
                           value="{{ field.value }}">
                     {% elif value_types.markdown_text == field_kind.value_type %}
-                      {{ macros.markdown_textarea(
+                      {{ MARKDOWN_TEXTAREA.INPUT(
                             'inputField_' + field_kind.id | string + '',
                             'field_kind_' + field_kind.id | string + '_result',
                             'field_kind_' + field_kind.id | string,
                             field.value ) }}
                       <script>
                         document_ready_functions.push(function() {
-                          {{ macros.tab_switcher_document_ready_part(
+                          {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT(
                                 'inputField_' + field_kind.id | string ) }};
                           markdownToHtml(
                               'field_kind_{{ field_kind.id }}',
@@ -450,6 +459,69 @@
         </table>
       </div>
 
+      <hr/>
+
+      <!-- Comments -->
+      <div class="col-12">
+        {% for comment in target_issue.ordered_comments() %}
+          <div class="card mb-1">
+            <div class="card-header">
+              <div class="row">
+                <div class="col">
+                  {% set user = project_manager.user_by_id(comment.user_id) %}
+                  {% if user %}
+                    <a href="/users/user/{{ user.id }}">
+                      {{ user.first_name }} {{ user.last_name }}
+                    </a>
+                  {% endif %}
+                </div>
+                <div class="col text-end">
+                  {{ comment.formated_creation_datetime() }}
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="card-text" id="comment_{{ comment.id }}_result"></p>
+              <input type="hidden" id="comment_{{ comment.id }}" value="{{ comment.content }}">
+              <script>
+                document_ready_functions.push(function() {
+                  markdownToHtml(
+                    'comment_{{ comment.id }}',
+                    'comment_{{ comment.id }}_result');
+                });
+              </script>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Add new comment form -->
+      {% if restriction.is_save_enabled %}
+        <form class="row g-3" action="/issues/add_comment/{{ target_issue.id }}" method="post">
+          <div class="col-12">
+            {{ MARKDOWN_TEXTAREA.INPUT(
+                  'newCommentTab',
+                  'new_comment_result',
+                  'new_comment_value' ) }}
+            <script>
+              document_ready_functions.push(function() {
+                {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('newCommentTab') }}
+                markdownToHtml('new_comment_value', 'new_comment_result');
+              });
+            </script>
+          </div>
+
+          <div class="col-12">
+            <button
+                class="btn btn-outline-dark"
+                type="submit">New comment</button>
+          </div>
+        </form>
+      {% endif %}
+      <!-- /Add new comment form -->
+
+      <hr/>
+
     </div>
   </div>
 {% endblock %}
@@ -457,31 +529,26 @@
 
 
 {% block scripts %}
-<script src="/static/js/datatables.min.js"></script>
-<script src="/static/js/jquery.dataTables.min.js"></script>
-<script src="/static/js/dataTables.bootstrap5.min.js"></script>
+  <script src="/static/js/datatables.min.js"></script>
+  <script src="/static/js/jquery.dataTables.min.js"></script>
+  <script src="/static/js/dataTables.bootstrap5.min.js"></script>
 
-{{ FILE_INPUT.SCRIPTS() }}
+  {{ FILE_INPUT.SCRIPTS() }}
+  {{ MARKDOWN_TEXTAREA.SCRIPTS() }}
 
-{{ macros.markdown_textarea_script() }}
+  <script>
+    document_ready_function = function() {
+      {{ TAB_SWITCHER.DOCUMENT_READY_SCRIPT('pillsTab') }}
 
-<script>
-document_ready_function = function() {
-  {{ macros.tab_switcher_document_ready_part('pillsTab') }}
-  {{ macros.tab_switcher_document_ready_part('contentTab') }}
-
-  markdownToHtml('issue_content', 'contentView');
-  markdownToHtml('issue_content', 'issue_content_result');
-
-  // Issues table initialization
-  $('#sub_issues_table').DataTable({
-    "processing": false,
-    "serverSide": false,
-    "searching": true,
-    "ordering": true,
-    "lengthChange": false,
-    "order": [[ 1, "asc" ]]
-  });
-}
-</script>
+      // Issues table initialization
+      $('#sub_issues_table').DataTable({
+        "processing": false,
+        "serverSide": false,
+        "searching": true,
+        "ordering": true,
+        "lengthChange": false,
+        "order": [[ 1, "asc" ]]
+      });
+    }
+  </script>
 {% endblock %}
